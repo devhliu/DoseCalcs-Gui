@@ -1,0 +1,2932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1528</width>
+    <height>1026</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>DoseCalcs for Dosimetry Calculations</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="minimumSize">
+    <size>
+     <width>1528</width>
+     <height>0</height>
+    </size>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1824</width>
+         <height>943</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_17">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
+          <item>
+           <widget class="QTabWidget" name="Tab">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="usesScrollButtons">
+             <bool>true</bool>
+            </property>
+            <property name="documentMode">
+             <bool>false</bool>
+            </property>
+            <property name="tabsClosable">
+             <bool>false</bool>
+            </property>
+            <property name="movable">
+             <bool>true</bool>
+            </property>
+            <property name="tabBarAutoHide">
+             <bool>false</bool>
+            </property>
+            <widget class="QWidget" name="Geometry">
+             <attribute name="title">
+              <string>Geometry</string>
+             </attribute>
+             <layout class="QFormLayout" name="formLayout_2">
+              <item row="1" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBoxGeometry">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_6">
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="WorldDimLabel">
+                   <property name="text">
+                    <string>World Data</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_14">
+                   <property name="text">
+                    <string>Geometry Data</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QFrame" name="frame_19">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_20">
+                    <property name="spacing">
+                     <number>6</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonChooseVoxIDsFile">
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditVoxIDsFilePath">
+                      <property name="toolTip">
+                       <string>add region r material IDs file for VoxIDs geometry</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Scripts/VoxIDs.dat</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="MaterialsDataLabel">
+                   <property name="text">
+                    <string>Materials Data</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QFrame" name="frame_World">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_3">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxWorldConst">
+                      <property name="text">
+                       <string>Construct</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonChoosWorldFile">
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="PhantomWorldMaterialLineEdit">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="editable">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="PhantomWorldHalfSizeslineEdit">
+                      <property name="placeholderText">
+                       <string>500. 500. 500. </string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxWorldSizeUnit"/>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonEditGeometryFile">
+                      <property name="text">
+                       <string>Edit world file</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="WorldDataShowButtonpushButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the registered macros of world building data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Show commands</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QFrame" name="frame_6">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_5">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonConstruct">
+                      <property name="text">
+                       <string>Construct</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonGDML">
+                      <property name="text">
+                       <string>GDML</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonTEXT">
+                      <property name="text">
+                       <string>TEXT</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonSTL">
+                      <property name="text">
+                       <string>STL</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonCpp">
+                      <property name="text">
+                       <string>C++</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonVoxel">
+                      <property name="text">
+                       <string>VOXEL</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonTET">
+                      <property name="text">
+                       <string>TET</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonVoxIDs">
+                      <property name="text">
+                       <string>VoxIDs</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButtonDICOM">
+                      <property name="text">
+                       <string>DICOM</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QFrame" name="frame_GDML">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_8">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>71</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="EditGeometyDataBtn">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the geometry frame to add, remove, and edit the geometrical data using the GUI and commands. All the data will be shown in commands. You should edit the commands in the input tab and save the macro commands.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Edit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditGeometrySymbole">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The geometry symbol is used to characterize the results in the result file. Note that the result is localized by geometry symbol, radionuclide or particle, quantity, source region, target region (and energy for particle).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Phantom1</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="GeometryDataShowButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the registered macros of geometry data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Show commands</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="ViewGeometyDataBtn">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run DoseCalcs for the created geometry visualization using the Qt driver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Visualize</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="labelGeomtryType">
+                   <property name="lineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Geometry method</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QFrame" name="frame_materials">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_12">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>298</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="MaterialsDataEditButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the material frame to add, remove, and edit the materials data using the GUI and commands. All the data will be shown in commands. You should edit the commands in the input tab and save the macro commands.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Edit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="MaterialsDataShowButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the registered macros of material data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Show commands</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="checkBoxUsePreDefinedGeom">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Use Pre-defined</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="comboBoxPreDefinedGeom"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBoxFixGeometryCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignor the geometry and materials macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Geometry and Materials</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" colspan="2">
+               <widget class="QFrame" name="frame_4">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <property name="leftMargin">
+                  <number>300</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>300</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QPushButton" name="PhantomBtnReset">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="BtnPhantomReturn">
+                   <property name="text">
+                    <string>Return</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="5" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBox_4">
+                <property name="title">
+                 <string>Simulate geometries with one radiation source and physics configuration</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_12">
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="pushButtonAddGeometryMacros">
+                   <property name="text">
+                    <string>Select Geometries Macros Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="checkBoxSimulateGeometriesWitOneSource">
+                   <property name="text">
+                    <string>OFF</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="pushButtonCheckMatGeoCommandsOfFiles">
+                   <property name="text">
+                    <string>Check Files Geometry Macros</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="3">
+                  <widget class="QLabel" name="LabelRededMacrosFiles">
+                   <property name="text">
+                    <string>Files:</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="2">
+               <widget class="QFrame" name="fraHelpGUIInput">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="Physics">
+             <attribute name="title">
+              <string>Physics, Source, Run</string>
+             </attribute>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="1" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBoxPhysics">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_11">
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="comboBoxPEEModels"/>
+                 </item>
+                 <item row="9" column="0">
+                  <widget class="QLabel" name="EnergyCutlabel">
+                   <property name="text">
+                    <string>Energy Cuts</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QComboBox" name="comboBoxElectronIonisationModels"/>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>Hadron Ionisation</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Electron Brem</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QComboBox" name="comboBoxComptonModels"/>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QComboBox" name="comboBoxRayleighScatteringModels"/>
+                 </item>
+                 <item row="9" column="1">
+                  <widget class="QLineEdit" name="SourceLineEditEnergyCut">
+                   <property name="toolTip">
+                    <string>add energy threshold and unit for simulated particles</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>0.01 keV or  1e-2 keV </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QComboBox" name="comboBoxGammaConversionModels"/>
+                 </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="CutDistancelabel">
+                   <property name="text">
+                    <string>Distance Cuts</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="labelPEE">
+                   <property name="text">
+                    <string>Photo Electric effect</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="1">
+                  <widget class="QLineEdit" name="SourceLineEditDistanceCut">
+                   <property name="toolTip">
+                    <string>add cut in range and unit for simulated particles</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>0.1 mm or 1e-1 mm</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="SourceComboBoxPhysUsed">
+                   <property name="acceptDrops">
+                    <bool>false</bool>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the physics to be used in simulation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="editable">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Rayleigh Scattering Effect</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1">
+                  <widget class="QComboBox" name="comboBoxHadronIonisationModels"/>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>Compton Effect</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Gamma Conversion Effect</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QComboBox" name="comboBoxElectronBremModels"/>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>Electron Ionisation</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="Physicslabel">
+                   <property name="text">
+                    <string>Physics Data</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="0">
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Generate Cross Section For</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="1">
+                  <widget class="QFrame" name="frame_10">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_10">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditParticleNamesForCrossSection">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add particle for which we will save the generated macroscopic cross section data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>gamma e-  e+ proton</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxEnergyUnitsForCrossSection">
+                      <property name="toolTip">
+                       <string>choose unit of list of energies</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditEnergiesForCrossSection">
+                      <property name="toolTip">
+                       <string>add energies where the cross section will be calculated</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>0.01 0.05 0.1 0.3 0.5 1</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBoxSource">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_3">
+                 <item row="6" column="0" rowspan="2">
+                  <widget class="QLabel" name="AngleDistributionLabel">
+                   <property name="text">
+                    <string>Source Mom Dir</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QLabel" name="PointNumToGenerateLabel">
+                   <property name="text">
+                    <string>Events Data Files</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QFrame" name="frame_8">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_7">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxTypeOfSources"/>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxSizeUnit"/>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditChosenSourceTypeData">
+                      <property name="placeholderText">
+                       <string>RegionSrc1 RegionSrc2 RegionSrc3...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxSourceRegionProposed"/>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="EnergyDistributionLabel">
+                   <property name="contextMenuPolicy">
+                    <enum>Qt::DefaultContextMenu</enum>
+                   </property>
+                   <property name="text">
+                    <string>Source Energies</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1" rowspan="2">
+                  <widget class="QFrame" name="frame_7">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_6">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QComboBox" name="SourceComboBoxAngleDist"/>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxAngleUnit"/>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditSpecialAngulatDistributionParameter"/>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QFrame" name="frame_3">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <property name="lineWidth">
+                    <number>0</number>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_27">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QComboBox" name="SourceComboBoxEnergyDist"/>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxEnergyUnit"/>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditSpecialEnergyDistributionParameter"/>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_2LoadICRPSpectrum">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose Spectrum data from ICRP Publication 107 based files. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Load ICRP Spectrum</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_2RootEnergyView">
+                      <property name="text">
+                       <string>Root View</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="8" column="1">
+                  <widget class="QComboBox" name="UseDataFilesFor">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;generate&amp;quot; if you intend to use the [simulate] executable just for generating event data and storing it in binary files. &amp;quot;save&amp;quot; for the direct generation of event data, where binary files will be generated with this event data. &amp;quot;read&amp;quot; for reading data from binary files for simulating events. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="ParticlesNamelabel">
+                   <property name="text">
+                    <string>Particles Names</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="SourcelineEditParName">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the particle names to be simulated as primary particles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>gamma e- e+ proton ... </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="BtnOrganSources">
+                   <property name="text">
+                    <string>Source Regions</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QCheckBox" name="checkBoxFixRunCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the run macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Run</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBox_3">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_10">
+                 <item row="1" column="0">
+                  <widget class="QFrame" name="frame_23">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_24">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>60</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>60</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxnohup">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check if you want to run simulation in the background, then, the terminal can be used for other purposes. In this case the simulation output messgaes will be writed to a file with a name begins with &amp;quot;nohup_&amp;quot; then followed by simulation parameters instead of showing these messages on terminal. you can use &amp;quot;top&amp;quot; command to check the simulation process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Run in Background</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxRocks">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check it if you use DoseCalcs on Rocks-Cluster and you will compute on nodes. In this case the simulation output messages will be writed to a file with a name begins with &amp;quot;DoseCalcs_&amp;quot; then followed by simulation parameters instead of showing these messages on terminal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Use on Rocks</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="MPIOrMTOnRockscomboBox">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;According to the build type, you should choose how to execute DoseCalcs. Note that the exe.sh file is different in a such case (MT or MPI).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonLoadExe">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The exe.sh is used to distribute DoseCalcs jobs on cluster computation units. The loaded file should be based on data read from GUI user inputs. After loading, you can modify the content of the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Load exe.sh</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonGenerateExe">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The exe.sh is used to distribute DoseCalcs jobs on cluster computation units. The generated file is based on data read from GUI user inputs. After generation, you can modify the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Generate exe.sh</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="RESUBButton_2">
+                      <property name="text">
+                       <string>RESUB</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonQstat">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check and list the DoseCalcs run jobs on Rocks-Cluster.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>qstat</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonChecQsubMPIsim">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When you run DoseCalcs on Rocks-Cluster, a DoseCalcs output file (DoseCalcs.o###) where ### is the job ID, will be created. The output file will be opened to check the simulation progress either if DoseCalcs run or terminated. You should select the job ID to be viewed on the terminal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Check</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonStopJob">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Delete a job on Rocks-Cluster, this will give a chooser that contains a list of registered and ran DoseCalcs simulations, choose the appropriate one. You can see the ID of the target job by clicking on qstat button.Note that you should wait 1s and in some cases return and reclick the button to read the command and write the results to the file 'F' in the build directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Stop Job</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QFrame" name="frame_16">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_17">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>303</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>303</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="RunButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run the DoseCalcs simulation. Note that DoseCalcs should be built, and principal simulation inputs should be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Run</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QFrame" name="frame_11">
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_11">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonCalculateNumSimulation">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculate the number of simulations according to the entered radiation source inputs. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>&gt;</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditNumberOfRanksOrThreads">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the number of threads or ranks (for MPI computation) (the number should not exceed the real number of physical cores).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Number Of thread</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditNumberOfEvent">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the number of events for each thread or rank (if MPI computation mode is used). The number of threads (or ranks) times the number of events per thread (or per rank) should not exceed the max int value (2147483647).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Events per thread</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="ScoreCombobowSimNumOnRanksLineEdit">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose Multi to simulate different source data on each thread (or Ranks for MPI computation), or set one to simulate the same source data on all threads (or Ranks).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="statusTip">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="openResultsDirButton">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>/../Results</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="BuildButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If DoseCalcs code not built yet, click to show the installation window, then build DoseCalcs code&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Build</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxUseMacroCommandFile">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If it's clicked, you can edit the input file by using the Edit button or Edit menu item, save the file, and run; else, the inputs from GUI components will be used, and you can view the component inputs in command text format by clicking on the View button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonEditMacros">
+                      <property name="toolTip">
+                       <string>Open the command text file, edit and click on save button, or view the components of GUI to be ran</string>
+                      </property>
+                      <property name="text">
+                       <string>Edit</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="QFrame" name="frame">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_2">
+                 <property name="leftMargin">
+                  <number>300</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>300</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="BtnsourceReturn">
+                   <property name="text">
+                    <string>Return</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="SourceBtnReset">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="checkBoxFixSourceCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the radiation source macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Radiation Source</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBoxFixPhysicsCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the physics macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Physics Setting</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="Root">
+             <attribute name="title">
+              <string>Score, Merge, ROOT Analysis</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QCheckBox" name="checkBoxFixScoreCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the score macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Score</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBoxScore">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_8">
+                 <property name="rightMargin">
+                  <number>72</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="VariableToScoreLabel">
+                   <property name="text">
+                    <string>Quantities To Score</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>Quantities Units</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="AnalysisLineEditVarToScore">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add quantities to score: AE (Absorbed Energy), AD (Absorbed Dose), AF(Absorbed Fraction), SAF(Specific Absorbed Fraction), S(S-Values), H(Equivalent Dose), E(Effective Dose), DR(Dose Ratio).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="statusTip">
+                    <string/>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>The quantities names must be separated by space</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="AnalysisLineEdit_ScorOrg">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add source volume names where the scored quantities will be performed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="statusTip">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>source Brain Liver Kidneys:LeftKidney:RightKidney target Brain Liver Kidneys:LeftKidney:RightKidney</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="TissueFactorLineEdit">
+                   <property name="placeholderText">
+                    <string>Region1 WT1  Region2 WT2 ...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Radiation Factors</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="VariableToScoreLabel_2">
+                   <property name="text">
+                    <string>Volumes To Score</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Radiotracer Biokinetic</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QFrame" name="frame_18">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_19">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLineEdit" name="RadioNucleidAdmActivitylineEdit">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add radionuclide-injected activity.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="statusTip">
+                       <string/>
+                      </property>
+                      <property name="placeholderText">
+                       <string>500</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxActivityUnits">
+                      <property name="toolTip">
+                       <string>choose the unit of administered activity</string>
+                      </property>
+                      <property name="statusTip">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="RadioNucleidSourceResTimelineEdit">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add radionuclide source regions and their residence times in the body.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="statusTip">
+                       <string/>
+                      </property>
+                      <property name="placeholderText">
+                       <string>region1 residenceTime1 ...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxTimeUnit">
+                      <property name="toolTip">
+                       <string>choose unit of residence time</string>
+                      </property>
+                      <property name="statusTip">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="radiationEnergyFactor">
+                   <property name="placeholderText">
+                    <string>Particle1 Energy1 WR1 Particle2 Energy2 WR2 ...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Radionuclide Data</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QFrame" name="frame_21">
+                   <property name="toolTip">
+                    <string>Select Absorbed energy unit</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_22">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxAEUnits">
+                      <property name="toolTip">
+                       <string>Select absorbed Energy unit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxSAFUnits">
+                      <property name="toolTip">
+                       <string>Select specific absorbed fraction unit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxADUnits">
+                      <property name="toolTip">
+                       <string>Select absorbed dose unit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxSUnits">
+                      <property name="toolTip">
+                       <string>Select S-values unit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxHUnits">
+                      <property name="toolTip">
+                       <string>Select equivalent dose unit</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxEUnits">
+                      <property name="toolTip">
+                       <string>Select effective dose unit</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QFrame" name="frame_17">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_18">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLineEdit" name="lineEditRadioNucleid">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the radionuclide name or symbol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>F-18</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxRadionuclidedataType"/>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="RadioNucleidlineEmissionDataEdit">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the list of particle names, energy, and emission yield percentage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="statusTip">
+                       <string/>
+                      </property>
+                      <property name="placeholderText">
+                       <string>particle1 energy1 percent1 ... (Or &quot;File) /../spectrumFile&quot;</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>Tissue Factors</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_2">
+                <property name="title">
+                 <string>Merge</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <item>
+                  <widget class="QFrame" name="frame_13">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_15">
+                    <property name="leftMargin">
+                     <number>156</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>156</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="pushButton">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the chosen result directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>Results Dir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonMerge">
+                      <property name="toolTip">
+                       <string>merge the resulted absorbed energy files in the results directory according to the simulation data provided by SimData file</string>
+                      </property>
+                      <property name="text">
+                       <string>Merge Results</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonOpenResultsFile">
+                      <property name="toolTip">
+                       <string>open the file ResultsData from the results directory</string>
+                      </property>
+                      <property name="text">
+                       <string>View Results</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBoxFixGraphsCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the graphs data and parameters macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Graphs Data</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBoxRootGraphs">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_9">
+                 <item row="1" column="2">
+                  <widget class="QComboBox" name="AnalysisComboBoxGraphsType">
+                   <property name="toolTip">
+                    <string>choose the Graphs Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QLineEdit" name="AnalysisLineEdit_RefName">
+                   <property name="toolTip">
+                    <string>References Names To compare with</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>MIRD, ICRP, ...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QComboBox" name="AnalysisComboBoxGraphData">
+                   <property name="toolTip">
+                    <string>Choose the Data to be used</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="4">
+                  <widget class="QFrame" name="frame_12">
+                   <property name="toolTip">
+                    <string>Choose reference files</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <property name="lineWidth">
+                    <number>0</number>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="btnReferenceFile">
+                      <property name="font">
+                       <font>
+                        <kerning>true</kerning>
+                       </font>
+                      </property>
+                      <property name="toolTip">
+                       <string>Choose Reference Data File</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                      <property name="autoDefault">
+                       <bool>false</bool>
+                      </property>
+                      <property name="default">
+                       <bool>false</bool>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="AnalysisLineEditRefFile">
+                      <property name="toolTip">
+                       <string>References Files that contain data to compare with</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>/../MIRDFile.txt /../ICRPFile.txt</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="12" column="4">
+                  <widget class="QLineEdit" name="AnalysisLineEdit_SliceID">
+                   <property name="toolTip">
+                    <string>set ID (z ID for XY plan, y ID for XZ plan, x ID for YZ plan ) of slice where the 2D dose map graph will be created </string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>Slice ID(Integer value)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QCheckBox" name="checkBoxRelSDev">
+                   <property name="toolTip">
+                    <string>If yes, the graphs contains standard deviation (or statistical error) will be created</string>
+                   </property>
+                   <property name="text">
+                    <string>Generate Relative SDev</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="3">
+                  <widget class="QCheckBox" name="checkBoxRegionParameter">
+                   <property name="toolTip">
+                    <string>If yes, the graphs contains Dosimetry quantity in function of regions parameters(Mass, Volume, Density, Distance) will be created</string>
+                   </property>
+                   <property name="text">
+                    <string>Generate Region Parameter</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="0">
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>Beam Axis, Slice For 2D</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="0" colspan="5">
+                  <widget class="QFrame" name="frame_2">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="btnPositionsFile">
+                      <property name="toolTip">
+                       <string>Positions Data File</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="AnalysisLineEditPositionsFile">
+                      <property name="placeholderText">
+                       <string>Positions data file</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btnEnergiessFile">
+                      <property name="toolTip">
+                       <string>Energies Data File</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="AnalysisLineEditEnergiesFile">
+                      <property name="placeholderText">
+                       <string>Energies data file</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btnMomDirsFile">
+                      <property name="toolTip">
+                       <string>Mom Dirs Data File</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="AnalysisLineEditMomDirsFile">
+                      <property name="placeholderText">
+                       <string>Mom Dirs data file</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxEventsDataHisto">
+                      <property name="toolTip">
+                       <string>If yes, the 1D, 2D, and 3D histograms contains events initial data will be created, but first, this data should given in previous files choosers</string>
+                      </property>
+                      <property name="text">
+                       <string>Generate Events Data Histo</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="12" column="2">
+                  <widget class="QComboBox" name="AnalysisComboBoxBeamAxis">
+                   <property name="toolTip">
+                    <string>Choose which axis is beam directed</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="3">
+                  <widget class="QComboBox" name="AnalysisComboBoxSliceFor2DGraph">
+                   <property name="toolTip">
+                    <string>Choose which plan will be used in 2D dose maps</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="4">
+                  <widget class="QComboBox" name="AnalysisComboBoxRegionVariable">
+                   <property name="toolTip">
+                    <string>Choose region variable to be used in region parameter graphs</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QComboBox" name="comboBoxRelDiff">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a relative difference type is chosen, the tables and graphs contains relative difference between DoseCalcs and the given references will be created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox">
+                <property name="title">
+                 <string>Graphs Parameters</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_5">
+                 <item row="1" column="0">
+                  <widget class="QCheckBox" name="checkBoxAddErrorBar">
+                   <property name="text">
+                    <string>Add Error bar</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QCheckBox" name="checkBoxUseGrid">
+                   <property name="text">
+                    <string>Use XY Grid</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="4">
+                  <widget class="QComboBox" name="AnalysisComboBoxGraphsExt"/>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QCheckBox" name="checkBoxPrintTitle">
+                   <property name="text">
+                    <string>Print Graphs Title</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="checkBoxUseLogE">
+                   <property name="text">
+                    <string>Use Log Scale For Energy</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QCheckBox" name="checkBoxUseLogVar">
+                   <property name="text">
+                    <string>Use Log Scale For Variable</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLineEdit" name="lineEditLegendXYWidth">
+                   <property name="placeholderText">
+                    <string>LegendXWidth LegendYHeight (0.15 0.23)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QComboBox" name="AnalysisLegendPoscomboBox"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_9">
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_4">
+                 <property name="leftMargin">
+                  <number>100</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>100</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="btnAnalysiInputFileFile">
+                   <property name="text">
+                    <string>Load Inputs</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QPushButton" name="RootAnalyseBtnReturn">
+                   <property name="text">
+                    <string>Return</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="RootAnalyseBtnReset">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="AnalysisbtnSaveInputs">
+                   <property name="text">
+                    <string>Save To Macro File</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="4">
+                  <widget class="QPushButton" name="RootAnalysispushButtonOpenROOTGUI">
+                   <property name="text">
+                    <string>Open ROOT GUI</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QPushButton" name="AnalysisbtnGenerate">
+                   <property name="text">
+                    <string>Generate</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QPushButton" name="AnalysisbtnGraphsDirPath">
+                   <property name="text">
+                    <string>Open output Dir</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="widget">
+             <attribute name="title">
+              <string>Dose Estimation</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="0" column="1">
+               <widget class="QTableWidget" name="tableWidgetForOneGraph"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="groupBox_5">
+                <property name="title">
+                 <string>Radionuclides Radiation Data</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_15">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="6" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_24">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_21">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMinHalflives">
+                      <property name="maximum">
+                       <double>1000000000.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxHalflives">
+                      <property name="maximum">
+                       <double>1000000000.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxPeriodUnit"/>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="4" column="0" colspan="3">
+                  <widget class="QCheckBox" name="checkBoxHalflivesNucl">
+                   <property name="text">
+                    <string>Half-live limits</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="pushButtonReadICRPData">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read ICRP SAFs files and organs Masses files that contains SAFs of particles and organs (sources and targets) masses. These data will be used to calculate dosimetry quantities of radionuclides in order to classify according to the user parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string>Read ICRP Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_20">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxRedionuclidesRadEmmiterType"/>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="frame_22">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QGridLayout" name="_2">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <item row="2" column="1">
+                        <widget class="QCheckBox" name="RadelectronCheckBox">
+                         <property name="text">
+                          <string>e-</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="4">
+                        <widget class="QCheckBox" name="RadNeutronCheckBox">
+                         <property name="text">
+                          <string>n</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="2">
+                        <widget class="QCheckBox" name="RadPositronCheckBox">
+                         <property name="text">
+                          <string>e+</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="3">
+                        <widget class="QCheckBox" name="RadAlphaCheckBox">
+                         <property name="text">
+                          <string>a</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QCheckBox" name="RadPhotonCheckBox">
+                         <property name="text">
+                          <string>g</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="14" column="0">
+                  <widget class="QPushButton" name="pushButtonGetResultsNucl">
+                   <property name="text">
+                    <string>List Radionuclides</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QComboBox" name="comboBoxEffDoseUnit"/>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="pushButtonReadUSERData">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read DoseCalcs result file that contains SAFs of particles and organs (sources and targets) masses. These data will be used to calculate dosimetry quantities of radionuclides in order to classify according to the user parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string>Read User Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QComboBox" name="comboBoxQuantityNucl"/>
+                 </item>
+                 <item row="14" column="1">
+                  <widget class="QPushButton" name="pushButtonReverseData">
+                   <property name="text">
+                    <string>Ascending</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="15" column="0" colspan="2">
+                  <widget class="QGroupBox" name="groupBox_6">
+                   <property name="title">
+                    <string>Radiopharmaceuticales Biokinetic Data</string>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_13">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="pushButtonSaveBiokinetikModelData">
+                      <property name="text">
+                       <string>Save Model Data</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QComboBox" name="comboBoxActivityAdministered"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QPushButton" name="pushButtonAddBiokineticModel">
+                      <property name="text">
+                       <string>Add Model Data</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QPushButton" name="pushButtonShowBiokineticData">
+                      <property name="text">
+                       <string>Show Model Data</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QPushButton" name="pushButtonGenerateQuantitiesWithBiokineticData">
+                      <property name="text">
+                       <string>Generate</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QDoubleSpinBox" name="doubleSpinBoxAdministeredActivity">
+                      <property name="maximum">
+                       <double>1000000000.990000009536743</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="13" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_5">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_16">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="spacing">
+                     <number>6</number>
+                    </property>
+                    <item row="1" column="2">
+                     <widget class="QComboBox" name="comboBoxSources"/>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QComboBox" name="comboBoxTotalorSourceOrCombNucl"/>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>&lt;---------</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QComboBox" name="comboBoxRadionuclideModel"/>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QComboBox" name="comboBoxTargets"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QComboBox" name="comboBoxPhantom"/>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="8" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_25">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_23">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxEffDoseLimNucl">
+                      <property name="text">
+                       <string>Limits</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMinEffDose">
+                      <property name="maximum">
+                       <double>1000000000.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxEffDose">
+                      <property name="maximum">
+                       <double>1000000000.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="16" column="1">
+                  <widget class="QPushButton" name="pushButtonSaveTableInPDF">
+                   <property name="text">
+                    <string>Save Table (PDF)</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTabWidget" name="tabWidget">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="movable">
+             <bool>false</bool>
+            </property>
+            <widget class="QWidget" name="tab_3">
+             <attribute name="title">
+              <string>Inputs Edit</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QFrame" name="frame_15">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_14">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>568</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QPushButton" name="pushButtonCloseFile">
+                   <property name="text">
+                    <string>Close</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButtonEditGeomFile">
+                   <property name="text">
+                    <string>Save/Close</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="CustomTextEdit" name="GeometryFileTextEdit" native="true"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="Output">
+             <attribute name="title">
+              <string>Output</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="1">
+               <widget class="QTextEdit" name="outputTextConsole">
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOn</enum>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+                </property>
+                <property name="lineWrapMode">
+                 <enum>QTextEdit::NoWrap</enum>
+                </property>
+                <property name="lineWrapColumnOrWidth">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_4">
+             <attribute name="title">
+              <string>Terminal</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_6"/>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1528</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_Inputs_To_Default_File"/>
+    <addaction name="actionRead_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHow_To_Use"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuBuild">
+    <property name="title">
+     <string>Build</string>
+    </property>
+    <addaction name="actionInstallations"/>
+    <addaction name="actionRun_2"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionClear_Output"/>
+    <addaction name="actionClear_Inputs"/>
+    <addaction name="actionReturn"/>
+    <addaction name="actionGeometryModelling"/>
+    <addaction name="actionVisualization"/>
+    <addaction name="actionAnalysis"/>
+    <addaction name="actionPackages_Statut"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuBuild"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="separator"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionUseTextInput"/>
+   <addaction name="actionEditFile"/>
+   <addaction name="separator"/>
+   <addaction name="actionPackages_Statut"/>
+   <addaction name="actionCheck_Inputs"/>
+   <addaction name="actionRun_2"/>
+   <addaction name="separator"/>
+   <addaction name="actionGeometryModelling"/>
+   <addaction name="actionVisualization"/>
+   <addaction name="actionInstallations"/>
+   <addaction name="actionAnalysis"/>
+   <addaction name="separator"/>
+   <addaction name="actionReturn"/>
+   <addaction name="actionClear_Inputs"/>
+   <addaction name="actionClear_Output"/>
+   <addaction name="separator"/>
+   <addaction name="actionClose"/>
+   <addaction name="actionAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/open-file-icon.png</normaloff>:/icons/res/open-file-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open Command File</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open a DoseCalcs macro file that contains the DoseCalcs commands to fill in the GUI components.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Windows-Close-Program-icon.png</normaloff>:/icons/res/Windows-Close-Program-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Save-icon.png</normaloff>:/icons/res/Save-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Command Data</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the GUI inputs to a macro file. If no file is chosen, the opened macros file or the default file will be used to save GUI component data in macro commands format. If you don't want to save the data, close the file editor.  &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionGeant4">
+   <property name="text">
+    <string>Geant4</string>
+   </property>
+  </action>
+  <action name="actionPre_requests">
+   <property name="text">
+    <string>Pre-requests</string>
+   </property>
+  </action>
+  <action name="actionGeant4_2">
+   <property name="text">
+    <string>Geant4</string>
+   </property>
+  </action>
+  <action name="actionData_for_Geant4">
+   <property name="text">
+    <string>Data for Geant4</string>
+   </property>
+  </action>
+  <action name="actionBuild_All">
+   <property name="text">
+    <string>Build All</string>
+   </property>
+  </action>
+  <action name="actionRun">
+   <property name="text">
+    <string>Run For One</string>
+   </property>
+   <property name="toolTip">
+    <string>Run DoseCalcs Simulation</string>
+   </property>
+  </action>
+  <action name="actionRun_2">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Places-start-here-icon.png</normaloff>:/icons/res/Places-start-here-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run</string>
+   </property>
+   <property name="toolTip">
+    <string>Run DoseCalcs simulations</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Actions-help-about-icon.png</normaloff>:/icons/res/Actions-help-about-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionHow_To_Use">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Button-Help-icon.png</normaloff>:/icons/res/Button-Help-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>How To Use</string>
+   </property>
+  </action>
+  <action name="actionUse_Default_Inputs">
+   <property name="text">
+    <string>Use Default Inputs</string>
+   </property>
+  </action>
+  <action name="actionUse_Default_Inputs_2">
+   <property name="text">
+    <string>Use Default Inputs</string>
+   </property>
+  </action>
+  <action name="actionInstallations">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/install-icon.png</normaloff>:/icons/res/install-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Install/Build/DefaultInputs</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Install packages needed to run DoseCalcs, build DoseCalcs, and set default inputs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionAnalysis">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Line-Graph-icon.png</normaloff>:/icons/res/Line-Graph-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Analysis</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Analysis of the DoseCalcs result by the automatic generation of several types of graphs and tables.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionVisualization">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Standing-skeleton-icon.png</normaloff>:/icons/res/Standing-skeleton-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Visualize Geometry</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Visualize the simulation geometry given in GUI components (Qt).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionGeometryModelling">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/GeometryModelling.png</normaloff>:/icons/res/GeometryModelling.png</iconset>
+   </property>
+   <property name="text">
+    <string>Geometry Modelling</string>
+   </property>
+  </action>
+  <action name="actionClear_Output">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Clear-icon.png</normaloff>:/icons/res/Clear-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear Output</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear output text or terminal</string>
+   </property>
+  </action>
+  <action name="actionClear_Inputs">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/remove.jpeg</normaloff>:/icons/res/remove.jpeg</iconset>
+   </property>
+   <property name="text">
+    <string>Clear Inputs</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear all GUI Inputs</string>
+   </property>
+  </action>
+  <action name="actionReturn">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/return.png</normaloff>:/icons/res/return.png</iconset>
+   </property>
+   <property name="text">
+    <string>Return</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;All GUI components are refilled with previous cleared data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionUseTextInput">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/CommFile.png</normaloff>:/icons/res/CommFile.png</iconset>
+   </property>
+   <property name="text">
+    <string>UseTextInput</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If it's clicked, you can edit the macro command file, saving it, and running it; else, the inputs from GUI components will be used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionEditFile">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/EditFile.png</normaloff>:/icons/res/EditFile.png</iconset>
+   </property>
+   <property name="text">
+    <string>EditFile</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit the macro command file to run it directly by DoseCalcs without using GUI component inputs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionRead_File">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/ReadTextFile.png</normaloff>:/icons/res/ReadTextFile.png</iconset>
+   </property>
+   <property name="text">
+    <string>Read a File</string>
+   </property>
+   <property name="toolTip">
+    <string>Read any text file format in DoseCalcs File Editor</string>
+   </property>
+  </action>
+  <action name="actionCheck_Inputs">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/check.png</normaloff>:/icons/res/check.png</iconset>
+   </property>
+   <property name="text">
+    <string>Check Inputs</string>
+   </property>
+   <property name="toolTip">
+    <string>Check and validate simulation Inputs</string>
+   </property>
+  </action>
+  <action name="actionPackages_Statut">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/ValidatePackages.png</normaloff>:/icons/res/ValidatePackages.png</iconset>
+   </property>
+   <property name="text">
+    <string>Packages Statut</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check the statut of packages needed for simulation&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionSave_Inputs_To_Default_File">
+   <property name="text">
+    <string>Save Inputs To Default File</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>CustomTextEdit</class>
+   <extends>QWidget</extends>
+   <header>gui/customtextedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
