@@ -1,5 +1,5 @@
-DoseCalcs Graphical User Interface
-===================================
+DoseCalcs-Gui: Graphical User Interface
+==========================================
 
 In this section, we will introduce how to use the GUI component to investigate the DoseCalcs-Core (geant4-based code) for internal dosimetry simulations. This package was developed to facilitate the use of DoseCalcs code by providing a platform that contains:
 
@@ -29,12 +29,16 @@ When the user download the DoseCalcs package and unpack it under Ubuntu, the Dos
 
 .. image:: /images/ConfigFile.png
 
-- ICRPDATA directory, which contains files from ICRP Publications 107, such as torgans_2016-08-12.NDX, sregions_2016-08-12.NDX, rcp-am_photon_2016-08-12.SAF, rcp-am_neutron_2016-08-12.SAF, rcp-am_electron_2016-08-12.SAF, rcp-am_alpha_2016-08-12.SAF, rcp-af_photon_2016-08-12.SAF, rcp-af_neutron_2016-08-12.SAF, rcp-af_electron_2016-08-12.SAF, and rcp-af_alpha_2016-08-12.SAF; and ICRP Publication 133 files such as ICRP-07.RAD, ICRP-07.NSF, ICRP-07.NDX, ICRP-07.BET, and ICRP-07.ACK.
+- [ICRPDATA] directory, which contains files from ICRP Publications 107, such as torgans_2016-08-12.NDX, sregions_2016-08-12.NDX, rcp-am_photon_2016-08-12.SAF, rcp-am_neutron_2016-08-12.SAF, rcp-am_electron_2016-08-12.SAF, rcp-am_alpha_2016-08-12.SAF, rcp-af_photon_2016-08-12.SAF, rcp-af_neutron_2016-08-12.SAF, rcp-af_electron_2016-08-12.SAF, and rcp-af_alpha_2016-08-12.SAF; and ICRP Publication 133 files such as ICRP-07.RAD, ICRP-07.NSF, ICRP-07.NDX, ICRP-07.BET, and ICRP-07.ACK.
 
-- PreDefinedGeometry directory, which contains several [macros] files and the corresponding geometry files. These files are used when the user would use a geometry from this provided list, which covers all DoseCalcs geometry methods.
+- [PreDefinedGeometry] directory, which contains several [macros] files and the corresponding geometry files. These files are used when the user would use a geometry from this provided list, which covers all DoseCalcs geometry methods.
+
+The [ICRPDATA] and [PreDefinedGeometry] do not come with DoseCalcs-Gui package, they can be downloaded from (`Download ICRPDATA and PreDefinedGeometry Zip file. <https://drive.google.com/file/d/1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD/view?usp=sharing>`_) in the form of a zip file (DoseCalcsSupplementary.tar.xz), then unzipped in the PackagesAndFiles directory before building the DoseCalcs-Gui package.
 
 Installing the DoseCalcs-GUI component
 -------------------------------------------
+
+.. GuiInstallations:
 
 Package Requirements
 +++++++++++++++++++++++
@@ -56,7 +60,7 @@ Package Requirements
 DoseCalcs-GUI Installation
 +++++++++++++++++++++++++++++
 
-After having installed the prerequisite packages, download DoseCalcs from: https://codeload.github.com/TarikEl/DoseCalcs/zip/refs/heads/main
+After having installed the prerequisite packages, download DoseCalcs from: https://codeload.github.com/TarikEl/DoseCalcs-Gui/zip/refs/heads/main
  
 Unpack the DoseCalcs source package "DoseCalcs.XX.tar.gz" to a location of your choice. For illustration only, this guide will assume it's been unpacked in a directory named, for example, /home/User/Desktop, so that the DoseCalcs source package sits in a subdirectory (DoseCalcs.XX means the version of DoseCalcs). The unpacked source is now in /home/User/Desktop/DoseCalcs.XX
 

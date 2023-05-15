@@ -1,7 +1,7 @@
 .. _Applications:
 
-Applications
-============
+DoseCalcs-Core Applications
+=============================
 
 MIRD phantom in GDML format file
 --------------------------------

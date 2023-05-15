@@ -1,5 +1,5 @@
-Installations
-=============
+DoseCalcs-Core Installations
+==============================
 
 .. CoreInstallations:
 

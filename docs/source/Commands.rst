@@ -1,5 +1,5 @@
-DoseCalcs Commands
-==================
+DoseCalcs-Core Commands
+=========================
 
 To Build Materials
 ------------------

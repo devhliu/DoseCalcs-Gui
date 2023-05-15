@@ -1,5 +1,5 @@
-DoseCalcs Simulations
-=====================
+DoseCalcs-Core Simulations
+============================
 
 .. GeneralConcept:
 
