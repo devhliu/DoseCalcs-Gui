@@ -60,6 +60,8 @@ void G4TNestedParamSteppingAction::UserSteppingAction(const G4Step* step)
         const G4VTouchable* touchable = step->GetPreStepPoint()->GetTouchable();
         RunAction->FillRegionStepHits(CopyNumberRegionNameMap[touchable->GetReplicaNumber(1) + VoxXNumber*touchable->GetReplicaNumber(2) + VoxXNumber*VoxYNumber*touchable->GetReplicaNumber(0)], edep);
 
+        //std::cout << "TrackID: "<< step->GetTrack()->GetTrackID() << " ParticleName: " << step->GetTrack()->GetParticleDefinition()->GetParticleName() << " Length "<< step->GetTrack()->GetTrackLength() << " Energy(MeV): "<< edep << std::endl;
+
         /*
                 //std::cout << " Touchable " << std::endl;
                 //std::cout << " Begin " << touchable->GetHistoryDepth() << " " << touchable->GetVolume()->GetName() << std::endl;

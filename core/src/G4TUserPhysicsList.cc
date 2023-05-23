@@ -255,14 +255,100 @@
 #include "G4StepLimiter.hh"
 #include "G4UserSpecialCuts.hh"
 
-extern G4String TestPointsPositions;
+// ------------------------- hadron physics constructors
 
-G4TUserPhysicsList::G4TUserPhysicsList():  G4VUserPhysicsList(), IsEcutsSet(false), IsDcutsSet(true), CutsEnergy(0.0000000001), CutsDistance(0.), ParticlePysics("Livemore")
+#include "G4HadronPhysicsFTFP_BERT.hh"
+#include "G4HadronPhysicsFTFP_BERT_ATL.hh"
+#include "G4HadronPhysicsFTFP_BERT_TRV.hh"
+#include "G4HadronPhysicsQGSP_FTFP_BERT.hh"
+#include "G4HadronPhysicsQGSP_BERT.hh"
+#include "G4HadronPhysicsQGSP_BERT_HP.hh"
+#include "G4HadronPhysicsQGSP_BIC.hh"
+#include "G4HadronPhysicsQGSP_BIC_AllHP.hh"
+#include "G4HadronPhysicsINCLXX.hh"
+#include "G4HadronPhysicsShielding.hh"
+#include "G4HadronPhysicsShieldingLEND.hh"
+
+#include "G4RegionStore.hh"
+
+G4TUserPhysicsList::G4TUserPhysicsList():  G4VUserPhysicsList()
 {
-    messengerPhyObj = new G4TPhysicsMessenger(this);
-    G4VPhysicsConstructorObj = new G4EmStandardPhysics(0);
+
+    G4VEmPhysicsConstructorObj = nullptr;
+    G4VHadromPhysicsConstructorObj = nullptr;
     decPhysicsList = new G4DecayPhysics(0);
-    GenerateCrossSectionTableFlag = false;
+
+    int verbose = 0 ;
+
+    if (ParticlePysics == "EMS") {
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics(verbose);
+    }
+    else if(ParticlePysics == "EMS1"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option1(verbose);
+    }
+    else if(ParticlePysics == "EMS2"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS2 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option2(verbose);
+    }
+    else if(ParticlePysics == "EMS3"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS3 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
+    }
+    else if(ParticlePysics == "EMS4"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS4 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option4(verbose);
+    }
+    else if(ParticlePysics == "Livermore"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Livermore Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmLivermorePhysics(verbose);
+    }
+    else if(ParticlePysics == "Penelope"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n penelope Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmPenelopePhysics(verbose);
+    }
+    else if(ParticlePysics == "FTFP_BERT"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT();
+    }
+    else if(ParticlePysics == "FTFP_BERT_ATL"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_ATL();
+    }
+    else if(ParticlePysics == "FTFP_BERT_TRV"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_TRV();
+    }
+    else if(ParticlePysics == "QGSP_FTFP_BERT"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_FTFP_BERT();
+    }
+    else if(ParticlePysics == "QGSP_BERT"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT();
+    }
+    else if(ParticlePysics == "QGSP_BERT_HP"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT_HP();
+    }
+    else if(ParticlePysics == "QGSP_BIC"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC();
+    }
+    else if(ParticlePysics == "QGSP_BIC_AllHP"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC_AllHP();
+    }
+    else if(ParticlePysics == "INCLXX"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsINCLXX();
+    }
+    else if(ParticlePysics == "Shielding"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsShielding();
+    }
+    else if(ParticlePysics == "ShieldingLEND"){
+        G4VHadromPhysicsConstructorObj = new G4HadronPhysicsShieldingLEND();
+    }
+    else {
+        G4Exception("MyPhysicsList::MyPhysicsList", "InvalidSetup", FatalException, "Invalid physics choice");
+    }
 
 }
 
@@ -271,14 +357,18 @@ G4TUserPhysicsList::~G4TUserPhysicsList()
     //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
 
     delete decPhysicsList;
-    delete messengerPhyObj;
+    //delete messengerPhyObj;
 
-    if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livemore"|| ParticlePysics == "Penelope"){
-        delete G4VPhysicsConstructorObj;
+    if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
+        delete G4VEmPhysicsConstructorObj;
     }
-    if( ParticlePysics == "Construct"){
+    else if(ParticlePysics == "Construct"){
 
     }
+    else{
+        delete G4VHadromPhysicsConstructorObj;
+    }
+
 
 }
 
@@ -286,26 +376,6 @@ void G4TUserPhysicsList::ConstructParticle()
 {
 
     //G4cout << "from function : " << __FUNCTION__<< G4endl;
-
-    /*G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n : " << ParticlePysics<< G4endl;
-
-    ShowSourceParameters();
-
-    if( ParticlePysics == "Construct"){
-        // gamma
-        G4Gamma::Gamma();
-        // leptons
-        G4Electron::Electron();
-        G4Positron::Positron();
-        // ions
-        G4He3::He3();
-        G4Alpha::Alpha();
-        // barions
-        G4Proton::Proton();
-        G4AntiProton::AntiProton();
-    }else {
-
-    }*/
 
     G4BosonConstructor* Boson = new G4BosonConstructor();
     G4LeptonConstructor* Lepton = new G4LeptonConstructor();
@@ -321,33 +391,6 @@ void G4TUserPhysicsList::ConstructParticle()
     Ion->ConstructParticle();
     ShortLived->ConstructParticle();
 
-    /*
-        G4VPhysicsConstructorObj->ConstructParticle();
-
-        G4cout << " The particles are builded by the G4PhysicsListHelper " << G4endl;
-        // gamma
-        G4Gamma::Gamma();
-        // leptons
-        G4Electron::Electron();
-        G4Positron::Positron();
-        // ions
-        G4Deuteron::Deuteron();
-        G4Triton::Triton();
-        G4He3::He3();
-        G4Alpha::Alpha();
-        G4GenericIon::GenericIonDefinition();
-        G4Neutron::Neutron();
-        // barions
-        G4Proton::Proton();
-        G4AntiProton::AntiProton();
-        G4MuonPlus::MuonPlus();
-        G4MuonMinus::MuonMinus();
-        // mesons
-        G4PionPlus::PionPlusDefinition();
-        G4PionMinus::PionMinusDefinition();
-        G4KaonPlus::KaonPlusDefinition();
-        G4KaonMinus::KaonMinusDefinition();
-    */
 }
 
 void G4TUserPhysicsList::ConstructProcess()
@@ -355,69 +398,12 @@ void G4TUserPhysicsList::ConstructProcess()
 
     //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
 
-    int verbose = 0 ;
-
-    if(ParticlePysics == "EMS"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmStandardPhysics(verbose);
-    }
-    else if(ParticlePysics == "EMS1"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmStandardPhysics_option1(verbose);
-    }
-    else if(ParticlePysics == "EMS2"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS2 Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmStandardPhysics_option2(verbose);
-    }
-    else if(ParticlePysics == "EMS3"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS3 Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
-    }
-    else if(ParticlePysics == "EMS4"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS4 Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmStandardPhysics_option4(verbose);
-    }
-    else if(ParticlePysics == "Livermore"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Livemore Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmLivermorePhysics(verbose);
-    }
-    else if(ParticlePysics == "Penelope"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n penelope Physics " << G4endl;
-
-        G4VPhysicsConstructorObj = new G4EmPenelopePhysics(verbose);
-    }
-
-
-    //G4ProcessManager* pmanager = G4Gamma::Gamma()->GetProcessManager();
-    //G4BiasingHelper::ActivatePhysicsBiasing(pmanager, "compt");
-    //G4BiasingHelper::ActivateNonPhysicsBiasing(pmanager);
-
-    G4RunManager::GetRunManager()->PhysicsHasBeenModified();
-
-    const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    if(TestPointsPositions == "yes"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n No Transportation() " << G4endl;
-
-    }else{
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n AddTransportation() " << G4endl;
-
-        AddTransportation();
-        decPhysicsList->ConstructProcess();
-    }
-
-
-    if( ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3" || ParticlePysics == "EMS4" || ParticlePysics == "Penelope" || ParticlePysics == "Livermore"){
-        G4VPhysicsConstructorObj->ConstructProcess();
-
-        //G4cout << " - The constructed Physics name : " << G4VPhysicsConstructorObj->GetPhysicsName() << " - The type is : " << G4VPhysicsConstructorObj->GetPhysicsType() <<   G4endl;
+    if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
+        G4VEmPhysicsConstructorObj->ConstructProcess();
     }
     else if( ParticlePysics == "Construct"){
+
+        const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 
 #if VERBOSE_USE
         G4cout << "\n\n - The process are builded by the G4PhysicsListHelper " << G4endl;
@@ -893,17 +879,129 @@ void G4TUserPhysicsList::ConstructProcess()
         G4LossTableManager::Instance()->SetAtomDeexcitation(de);
 
     }
+    else{
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+
+
+/*
+    if(ParticlePysics == "EMS"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+
+    }
+    else if(ParticlePysics == "EMS1"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option1(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+    else if(ParticlePysics == "EMS2"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS2 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option2(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+    else if(ParticlePysics == "EMS3"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS3 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+    else if(ParticlePysics == "EMS4"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS4 Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option4(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+    else if(ParticlePysics == "Livermore"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Livermore Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmLivermorePhysics(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+    else if(ParticlePysics == "Penelope"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n penelope Physics " << G4endl;
+
+        G4VEmPhysicsConstructorObj = new G4EmPenelopePhysics(verbose);
+        G4VEmPhysicsConstructorObj->ConstructProcess();
+    }
+    else if(ParticlePysics == "FTFP_BERT"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT();
+
+    }
+    else if(ParticlePysics == "FTFP_BERT_ATL"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_ATL();
+
+    }
+    else if(ParticlePysics == "FTFP_BERT_TRV"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_TRV();
+
+    }
+    else if(ParticlePysics == "QGSP_FTFP_BERT"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_FTFP_BERT();
+
+    }
+    else if(ParticlePysics == "QGSP_BERT"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT();
+
+    }
+    else if(ParticlePysics == "QGSP_BERT_HP"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT_HP();
+
+    }
+    else if(ParticlePysics == "QGSP_BIC"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC();
+
+    }
+    else if(ParticlePysics == "QGSP_BIC_AllHP"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC_AllHP();
+
+    }
+    else if(ParticlePysics == "INCLXX"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsINCLXX();
+
+    }
+    else if(ParticlePysics == "Shielding"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsShielding();
+
+    }
+    else if(ParticlePysics == "ShieldingLEND"){
+        G4VEmPhysicsConstructorObj = new G4HadronPhysicsShieldingLEND();
+
+    }
+    */
+
+    //G4ProcessManager* pmanager = G4Gamma::Gamma()->GetProcessManager();
+    //G4BiasingHelper::ActivatePhysicsBiasing(pmanager, "compt");
+    //G4BiasingHelper::ActivateNonPhysicsBiasing(pmanager);
+
+    //G4RunManager::GetRunManager()->PhysicsHasBeenModified();
 
     //if (verboseLevel>0)  DumpList();
+
+    if(TestPointsPositions == "yes"){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n No Transportation() " << G4endl;
+
+    }else{
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n AddTransportation() " << G4endl;
+
+        AddTransportation();
+        decPhysicsList->ConstructProcess();
+    }
+
+
 
 }
 
 void G4TUserPhysicsList::SetCuts()
 {
 
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+    //G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(CutsEnergy, 1*GeV);
 
-    //const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
 
     defaultCutValue = CutsDistance;
 
@@ -922,13 +1020,26 @@ void G4TUserPhysicsList::SetCuts()
     SetCutValue(defaultCutValue, "gamma");
     SetCutValue(defaultCutValue, "e-");
     SetCutValue(defaultCutValue, "e+");
-    SetCutValue(defaultCutValue, "proton");
+    SetCutValue(100*keV, "proton");
+    SetCutValue(defaultCutValue, "alpha");
+    SetCutValue(100*keV, "neutron");
 
+    // SetCutsWithDefault();
     // Set the secondary production cut lower than 990. eV,  Very important for high precision of lowenergy processes at low energies
+
 
     G4double lowLimit = CutsEnergy ;
     G4double highLimit = 100. * GeV;
     G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+
+
+     // Set the tracking cut for neutrons
+     G4double neutronCut = 0.5 * mm;
+     SetCutValue(neutronCut, "neutron");
+     G4Region* region = G4RegionStore::GetInstance()->GetRegion("DefaultRegionForTheWorld");
+     G4ProductionCuts* cuts = new G4ProductionCuts;
+     cuts->SetProductionCut(neutronCut);
+     region->SetProductionCuts(cuts);
 
     ShowSourceParameters();
 
@@ -962,84 +1073,4 @@ void G4TUserPhysicsList::ShowSourceParameters() {
     }
 #endif
 
-}
-
-void G4TUserPhysicsList::setCutsEnergy(G4double newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__ << G4endl;
-    CutsEnergy= newVal*MeV;
-    IsEcutsSet = true ;
-    //G4cout<<" >> New CutsEnergy " << CutsEnergy <<G4endl;
-}
-void G4TUserPhysicsList::setCutsDistance(G4double newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__ << G4endl;
-    CutsDistance = newVal*mm;
-    IsDcutsSet = true ;
-    //G4cout<<" >> New CutsDistance " << CutsDistance <<G4endl;
-}
-void G4TUserPhysicsList::setPhysics(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    ParticlePysics = newVal;
-    //G4cout<<" >> New ParticlePysics " << ParticlePysics <<G4endl;
-}
-void G4TUserPhysicsList::setPhotoElectricEffectModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    PhotoElectricEffectModel = newVal;
-    //G4cout<<" >> New PhotoElectricEffectModel " << PhotoElectricEffectModel <<G4endl;
-}
-void G4TUserPhysicsList::setPolarizedPhotoElectricEffectModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    PolarizedPhotoElectricEffectModel = newVal;
-    //G4cout<<" >> New PolarizedPhotoElectricEffectModel " << PolarizedPhotoElectricEffectModel <<G4endl;
-}
-void G4TUserPhysicsList::setComptonScatteringModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    ComptonScatteringModel = newVal;
-    //G4cout<<" >> New ComptonScatteringModel " << ComptonScatteringModel <<G4endl;
-}
-void G4TUserPhysicsList::setPolarizedComptonModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    PolarizedComptonModel = newVal;
-    //G4cout<<" >> New PolarizedComptonModel " << PolarizedComptonModel <<G4endl;
-}
-void G4TUserPhysicsList::setGammaConversionModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    GammaConversionModel = newVal;
-    //G4cout<<" >> New GammaConversionModel " << GammaConversionModel <<G4endl;
-}
-void G4TUserPhysicsList::setPolarizedGammaConversionModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    PolarizedGammaConversionModel = newVal;
-    //G4cout<<" >> New PolarizedGammaConversionModel " << PolarizedGammaConversionModel <<G4endl;
-}
-void G4TUserPhysicsList::setRayleighScatteringModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    RayleighScatteringModel = newVal;
-    //G4cout<<" >> New ParticlePysics " << RayleighScatteringModel <<G4endl;
-}
-void G4TUserPhysicsList::setGammaConversionToMuonModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    GammaConversionToMuonModel = newVal;
-    //G4cout<<" >> New GammaConversionToMuonModel " << GammaConversionToMuonModel <<G4endl;
-}
-void G4TUserPhysicsList::setElectronIonisationModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    ElectronIonisationModel = newVal;
-    //G4cout<<" >> New ElectronIonisationModel " << ElectronIonisationModel <<G4endl;
-}
-void G4TUserPhysicsList::setElectronBremModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    ElectronBremModel = newVal;
-    //G4cout<<" >> New ElectronBremModel " << ElectronBremModel <<G4endl;
-}
-
-void G4TUserPhysicsList::setHadronIonisationModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    HadronIonisationModel = newVal;
-    //G4cout<<" >> New HadronIonisationModel " << HadronIonisationModel <<G4endl;
-}
-
-void G4TUserPhysicsList::setIonIonisationModel(G4String newVal){
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
-    IonIonisationModel = newVal;
-    //G4cout<<" >> New IonIonisationModel " << IonIonisationModel <<G4endl;
 }

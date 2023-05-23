@@ -41,6 +41,33 @@
 #include "G4VPhysicsConstructor.hh"
 #include "G4TComptonProcess.hh"
 
+// Physics
+extern G4bool IsEcutsSet;
+extern G4bool IsDcutsSet;
+extern G4double CutsEnergy;
+extern G4double CutsDistance;
+extern G4String ParticlePysics;
+extern G4String PhotoElectricEffectModel;
+extern G4String PolarizedPhotoElectricEffectModel;
+extern G4String ComptonScatteringModel;
+extern G4String PolarizedComptonModel;
+extern G4String GammaConversionModel;
+extern G4String PolarizedGammaConversionModel;
+extern G4String RayleighScatteringModel;
+extern G4String GammaConversionToMuonModel;
+extern G4String ElectronIonisationModel;
+extern G4String ElectronBremModel;
+extern G4String HadronIonisationModel;
+extern G4String HadronBremModel;
+extern G4String IonIonisationModel;
+extern G4bool GenerateCrossSectionTableFlag;
+extern G4String ParticleForCrossSection;
+extern std::vector<G4double> EnergiesForCrossSectionValues;
+
+
+extern G4String TestPointsPositions;
+
+
 class G4TUserPhysicsList: public G4VUserPhysicsList
 {
 public:
@@ -49,46 +76,13 @@ public:
 
 private:
 
-    G4bool IsEcutsSet;
-    G4bool IsDcutsSet;
-
-    G4double CutsEnergy;
-    G4double CutsDistance;
-    G4String ParticlePysics;
-
-    G4String PhotoElectricEffectModel;
-    G4String PolarizedPhotoElectricEffectModel;
-    G4String ComptonScatteringModel;
-    G4String PolarizedComptonModel;
-    G4String GammaConversionModel;
-    G4String PolarizedGammaConversionModel;
-    G4String RayleighScatteringModel;
-    G4String GammaConversionToMuonModel;
-
-    G4String ElectronIonisationModel;
-    G4String ElectronBremModel;
-    G4String HadronIonisationModel;
-    G4String HadronBremModel;
-    G4String IonIonisationModel;
-
     void ShowSourceParameters();
 
-    G4bool GenerateCrossSectionTableFlag;
-    G4String ParticleForCrossSection;
-    std::vector<G4double> EnergiesForCrossSectionValues;
 
     //G4TComptonProcess* ComptonWrappedProcess;
 public:
 
-    void setGenerateCrossSectionTableFlag(G4bool n ){ GenerateCrossSectionTableFlag = n; }
-    G4bool getGenerateCrossSectionTableFlag() const {return GenerateCrossSectionTableFlag;}
-
-    void setParticleForCrossSection(G4String n ){ ParticleForCrossSection = n; }
-    G4String getParticleForCrossSectionValues() const {return ParticleForCrossSection;}
-
-    void setEnergiesForCrossSectionValues(G4double n ){ EnergiesForCrossSectionValues.push_back(n); }
-    std::vector<G4double> getEnergiesForCrossSectionValues() const {return EnergiesForCrossSectionValues;}
-
+/*
     void setPhysics(G4String);
     void setCutsEnergy(G4double);
     void setCutsDistance(G4double);
@@ -106,9 +100,10 @@ public:
     void setElectronBremModel(G4String);
     void setHadronIonisationModel(G4String);
     void setIonIonisationModel(G4String);
-
     G4double getCutsEnergy() const { return CutsEnergy;}
     G4double getCutsDistance() const { return CutsDistance;}
+
+*/
 
     //G4String getPhysics()const {return ParticlePysics;};
     //G4double getCutsEnergy()const {return CutsEnergy;};
@@ -124,7 +119,8 @@ private:
 
     G4TPhysicsMessenger* messengerPhyObj;
 
-    G4VPhysicsConstructor* G4VPhysicsConstructorObj;
+    G4VPhysicsConstructor* G4VEmPhysicsConstructorObj;
+    G4VPhysicsConstructor* G4VHadromPhysicsConstructorObj;
     G4VPhysicsConstructor* decPhysicsList;
 
 };

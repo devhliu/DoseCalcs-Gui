@@ -37,6 +37,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4TMessenger.hh"
 #include "G4TGeometryMessenger.hh"
+#include "G4TPhysicsMessenger.hh"
 #include "G4TPrimaryGeneratorMessenger.hh"
 
 #include "globals.hh"
@@ -199,6 +200,30 @@ extern G4String TETNodeDataFile, TETEleDataFile, TETMatDataFile;
 extern G4double MinTETPhantom;
 extern G4double MaxTETPhantom;
 extern bool MaterialNameAsRegionName;
+
+
+// Physics
+extern G4bool IsEcutsSet;
+extern G4bool IsDcutsSet;
+extern G4double CutsEnergy;
+extern G4double CutsDistance;
+extern G4String ParticlePysics;
+extern G4String PhotoElectricEffectModel;
+extern G4String PolarizedPhotoElectricEffectModel;
+extern G4String ComptonScatteringModel;
+extern G4String PolarizedComptonModel;
+extern G4String GammaConversionModel;
+extern G4String PolarizedGammaConversionModel;
+extern G4String RayleighScatteringModel;
+extern G4String GammaConversionToMuonModel;
+extern G4String ElectronIonisationModel;
+extern G4String ElectronBremModel;
+extern G4String HadronIonisationModel;
+extern G4String HadronBremModel;
+extern G4String IonIonisationModel;
+extern G4bool GenerateCrossSectionTableFlag;
+extern G4String ParticleForCrossSection;
+extern std::vector<G4double> EnergiesForCrossSectionValues;
 
 class G4VPhysicalVolume;
 class G4TVolumeConstruction : public G4VUserDetectorConstruction
@@ -1039,6 +1064,95 @@ public:
     //std::map<G4int, G4double>                                densityMap;
     //std::map<G4int, G4String>                                organNameMap;
 
+
+    //////////////////////////////////////////// begin Physics Commands
+
+    void setCutsEnergy(G4double newVal){
+        CutsEnergy= newVal*MeV;
+        IsEcutsSet = true ;
+        //G4cout<<" >> New CutsEnergy " << CutsEnergy <<G4endl;
+    }
+    void setCutsDistance(G4double newVal){
+        CutsDistance = newVal*mm;
+        IsDcutsSet = true ;
+        //G4cout<<" >> New CutsDistance " << CutsDistance <<G4endl;
+    }
+    void setPhysics(G4String newVal){
+        ParticlePysics = newVal;
+        //G4cout<<" >> New ParticlePysics " << ParticlePysics <<G4endl;
+    }
+    void setPhotoElectricEffectModel(G4String newVal){
+        PhotoElectricEffectModel = newVal;
+        //G4cout<<" >> New PhotoElectricEffectModel " << PhotoElectricEffectModel <<G4endl;
+    }
+    void setPolarizedPhotoElectricEffectModel(G4String newVal){
+        PolarizedPhotoElectricEffectModel = newVal;
+        //G4cout<<" >> New PolarizedPhotoElectricEffectModel " << PolarizedPhotoElectricEffectModel <<G4endl;
+    }
+    void setComptonScatteringModel(G4String newVal){
+        ComptonScatteringModel = newVal;
+        //G4cout<<" >> New ComptonScatteringModel " << ComptonScatteringModel <<G4endl;
+    }
+    void setPolarizedComptonModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        PolarizedComptonModel = newVal;
+        //G4cout<<" >> New PolarizedComptonModel " << PolarizedComptonModel <<G4endl;
+    }
+    void setGammaConversionModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        GammaConversionModel = newVal;
+        //G4cout<<" >> New GammaConversionModel " << GammaConversionModel <<G4endl;
+    }
+    void setPolarizedGammaConversionModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        PolarizedGammaConversionModel = newVal;
+        //G4cout<<" >> New PolarizedGammaConversionModel " << PolarizedGammaConversionModel <<G4endl;
+    }
+    void setRayleighScatteringModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        RayleighScatteringModel = newVal;
+        //G4cout<<" >> New ParticlePysics " << RayleighScatteringModel <<G4endl;
+    }
+    void setGammaConversionToMuonModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        GammaConversionToMuonModel = newVal;
+        //G4cout<<" >> New GammaConversionToMuonModel " << GammaConversionToMuonModel <<G4endl;
+    }
+    void setElectronIonisationModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        ElectronIonisationModel = newVal;
+        //G4cout<<" >> New ElectronIonisationModel " << ElectronIonisationModel <<G4endl;
+    }
+    void setElectronBremModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        ElectronBremModel = newVal;
+        //G4cout<<" >> New ElectronBremModel " << ElectronBremModel <<G4endl;
+    }
+
+    void setHadronIonisationModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        HadronIonisationModel = newVal;
+        //G4cout<<" >> New HadronIonisationModel " << HadronIonisationModel <<G4endl;
+    }
+
+    void setIonIonisationModel(G4String newVal){
+        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
+        IonIonisationModel = newVal;
+        //G4cout<<" >> New IonIonisationModel " << IonIonisationModel <<G4endl;
+    }
+
+    void setGenerateCrossSectionTableFlag(G4bool n ){ GenerateCrossSectionTableFlag = n; }
+    G4bool getGenerateCrossSectionTableFlag() const {return GenerateCrossSectionTableFlag;}
+
+    void setParticleForCrossSection(G4String n ){ ParticleForCrossSection = n; }
+    G4String getParticleForCrossSectionValues() const {return ParticleForCrossSection;}
+
+    void setEnergiesForCrossSectionValues(G4double n ){ EnergiesForCrossSectionValues.push_back(n); }
+    std::vector<G4double> getEnergiesForCrossSectionValues() const {return EnergiesForCrossSectionValues;}
+
+
+    //////////////////////////////////////////// end Physics Commands
+
 private:
 
 #ifdef G4MPI_USE
@@ -1057,7 +1171,11 @@ private:
 
     G4TMessenger* OtherDataMessenger;
     G4TGeometryMessenger* geometryMessenger;
+    G4TPhysicsMessenger* PhysicsMessenger;
+
     G4TPrimaryGeneratorMessenger* PGAMessenger;
+
+
 
 };
 

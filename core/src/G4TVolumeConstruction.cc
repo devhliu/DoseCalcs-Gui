@@ -106,6 +106,8 @@ G4TVolumeConstruction::G4TVolumeConstruction()
 
     MaterialNameAsRegionName = true;
 
+    GenerateCrossSectionTableFlag = false;
+
     BoxLVName = "BoxVolume";
     DataDirectoryPath = "EventsData";
     //ScriptsDirectoryPath  = "Scripts/";
@@ -123,6 +125,7 @@ G4TVolumeConstruction::G4TVolumeConstruction()
 
     OtherDataMessenger = new G4TMessenger(this);
     geometryMessenger = new G4TGeometryMessenger(this);
+    PhysicsMessenger = new G4TPhysicsMessenger(this);
     PGAMessenger = new G4TPrimaryGeneratorMessenger(this);
 
     UseDicomCumAct = false;
@@ -143,6 +146,7 @@ G4TVolumeConstruction::~G4TVolumeConstruction()
 
     delete OtherDataMessenger;
     delete geometryMessenger;
+    delete PhysicsMessenger;
     delete PGAMessenger;
 
     if(tetData != 0){delete tetData;}
@@ -1248,6 +1252,15 @@ void G4TVolumeConstruction::constructWorldVolume(G4String mn, G4ThreeVector dim)
     G4Box* world = new G4Box("World", WorldHalfSize.getX()/2., WorldHalfSize.getY()/2., WorldHalfSize.getZ()/2.);
     G4LogicalVolume* logicMotherWorld = new G4LogicalVolume(world, CreatedMaterials[WorldMaterialName], "World", 0, 0,0);
     WorldPhysicalVolume = new G4PVPlacement(0,G4ThreeVector(), "World", logicMotherWorld, 0 , false, 0 , false );
+
+/*
+    G4UserLimits(G4double uStepMax = DBL_MAX,
+                 G4double uTrakMax = DBL_MAX,
+                 G4double uTimeMax = DBL_MAX,
+                 G4double uEkinMin = 0.,
+                 G4double uRangMin = 0. );
+*/
+    //logicMotherWorld->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,DBL_MAX,1*MeV,DBL_MAX));
 
     //OrganNamesVector.push_back(WorldVolumeName);
 

@@ -54,6 +54,8 @@ void G4TParamSteppingAction::UserSteppingAction(const G4Step* step)
     if (edep == 0.) return;
     RunAction->FillRegionStepHits(CopyNumberRegionNameMap[step->GetPreStepPoint()->GetTouchable()->GetCopyNumber()], edep);
 
+    //std::cout << "---- ParticleName: " << step->GetTrack()->GetParticleDefinition()->GetParticleName() << " Energy(MeV): "<< edep << " ProcessName: "<< step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() << std::endl;
+
     //if(step->GetPreStepPoint()->GetTouchable()!= nullptr){
 
     //const G4VTouchable* touchable = step->GetPreStepPoint()->GetTouchable();

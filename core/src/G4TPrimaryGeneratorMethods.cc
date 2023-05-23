@@ -198,32 +198,32 @@ namespace
 }
 
 G4TPrimaryGeneratorMethods::G4TPrimaryGeneratorMethods(){
-
+    
 }
 
 G4TPrimaryGeneratorMethods::~G4TPrimaryGeneratorMethods(){}
 
 void G4TPrimaryGeneratorMethods::GenerateEventsParticle(){
-
+    
     if(EnergyTypeNum == 5){
         particleDefinitionList[ParNameList[EnergyListInc]];
     }
 }
 
 void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
-
+    
     if(PositionTypeNum == 1){
-
+        
         X = (NewRankSourceRegionsPosValues[DataID].getX() - NewRankSourceRegionsBoxDimValues[DataID].getX()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getX()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
         Y = (NewRankSourceRegionsPosValues[DataID].getY() - NewRankSourceRegionsBoxDimValues[DataID].getY()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getY()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
         Z = (NewRankSourceRegionsPosValues[DataID].getZ() - NewRankSourceRegionsBoxDimValues[DataID].getZ()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getZ()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
-
+        
         //std::cout << "DataID "<< DataID << " SourceType=" << SourceType << " NewRankSourceRegionsNamesValues[DataID]=" << NewRankSourceRegionsNamesValues[DataID] << " " << G4ThreeVector(X,Y,Z) << " is in " << aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName() << std::endl;
-
+        
         if(NewRankSourceRegionsNamesValues[DataID] == "allregions"){
-
+            
             bool Save = true;
-
+            
             for (int gg = 0 ; gg < SourceRegionsNamesToBeIgnoredValues.size() ; gg++) {
                 if(SourceRegionsNamesToBeIgnoredValues[gg] == aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName()){
                     Save=false;
@@ -231,41 +231,41 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
                 }
                 //else{Save=true;}
             }
-
+            
             //std::cout << "\n\n\n\n\n\nDataID "<< DataID << " SourceType=" << SourceType << " NewRankSourceRegionsNamesValues[DataID]=" << NewRankSourceRegionsNamesValues[DataID] << " " << G4ThreeVector(X,Y,Z) << " is in " << aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName() << std::endl;
-
+            
             while (Save==false){
-
+                
                 Save = true;
-
+                
                 X = (NewRankSourceRegionsPosValues[DataID].getX() - NewRankSourceRegionsBoxDimValues[DataID].getX()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getX()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
                 Y = (NewRankSourceRegionsPosValues[DataID].getY() - NewRankSourceRegionsBoxDimValues[DataID].getY()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getY()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
                 Z = (NewRankSourceRegionsPosValues[DataID].getZ() - NewRankSourceRegionsBoxDimValues[DataID].getZ()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getZ()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
-
+                
                 for (int gg = 0 ; gg < SourceRegionsNamesToBeIgnoredValues.size() ; gg++) {
                     if(SourceRegionsNamesToBeIgnoredValues[gg] == aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName()){
                         Save=false;
                     }
                 }
-
+                
                 //std::cout << "DataID "<< DataID << " SourceType=" << SourceType << " NewRankSourceRegionsNamesValues[DataID]=" << NewRankSourceRegionsNamesValues[DataID] << " " << G4ThreeVector(X,Y,Z) << " is in " << aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName() << std::endl;
-
+                
             }
-
+            
         }else{
             while (aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName() != NewRankSourceRegionsNamesValues[DataID]){
-
+                
                 //std::cout << "DataID "<< DataID << " SourceType=" << SourceType << " NewRankSourceRegionsBoxDimValues[DataID]=" << NewRankSourceRegionsBoxDimValues[DataID] << " NewRankSourceRegionsNamesValues[DataID]=" << NewRankSourceRegionsNamesValues[DataID] << " NewRankSourceRegionsPosValues[DataID]=" << NewRankSourceRegionsPosValues[DataID] << " Generated Pos: " << G4ThreeVector(X,Y,Z) << " is in " << aNavigator->LocateGlobalPointAndSetup(G4ThreeVector(X,Y,Z))->GetLogicalVolume()->GetName() << std::endl;
-
+                
                 X = (NewRankSourceRegionsPosValues[DataID].getX() - NewRankSourceRegionsBoxDimValues[DataID].getX()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getX()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
                 Y = (NewRankSourceRegionsPosValues[DataID].getY() - NewRankSourceRegionsBoxDimValues[DataID].getY()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getY()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
                 Z = (NewRankSourceRegionsPosValues[DataID].getZ() - NewRankSourceRegionsBoxDimValues[DataID].getZ()) + (G4double)G4UniformRand() * (2*NewRankSourceRegionsBoxDimValues[DataID].getZ()); //generateRandom(hXmin,NewRankSourceRegionsBoxDimValues[DataID].getX());
             }
         }
-
+        
     }
     else if(PositionTypeNum == 2){
-
+        
         if(SourceSolid == "Sphere")
         {
             X = Radius*2.;
@@ -286,7 +286,7 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
                 X = (G4UniformRand()*2.*HalfX) - HalfX;
                 Y = (G4UniformRand()*2.*HalfY) - HalfY;
                 Y = (G4UniformRand()*2.*HalfZ) - HalfZ;
-
+                
                 temp = ((X*X)/(HalfX*HalfX)) + ((Y*Y)/(HalfY*HalfY)) + ((Z*Z)/(HalfZ*HalfZ));
             }
         }
@@ -309,7 +309,7 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
                 X = (G4UniformRand()*2.*HalfX) - HalfX;
                 Y = (G4UniformRand()*2.*HalfY) - HalfY;
                 Z = (G4UniformRand()*2.*HalfZ) - HalfZ;
-
+                
                 expression = ((X*X)/(HalfX*HalfX)) + ((Y*Y)/(HalfY*HalfY));
             }
         }
@@ -322,12 +322,12 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
             //y = y + z*std::tan(ParTheta)*std::sin(ParPhi);
             //Z = Z;
         }
-
+        
         X = X+SourcePosition.getX(), Y = Y+SourcePosition.getY() , Z = Z + SourcePosition.getZ();
         //return G4ThreeVector(X+SourcePosition.getX(), Y+SourcePosition.getY(), Z + SourcePosition.getZ());
     }
     else if(PositionTypeNum == 3){
-
+        
         if(SourceSurface == "Sphere")
         {
             G4double phi = twopi*G4UniformRand(), Theta = twopi*G4UniformRand();
@@ -336,16 +336,16 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
             Z = Radius * std::cos(Theta);
         }
         else if(SourceSurface == "Ellipsoid"){
-
+            
             G4double minphi, maxphi, middlephi;
             G4double answer, constant;
-
+            
             constant = pi/(HalfX*HalfX) + pi/(HalfY*HalfY) + twopi/(HalfZ*HalfZ);
-
+            
             // simplified approach
             G4double theta = G4UniformRand();
             G4double phi = G4UniformRand();
-
+            
             theta = std::acos(1. - 2.*theta);
             minphi = 0.;
             maxphi = twopi;
@@ -364,21 +364,21 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
                     phi = middlephi;
                 }
             }
-
+            
             X = std::sin(theta)*std::cos(phi);
             Y = std::sin(theta)*std::sin(phi);
             Z = std::cos(theta);
         }
-
+        
         X = X+SourcePosition.getX(), Y = Y+SourcePosition.getY() , Z = Z + SourcePosition.getZ();
         //return G4ThreeVector(X+SourcePosition.getX(), Y+SourcePosition.getY(), Z + SourcePosition.getZ());
-
+        
     }
     else if(PositionTypeNum == 4){
-
+        
         G4double A = G4RandGauss::shoot(0.0,BeamSDev);
         G4double B = G4RandGauss::shoot(0.0,BeamSDev);
-
+        
         if(SourceAxis == "Z"){
             X = A+SourcePosition.getX(), Y = B+SourcePosition.getY() , Z = SourcePosition.getZ();
         }
@@ -389,12 +389,12 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
             Y = A+SourcePosition.getY(), Z = B+SourcePosition.getZ() , X = SourcePosition.getX();
         }
         //return G4ThreeVector(X, Y, Z);
-
+        
     }
     else if(PositionTypeNum == 5){
-
+        
         G4double A, B, HalfA, HalfB;
-
+        
         if(SourceAxis == "Z"){
             HalfA = HalfX, HalfB = HalfY;
         }
@@ -404,7 +404,7 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
         else if (SourceAxis == "X") {
             HalfA = HalfY, HalfB = HalfZ;
         }
-
+        
         if(SourcePlane == "Circle")
         {
             A = Radius + 100.;
@@ -446,7 +446,7 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
             A = ((G4UniformRand()*2.*HalfA) - HalfA);
             B = ((G4UniformRand()*2.*HalfB) - HalfB);
         }
-
+        
         if(SourceAxis == "Z"){
             X = A+SourcePosition.getX(), Y = B+SourcePosition.getY() , Z = SourcePosition.getZ();
         }
@@ -457,78 +457,78 @@ void G4TPrimaryGeneratorMethods::GenerateEventsPosition(){
             Y = A+SourcePosition.getY(), Z = B+SourcePosition.getZ() , X = SourcePosition.getX();
         }
         //return G4ThreeVector(X, Y, Z);
-
+        
     }
     else if(PositionTypeNum == 6){
         X = SourcePosition.getX(), Y = SourcePosition.getY(), Z = SourcePosition.getZ();
         //return G4ThreeVector(SourcePosition.getX(), SourcePosition.getY(), SourcePosition.getZ());
     }
     else if(PositionTypeNum == 7){
-
+        
         X = Radius + 100.;
         Y = Radius + 100.;
         Z = 0.;
-
+        
         G4double Diameter = 2*Radius;
         while(std::sqrt((X*X) + (Y*Y)) > Radius)
         {
             X = ((G4UniformRand()*Diameter) - Radius);
             Y = ((G4UniformRand()*Diameter) - Radius);
         }
-
+        
         // This takes in 2 vectors,1 in x' and 2 in the plane x'-y', and from these takes a cross product to calculate z'. Then a cross product is taken between x' and z' to give y'
         G4ThreeVector Rotz, RelPos, AbsPos;
-
+        
         SourceRotVector1 = SourceRotVector1.unit(); // x'
         SourceRotVector2 = SourceRotVector2.unit(); // vector in x'y' plane
         Rotz = SourceRotVector1.cross(SourceRotVector2); // z'
         Rotz = Rotz.unit();
         SourceRotVector2 = Rotz.cross(SourceRotVector1); // y'
         SourceRotVector2 = SourceRotVector2.unit();
-
+        
         RelPos.setX((X * SourceRotVector1.x()) + (Y * SourceRotVector2.x()) + (Z * Rotz.x()));
         RelPos.setY((X * SourceRotVector1.y()) + (Y * SourceRotVector2.y()) + (Z * Rotz.y()));
         RelPos.setZ((X * SourceRotVector1.z()) + (Y * SourceRotVector2.z()) + (Z * Rotz.z()));
-
+        
         // RelPos = G4ThreeVector(X,Y,Z);
         // Translate
         AbsPos = SourcePosition + RelPos;
-
+        
         X = AbsPos.getX(), Y = AbsPos.getY(), Z = AbsPos.getZ() ;
         //return G4ThreeVector(AbsPos.getX(), AbsPos.getY(), AbsPos.getZ());
-
-
+        
+        
     }
     else if(PositionTypeNum == 8){
-
+        
         G4bool insideChk(false);
         G4ThreeVector pos;
         do{
             pos = G4ThreeVector(NewRankTETBoxMinOfSourceRegion[DataID].getX()+NewRankTETBoxDimOfSourceRegion[DataID].getX()*G4UniformRand(),
                                 NewRankTETBoxMinOfSourceRegion[DataID].getY()+NewRankTETBoxDimOfSourceRegion[DataID].getY()*G4UniformRand(),
                                 NewRankTETBoxMinOfSourceRegion[DataID].getZ()+NewRankTETBoxDimOfSourceRegion[DataID].getZ()*G4UniformRand());
-
+            
             for(auto tet:NewRankTETOfSourceRegion[DataID]){
                 if(tet->Inside(pos) == kOutside) continue;
                 insideChk = true;
                 break;
             }
         }while(!insideChk);
-
+        
         X = pos.getX();
         Y = pos.getY();
         Z = pos.getZ();
-
+        
     }
-
+    
     //return G4ThreeVector(X, Y, Z);
-
+    
 }
 
 void G4TPrimaryGeneratorMethods::GenerateEventsEnergy(){
-
+    
     //G4cout << "************** Generate " << NumberOfGenPointsToSave << " Event Energy(MeV) and Saving the data to " << EnergyDataFile<< G4endl;
-
+    
     //G4double pi = 4*std::arctan(1);  pi/4 = 4*arctan(1/5) - arctan(1/239) (Machin's formula) , or using towpi from G4PhysicalConstants.hh
     if(EnergyTypeNum == 0){
         ENERGY = NewRankSourceEnergiesValues[DataID] ;
@@ -547,34 +547,34 @@ void G4TPrimaryGeneratorMethods::GenerateEventsEnergy(){
     }
     else{
         if(EnergyListInc == EventsNumPerThreadRank ){
-            std::cout << "EnergyListInc="<< EnergyListInc << " EventsNumPerThreadRank=" << EventsNumPerThreadRank << G4endl;
+            //std::cout << "EnergyListInc="<< EnergyListInc << " EventsNumPerThreadRank=" << EventsNumPerThreadRank << G4endl;
             EnergyListInc= 0;
         }
-            if(EnergyTypeNum == 3){
-                ENERGY = CLHEP::RandGauss::shoot(NewRankSourceEnergiesValues[DataID], GaussSDev) ;
-                //return CLHEP::RandGauss::shoot(GaussMean, GaussSDev);
-            }
-            else if(EnergyTypeNum == 4){
-                ENERGY = EnergyList[EnergyListInc] ;
-                EnergyListInc++;
-            }
-            else if(EnergyTypeNum == 5){
-                ENERGY = EnergyList[EnergyListInc] ;
-                EnergyListInc++;
-            }
+        if(EnergyTypeNum == 3){
+            ENERGY = CLHEP::RandGauss::shoot(NewRankSourceEnergiesValues[DataID], GaussSDev) ;
+            //return CLHEP::RandGauss::shoot(GaussMean, GaussSDev);
         }
+        else if(EnergyTypeNum == 4){
+            ENERGY = EnergyList[EnergyListInc] ;
+            EnergyListInc++;
+        }
+        else if(EnergyTypeNum == 5){
+            ENERGY = EnergyList[EnergyListInc] ;
+            EnergyListInc++;
+        }
+    }
     //G4cout << UniformEmin << " ENERGY=" << ENERGY << " " << NewRankSourceEnergiesValues[DataID] << G4endl;
-
+    
     TotalEmittedEnergy += ENERGY ;
-
+    
     //G4cout << EnergyListInc << " ENERGY=" << ENERGY << " " << TotalEmittedEnergy << G4endl; EnergyListInc++;
-
+    
     //return ENERGY;
-
+    
 }
 
 void G4TPrimaryGeneratorMethods::GenerateEventsMomentumDirection(){
-
+    
     if(MomDirTypeNum == 0){
         G4double cosTheta = 2*G4UniformRand() - 1., phi = twopi*G4UniformRand();
         G4double sinTheta = std::sqrt(1. - cosTheta*cosTheta);
@@ -592,7 +592,7 @@ void G4TPrimaryGeneratorMethods::GenerateEventsMomentumDirection(){
         //return G4ThreeVector(std::sin(Theta)*std::cos(Phi), std::sin(Theta)*std::sin(Phi), std::cos(Theta));
     }
     else if(MomDirTypeNum == 3){
-
+        
         G4double theta, phi;
         if(ThetaMin == ThetaMax){
             theta = ThetaMax;
@@ -604,22 +604,22 @@ void G4TPrimaryGeneratorMethods::GenerateEventsMomentumDirection(){
         }else {
             phi = PhiMin + G4UniformRand()*(PhiMax-PhiMin);
         }
-
+        
         XMOMD = std::sin(theta)*std::cos(phi);
         YMOMD = std::sin(theta)*std::sin(phi);
         ZMOMD = std::cos(theta);
-
+        
         // G4cout << " XMOMD=" << XMOMD << " YMOMD=" << YMOMD << " ZMOMD=" << ZMOMD << G4endl;
-
+        
         //return G4ThreeVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
-
+        
     }
-
+    
     //return G4ParticleMomentum(XMOMD, YMOMD, ZMOMD);
 }
 
 void G4TPrimaryGeneratorMethods::OpenFilesToSaveGeneratedData(){
-
+    
     std::ostringstream a ;
     if(SourceType == "Solid"){
         a << DataDirectoryPath  << "/Pos_" << NewRankSourceRegionsNamesValues[DataID] << "_" << SourceSolid << "_" << SourceType;
@@ -635,7 +635,7 @@ void G4TPrimaryGeneratorMethods::OpenFilesToSaveGeneratedData(){
     }
     a << "_" << EventsNumPerThreadRank << "_" <<DataID << DataFilesExtension;
     PositionFileStream.open(a.str().c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
-
+    
     std::ostringstream b ;
     b << DataDirectoryPath  << "/Ene_" << EnergyDistribution <<"_";
     if(EnergyDistribution == "Spectrum"){
@@ -651,9 +651,9 @@ void G4TPrimaryGeneratorMethods::OpenFilesToSaveGeneratedData(){
         b << NewRankSourceEnergiesValues[DataID];
     }
     b << "_" << EventsNumPerThreadRank << "_" << DataID << DataFilesExtension;
-
+    
     EneFileStream.open(b.str().c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
-
+    
     std::ostringstream c ;
     c << DataDirectoryPath  << "/MomDir_" << MomDirDistribution ; // or NewRankSourceMomDirsValues[DataID]
     if(MomDirDistribution == "Isotropic"){
@@ -667,7 +667,7 @@ void G4TPrimaryGeneratorMethods::OpenFilesToSaveGeneratedData(){
     }
     c <<  "_" << EventsNumPerThreadRank << "_" <<DataID<< DataFilesExtension;
     MomDirFileStream.open(c.str().c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
-
+    
 }
 
 void G4TPrimaryGeneratorMethods::CloseFilesToSaveGeneratedData(){
@@ -683,9 +683,9 @@ void G4TPrimaryGeneratorMethods::SaveGeneratedDataToFiles(){
 }
 
 void G4TPrimaryGeneratorMethods::SourceInitialization(){
-
+    
     // for particles
-
+    
     if(EnergyDistribution == "RadioNuclide" || EnergyDistribution == "File"){
         particleDefinitionList[0] = G4ParticleTable::GetParticleTable()->FindParticle("gamma");;
         particleDefinitionList[1] = G4ParticleTable::GetParticleTable()->FindParticle("e-");;
@@ -698,26 +698,26 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
         particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(NewRankSourceParticlesNamesValues[DataID]);
         if(particleDefinition == nullptr){ G4String msg = "Particle name (" + NewRankSourceParticlesNamesValues[DataID] + ") in rank/thread (" + std::to_string(DataID) + ") not found "; G4Exception("Source Data", "1", FatalErrorInArgument, msg.c_str());}
     }
-
+    
     // for initial positions generation
-
+    
     if(SourceType == "Voxels"){PositionTypeNum = 0;
-
+        
         if(NewRankVoxelsIDsOfSourceRegion.size() == 0 || NewRankVoxelsIDsOfSourceRegion[DataID].size() == 0 ){
             G4String msg = "Source region (" + NewRankSourceRegionsNamesValues[DataID] + ") in rank/thread (" + std::to_string(DataID) + "), number voxels of voxels equal to 0 "; G4Exception("Source Data", "1", FatalErrorInArgument, msg.c_str());
         }
-
+        
         const G4TVolumeConstruction* TConstruction = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-
+        
         Voxel0PosX = -((VoxXNumber*VoxXHalfSize) - VoxXHalfSize) + TConstruction->getVoxContainerPos().getX();
         Voxel0PosY = -((VoxYNumber*VoxYHalfSize) - VoxYHalfSize) + TConstruction->getVoxContainerPos().getY();
         Voxel0PosZ = -((VoxZNumber*VoxZHalfSize) - VoxZHalfSize) + TConstruction->getVoxContainerPos().getZ();
     }
     else if(SourceType == "Volume"){PositionTypeNum = 1;
-
+        
         const G4TVolumeConstruction* TConstruction = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
         WorldPhysicalVolume = TConstruction->getWorldPhyVolume();
-
+        
         aNavigator = new G4Navigator();
         aNavigator->SetWorldVolume(WorldPhysicalVolume);
         /*
@@ -732,7 +732,7 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
                           */
     }
     else if(SourceType == "Solid"){ PositionTypeNum = 2;
-
+        
         if(SourceSolid == "Sphere")
         {
             PositionTypeNum = 2;
@@ -755,7 +755,7 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
         }
     }
     else if(SourceType == "Surface"){PositionTypeNum = 3;
-
+        
         if(SourceSurface == "Sphere")
         {
             PositionTypeNum = 7;
@@ -770,30 +770,30 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
     else if(SourceType == "Rotated"){ PositionTypeNum = 7;}
     else if(SourceType == "TET"){PositionTypeNum = 8;}
     // for initial MomDires generation
-
+    
     if(NewRankSourceMomDirsValues[DataID] == "Isotropic"){MomDirTypeNum = 0;}
     else if(NewRankSourceMomDirsValues[DataID] == "Uniform"){MomDirTypeNum = 1;}
     else if(NewRankSourceMomDirsValues[DataID] == "Directed"){MomDirTypeNum = 2;}
     else if(NewRankSourceMomDirsValues[DataID] == "Delimited"){MomDirTypeNum = 3;}
-
+    
     // for initial energies generation
     if(EnergyDistribution == "Mono"){EnergyTypeNum = 0;}
     else if(EnergyDistribution == "Uniform"){EnergyTypeNum = 1;}
     else if(EnergyDistribution == "Rayleigh"){EnergyTypeNum = 2;}
     else if(EnergyDistribution == "Gauss"){EnergyTypeNum = 3;}
     else if(EnergyDistribution == "Spectrum"){EnergyTypeNum = 4;
-
+        
         G4double TotalProbability = 0;
-
+        
         /*
         G4double TotalYield = 0;
         G4double EnergyProbability;
         G4double EnergyYield;
-
+        
         G4double TotalNumberOfRegisteredEventsByProbability = 0;
         G4double TotalNumberOfRegisteredEventsByYield = 0;
         EnergyValues = new G4double[EventsNumPerThreadRank];
-
+        
         for ( auto Abeg = EnergyValueProbability.begin(); Abeg != EnergyValueProbability.end(); ++Abeg  ){
             EnergyProbability = Abeg->second;
             TotalProbability += EnergyProbability;
@@ -802,73 +802,73 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
             //TotalProbability += Abeg->second;
         }
         for ( auto Abeg = EnergyValueProbability.begin(); Abeg != EnergyValueProbability.end(); ++Abeg  ){
-
+        
             EnergyProbability = Abeg->second;
             int enevalNum = EventsNumPerThreadRank * (EnergyProbability/TotalProbability);
             int enevalNumByYield = EventsNumPerThreadRank * Abeg->second;
-
+            
             //std::cout << " EnergyProbability " << EnergyProbability  << " enevalNum " << enevalNum << std::endl;
-
+            
             for(int f = TotalNumberOfRegisteredEventsByProbability; f < TotalNumberOfRegisteredEventsByProbability+enevalNum ;f++ ){
                 EnergyValues[f] = Abeg->first;
                 //std::cout << f << "  " << EnergyValues[f] << " enevalNum " << enevalNum << " enevalNumByYield " << enevalNumByYield << std::endl;
             }
-
+            
             std::cout << " Energy "<< Abeg->first << " EnergyYield " << Abeg->second << " enevalNumByYield " << enevalNumByYield << " EnergyProbability " << EnergyProbability << " enevalNum " << enevalNum << std::endl;
             TotalNumberOfRegisteredEventsByProbability += enevalNum;
             TotalNumberOfRegisteredEventsByYield += enevalNumByYield;
-
+            
         }
-
+        
         std::cout  << " TotalProbability " << TotalProbability
                    << " TotalNumberOfRegisteredEventsByProbability " << TotalNumberOfRegisteredEventsByProbability
                    << " TotalYield " << TotalYield
                       //<< " TotalNumberOfRegisteredEventsByYield " << TotalNumberOfRegisteredEventsByYield
                    << " EventsNumPerThreadRank " << EventsNumPerThreadRank << std::endl;
-
+                   
 */
-
+        
         std::map<G4double, G4double> EnergyProbabilityInterval;
         std::map<G4int, G4double> CumulatedProbabilityIndexEnergy;
-
+        
         G4int index=0;
-
+        
         for ( auto Abeg = EnergyValueProbability.begin(); Abeg != EnergyValueProbability.end(); ++Abeg  ){
-
+            
             EnergyProbabilityInterval[Abeg->first] = Abeg->second;
             TotalProbability += EnergyProbabilityInterval[Abeg->first];
-
+            
 #if VERBOSE_USE
             //std::cout  << index << " TotalProbability "<< TotalProbability << " - this EnergyProbabilityInterval " << EnergyProbabilityInterval[Abeg->first] << " Energy " << std::endl;
 #endif
             CumulatedProbabilityIndexEnergy[index] = Abeg->first;
             index++;
         }
-
+        
         EnergyList = new G4double[EventsNumPerThreadRank];
-
+        
         for(int f = 0; f < EventsNumPerThreadRank ;f++ ){
-
+            
             G4double RV = TotalProbability*(G4double)G4UniformRand() ;
             G4double EnergyCumulatedProbability = 0;
-
+            
             index=0;
             for ( auto Abeg = EnergyValueProbability.begin(); Abeg != EnergyValueProbability.end(); ++Abeg  ){
-
+                
                 EnergyCumulatedProbability += Abeg->second;
-
+                
                 if(RV < EnergyCumulatedProbability){
                     EnergyList[f] = CumulatedProbabilityIndexEnergy[index];
                     break;
                 }
                 index++;
             }
-
+            
             //std::cout << f << " Energy " << EnergyValues[f] << " EnergyCumulatedProbability " << EnergyCumulatedProbability << " - this EnergyProbabilityInterval " << EnergyProbabilityInterval[EnergyValues[f]] << std::endl;
         }
     }
     else if(EnergyDistribution == "RadioNuclide" || EnergyDistribution == "File"){EnergyTypeNum = 5;
-
+        
         ParNameList = new unsigned int[EventsNumPerThreadRank];
         EnergyList = new double[EventsNumPerThreadRank];
         MomDirXList = new double[EventsNumPerThreadRank];
@@ -877,32 +877,32 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
         PosXList = new double[EventsNumPerThreadRank];
         PosYList = new double[EventsNumPerThreadRank];
         PosZList = new double[EventsNumPerThreadRank];
-
+        
         G4double TotalProbability;
         for(int m = 0; m < RadioNuclideProbVec.size() ;m++ ){
             TotalProbability += RadioNuclideProbVec[m];
             //std::cout << m << " TotalProbability " << TotalProbability << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " Proba " << RadioNuclideProbVec[m] << " EneMin " << RadioNuclideEneVec[m][0] << std::endl;
             //std::cout << m <<  " yield " << RadioNuclideProbVec[m] <<  " accumulated yield " << TotalProbability << std::endl;
         }
-
+        
         for(int f = 0; f < EventsNumPerThreadRank ;f++ ){
-
+            
             G4double RV = TotalProbability*(G4double)G4UniformRand() ;
             G4double EnergyCumulatedProbability = 0;
-
+            
             for(int m = 0; m < RadioNuclideProbVec.size() ;m++ ){
-
+                
                 EnergyCumulatedProbability += RadioNuclideProbVec[m];
-
+                
                 if(RV < EnergyCumulatedProbability){
                     if(RadioNuclideSpectrumOrDiscreteVec[m] == 0){
-
+                        
                         double RandomEne = RadioNuclideEneVec[m][0] + (RadioNuclideEneVec[m][1]-RadioNuclideEneVec[m][0])*(double)G4UniformRand();
                         EnergyList[f] = RandomEne;
                         //std::cout << f << " Particle "<< RadioNuclidePartNameVec[m] << " TotalProbability "<< TotalProbability << " RandomProb " << RV << " Prob "<< RadioNuclideProbVec[m] << " EnergyCumulatedProbability " << EnergyCumulatedProbability  << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " Min " << RadioNuclideEneVec[m][0]   << " RandomEne " << EnergyList[f] << " Max " << RadioNuclideEneVec[m][1] << std::endl;
-
+                        
                     }else{
-
+                        
                         EnergyList[f] = RadioNuclideEneVec[m][0];
                         //std::cout << f << " Particle "<< RadioNuclidePartNameVec[m] << " TotalProbability "<< TotalProbability << " RandomProb " << RV << " Prob "<< RadioNuclideProbVec[m] << " EnergyCumulatedProbability " << EnergyCumulatedProbability  << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " selected Energy " << EnergyList[f] << std::endl;
                     }
@@ -911,23 +911,23 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
                 }
             }
         }
-
-
+        
+        
         /*for(int m = 0; m < RadioNuclideProbVec.size() ;m++ ){
-
+          
             int eventswithene = (RadioNuclideProbVec[m]/TotalProbability)*EventsNumPerThreadRank;
-
+            
             std::cout << m << " eventswithene " << eventswithene << " RadioNuclideProbVec[m] " << RadioNuclideProbVec[m] << " TotalProbability " << TotalProbability << " EneMin " << RadioNuclideEneVec[m][0] << std::endl;
-
+            
             for(int f = 0; f < eventswithene ;f++ ){
                 if(RadioNuclideSpectrumOrDiscreteVec[m] == 0){
-
+                
                     double RandomEne = RadioNuclideEneVec[m][0] + (RadioNuclideEneVec[m][1]-RadioNuclideEneVec[m][0])*(double)G4UniformRand();
                     EnergyList[f] = RandomEne;
                     //std::cout << f << " Particle "<< RadioNuclidePartNameVec[m] << " TotalProbability "<< TotalProbability << " RandomProb " << RV << " Prob "<< RadioNuclideProbVec[m] << " EnergyCumulatedProbability " << EnergyCumulatedProbability  << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " Min " << RadioNuclideEneVec[m][0]   << " RandomEne " << EnergyList[f] << " Max " << RadioNuclideEneVec[m][1] << std::endl;
-
+                    
                 }else{
-
+                
                     EnergyList[f] = RadioNuclideEneVec[m][0];
                     //std::cout << f << " Particle "<< RadioNuclidePartNameVec[m] << " TotalProbability "<< TotalProbability << " RandomProb " << RV << " Prob "<< RadioNuclideProbVec[m] << " EnergyCumulatedProbability " << EnergyCumulatedProbability  << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " selected Energy " << EnergyList[f] << std::endl;
                 }
@@ -937,16 +937,16 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
         }
         */
     }
-
+    
     WriteSourceDataToFiles = 0;
-
+    
     if(WriteSourceDataToFiles == 1){
         OpenFilesToSaveGeneratedData();
     }
 }
 
 void G4TPrimaryGeneratorMethods::GunInitialize(){
-
+    
     if(UseGeneratedData == "save"){
         std::cout << "\n For each thread, the direct data generation for each event simulation. The data will be saved to events data files " << std::endl;
     }else if(UseGeneratedData == "read"){
@@ -954,9 +954,9 @@ void G4TPrimaryGeneratorMethods::GunInitialize(){
     }else{
         std::cout << "\n For each thread, the direct data generation for each event simulation " << std::endl;
     }
-
+    
     //std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n************** The primary generator Action initialization... "<< std::endl;
-
+    
     DataID = 0;
 #ifdef G4MPI_USE
     //DataID = G4MPImanager::GetManager()->GetRank() ;
@@ -966,7 +966,7 @@ void G4TPrimaryGeneratorMethods::GunInitialize(){
         DataID = G4Threading::G4GetThreadId();
     }
 #endif
-
+    
     EnergyListInc = 0;
     EvInc = 0;
     VoxelsInc = 0;
@@ -974,24 +974,24 @@ void G4TPrimaryGeneratorMethods::GunInitialize(){
 }
 
 void G4TPrimaryGeneratorMethods::GetEventsData(){
-
+    
     //G4cout << __FUNCTION__ << G4endl;
-
+    
     // to read the file and fill the vector of points if it's empty, else it would be filled then we dont need to read and fill ...
-
+    
     //G4int TotalEventsNumPerThreadRank = G4RunManager::GetRunManager()->GetNumberOfEventsToBeProcessed();
-
+    
     G4ThreadLocal G4int rank = 0 ;
     G4ThreadLocal G4int thread = 0;
     G4ThreadLocal G4int DataFileThreadRankID = 0; // used to read a new file with new ID and not 0 when we use "o" option
-
+    
     DataID = 0;
-
+    
 #ifdef G4MPI_USE
     //rank = G4MPImanager::GetManager()->GetRank();
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     DataFileThreadRankID = rank;
-
+    
     if(MPISimulationNum == "m"){
         //DataID = G4MPImanager::GetManager()->GetRank();
         MPI_Comm_rank(MPI_COMM_WORLD, &DataID);
@@ -1007,28 +1007,28 @@ void G4TPrimaryGeneratorMethods::GetEventsData(){
         }
     }
 #endif
-
+    
     EnergyList  = new double[EventsNumPerThreadRank];
     PositionsList = new G4ThreeVector[EventsNumPerThreadRank];
     MomDirecsList = new G4ThreeVector[EventsNumPerThreadRank];
-
+    
     // to test the data files if existes and if the file id correspond to the DataId if not use the file exists
     //#########################################################################################################################################"
-
+    
     G4ThreadLocal DIR *dir;
     G4ThreadLocal struct dirent *diread;
-
+    
     G4ThreadLocal std::map<G4String,std::map<G4String,int>> PosDataFileID;
     G4ThreadLocal std::map<G4String,std::map<double,int>> EneDataFileID;
     G4ThreadLocal std::map<G4String,int> MomDirDataFileID;
-
+    
     if ((dir = opendir(DataDirectoryPath.c_str())) != nullptr) {
         while ((diread = readdir(dir)) != nullptr) {
             std::string str1 = diread->d_name;
             std::string Idc = str1.substr(0, 3);
-
+            
             //std::cout << str1 << "  " << Idc << std::endl;
-
+            
             std::vector<std::string> result;
             std::stringstream ss (getFileNameFromPath(diread->d_name));
             std::string item;
@@ -1036,7 +1036,7 @@ void G4TPrimaryGeneratorMethods::GetEventsData(){
                 result.push_back(item);
                 //std::cout << "item " << item << std::endl;
             }
-
+            
             if(Idc == "Pos"){
                 if(result.size() > 3){
                     PosDataFileNames[result[1]][result[2]][std::atoi(result[4].c_str())] = DataDirectoryPath +"/"+diread->d_name;
@@ -1061,199 +1061,199 @@ void G4TPrimaryGeneratorMethods::GetEventsData(){
     } else {
         perror ("opendir");
     }
-
+    
     if(FILE* file = fopen(PosDataFileNames[NewRankSourceRegionsNamesValues[DataID]][SourceType][DataFileThreadRankID].c_str(),"r")){
         NewRankSourcePositionDataFiles[DataID] = PosDataFileNames[NewRankSourceRegionsNamesValues[DataID]][SourceType][DataFileThreadRankID]; std::fclose(file);
     }else{NewRankSourcePositionDataFiles[DataID] = PosDataFileNames[NewRankSourceRegionsNamesValues[DataID]][SourceType][PosDataFileID[NewRankSourceRegionsNamesValues[DataID]][SourceType]];}
-
+    
     if(FILE* file = fopen(EneDataFileNames[EnergyDistribution][NewRankSourceEnergiesValues[DataID]][DataFileThreadRankID].c_str(),"r")){
         NewRankSourceEnergyDataFiles  [DataID] = EneDataFileNames[EnergyDistribution][NewRankSourceEnergiesValues[DataID]][DataFileThreadRankID]; std::fclose(file);
     }else{NewRankSourceEnergyDataFiles  [DataID] = EneDataFileNames[EnergyDistribution][NewRankSourceEnergiesValues[DataID]][EneDataFileID[EnergyDistribution][NewRankSourceEnergiesValues[DataID]]];}
-
+    
     if(FILE* file = fopen(MomDirDataFileNames[MomDirDistribution][DataFileThreadRankID].c_str(),"r")){
         NewRankSourceMomDirDataFiles  [DataID] = MomDirDataFileNames[MomDirDistribution][DataFileThreadRankID];std::fclose(file);
     }else{NewRankSourceMomDirDataFiles  [DataID] = MomDirDataFileNames[MomDirDistribution][MomDirDataFileID[MomDirDistribution]];}
-
+    
     //std::cout <<" DataFileThreadRankID " << DataFileThreadRankID << " DataID " << DataID << " NewRankSourcePositionDataFiles[DataID] " << NewRankSourcePositionDataFiles[DataID] << " " << PosDataFileNames[NewRankSourceRegionsNamesValues[DataID]][SourceType][DataID].c_str() << " " << PosDataFileID[NewRankSourceRegionsNamesValues[DataID]][SourceType] << std::endl;
     //std::cout <<" DataFileThreadRankID " << DataFileThreadRankID << " DataID " << DataID << " NewRankSourceEnergyDataFiles[DataID]   " << NewRankSourceEnergyDataFiles[DataID]   << " " << EneDataFileNames[EnergyDistribution][NewRankSourceEnergiesValues[DataID]][DataID].c_str()  << " " << EneDataFileID[EnergyDistribution][NewRankSourceEnergiesValues[DataID]] << std::endl;
     //std::cout <<" DataFileThreadRankID " << DataFileThreadRankID << " DataID " << DataID << " NewRankSourceMomDirDataFiles[DataID]   " << NewRankSourceMomDirDataFiles[DataID]   << " " << MomDirDataFileNames[MomDirDistribution][DataID].c_str() << " " << MomDirDataFileID[MomDirDistribution] << std::endl;
-
+    
     //#########################################################################################################################################"
-
+    
     //G4cout << " !!!!!!! If the number of generated points is less than the number of events to be processed, the application will reopens the file and reads the events data" << G4endl;
     std::cout << "\n---> for rank " << rank << ", thread " << thread << " (data ID:" << DataID << ") Reading " << EventsNumPerThreadRank << " Generated data from files " << NewRankSourcePositionDataFiles[DataID].c_str() << ", " << NewRankSourceEnergyDataFiles[DataID].c_str() << " and " << NewRankSourceMomDirDataFiles[DataID].c_str() << "..."<< std::endl;
-
+    
     G4double posX,posY,posZ, val;
-
+    
     //std::ifstream fileorganStream(NewRankSourcePositionDataFiles[DataID].c_str());
     std::ifstream PosFileStream;
     PosFileStream.open(NewRankSourcePositionDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
-
+    
     if(!PosFileStream.is_open()) {
         G4String msg = "Unable to open position data file : " + NewRankSourcePositionDataFiles[DataID] + " for rank/thread (" + std::to_string(DataID) + ") "; G4Exception("Source Data", "1", FatalErrorInArgument, msg.c_str());
     }
     else {
         G4int Begin, First = 0;
         Begin = (rank*ThreadsNumber*EventsNumPerThreadRank) + (thread*EventsNumPerThreadRank);
-
+        
         while(First < Begin){ // read just what we need to simulate
-
+            
             PosFileStream >> posY >> posZ >> posY ;
-
+            
             if(PosFileStream.peek()==EOF && First < Begin){
                 PosFileStream.close(); // , std::ios_base::out | std::ios_base::binary
                 PosFileStream.open(NewRankSourcePositionDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
             }
-
+            
             First++;
         }
         std::cout << "    EventsNumPerThreadRank "<< EventsNumPerThreadRank << " Events Position Data For rank " << rank << ", thread " << thread << " (data ID:"<< DataID<< ") | Begins from line " << Begin << " to " << Begin + EventsNumPerThreadRank << std::endl;
-
+        
         G4int EventIncre = 0;
         while(EventIncre < EventsNumPerThreadRank){ // read just what we need to simulate
-
+            
             if(PosFileStream.peek()==EOF && EventIncre < EventsNumPerThreadRank){ // If the number of generated points is less than the number of events to be processed, the application will reopen the file and reads points positions
-
+                
                 //std::cout << "EventIncre < EventsNumPerThreadRank && peek()==EOF " << std::endl;
                 PosFileStream.close(); // , std::ios_base::out | std::ios_base::binary
                 PosFileStream.open(NewRankSourcePositionDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
                 //std::cout  << "##########################"<<EventsNumPerThreadRank << " " <<EventIncre << " " << Energies[EventIncre] << " " << Positions[EventIncre] << " " << MomDirecs[EventIncre] << std::endl;
                 //continue;
             }
-
+            
             PosFileStream >> posX >> posY >> posZ ;
             PositionsList[EventIncre] = G4ThreeVector( posX , posY , posZ);
-
+            
             //if( G4Threading::G4GetThreadId() == 3 && rank == 3){
             //  std::cout << EventsNumPerThreadRank << " " << EventIncre << " " << Positions[EventIncre] << std::endl;
             //}
-
-
+            
+            
             //std::cout <<EventsNumPerThreadRank << " " <<EventIncre  << " Pos " << Positions[EventIncre] << std::endl;
-
+            
             EventIncre++;
         }
-
+        
         PosFileStream.close();
-
+        
         //std::cout << "End of Positions File reading"<< std::endl;
     }
-
+    
     //###########################################posY##############################################################################################"
-
+    
     std::ifstream EneFileStream;
     EneFileStream.open(NewRankSourceEnergyDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
-
+    
     if(!EneFileStream.is_open()) {
         G4String msg =  "Unable to open energy data file : " + NewRankSourceEnergyDataFiles[DataID] + " for rank/thread (" + std::to_string(DataID) + ") "; G4Exception("Source Data", "1", FatalErrorInArgument, msg.c_str());
     }
     else {
-
+        
         G4int Begin, First = 0;
         Begin = (rank*ThreadsNumber*EventsNumPerThreadRank) + (thread*EventsNumPerThreadRank);
-
+        
         while(First < Begin){ // read just what we need to simulate
-
+            
             EneFileStream >> val ;
-
+            
             if(EneFileStream.peek()==EOF && First < Begin){
                 EneFileStream.close();
                 EneFileStream.open(NewRankSourceEnergyDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
             }
-
+            
             First++;
         }
         std::cout << "    EventsNumPerThreadRank "<< EventsNumPerThreadRank << " Events Energy Data For rank " << rank << ", thread " << thread << " (data ID:"<< DataID<< ") | Begins from line " << Begin << " to " << Begin + EventsNumPerThreadRank << std::endl;
-
+        
         G4int EventIncre = 0;
         while(EventIncre < EventsNumPerThreadRank){ // read just what we need to simulate
-
+            
             if(EneFileStream.peek()==EOF && EventIncre < EventsNumPerThreadRank){ // If the number of generated points is less than the number of events to be processed, the application will reopen the file and reads points positions
-
+                
                 //std::cout << "EventIncre < EventsNumPerThreadRank && peek()==EOF " << std::endl;
                 EneFileStream.close();
                 EneFileStream.open(NewRankSourceEnergyDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
                 //std::cout  << "##########################"<<EventsNumPerThreadRank << " " <<EventIncre << " " << Energies[EventIncre] << " " << Positions[EventIncre] << " " << MomDirecs[EventIncre] << std::endl;
                 //continue;
             }
-
+            
             EneFileStream >> val;
             EnergyList[EventIncre] = val ;
-
+            
             //if( G4Threading::G4GetThreadId() == 3  && rank == 3){
             //  std::cout << EventsNumPerThreadRank << " " << EventIncre << " " << Energies[EventIncre] << std::endl;
             //}
-
+            
             //std::cout <<EventsNumPerThreadRank << " " <<EventIncre << " " << Energies[EventIncre] << " " << Positions[EventIncre] << " " << MomDirecs[EventIncre] << std::endl;
-
+            
             EventIncre++;
         }
-
+        
         EneFileStream.close();
-
+        
         //std::cout << "End of Energy File reading"<< std::endl;
     }
-
+    
     //#########################################################################################################################################"
-
+    
     std::ifstream MomDirFileStream;
     MomDirFileStream.open(NewRankSourceMomDirDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
-
+    
     if(!MomDirFileStream.is_open()) {
         G4String msg =  "Unable to open momentum direction data file : " + NewRankSourceMomDirDataFiles[DataID] + " for rank/thread (" + std::to_string(DataID) + ") "; G4Exception("Source Data", "1", FatalErrorInArgument, msg.c_str());
     }
     else {
-
+        
         G4int Begin, First = 0;
         Begin = (rank*ThreadsNumber*EventsNumPerThreadRank) + (thread*EventsNumPerThreadRank);
-
+        
         while(First < Begin){ // read just what we need to simulate
-
+            
             MomDirFileStream >> posX >> posY >> posZ ;
-
+            
             if(MomDirFileStream.peek()==EOF && First < Begin){
                 MomDirFileStream.close();
                 MomDirFileStream.open(NewRankSourceMomDirDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
             }
-
+            
             First++;
         }
-
+        
         std::cout << "    EventsNumPerThreadRank "<< EventsNumPerThreadRank << " Events Momentum Direction Data For rank " << rank << ", thread " << thread << " (data ID:"<< DataID<< ") | Begins from line " << Begin << " to " << Begin + EventsNumPerThreadRank << std::endl;
-
+        
         G4int EventIncre = 0;
         while(EventIncre < EventsNumPerThreadRank){ // read just what we need to simulate
-
+            
             if(MomDirFileStream.peek()==EOF && EventIncre < EventsNumPerThreadRank){ // If the number of generated points is less than the number of events to be processed, the application will reopen the file and reads points positions
-
+                
                 //std::cout << "EventIncre < EventsNumPerThreadRank && peek()==EOF " << std::endl;
                 MomDirFileStream.close();
                 MomDirFileStream.open(NewRankSourceMomDirDataFiles[DataID].c_str() , std::ios_base::binary); // , std::ios_base::out | std::ios_base::binary
                 //std::cout  <<EventsNumPerThreadRank << " " <<EventIncre << " " << Energies[EventIncre] << " " << Positions[EventIncre] << " " << MomDirecs[EventIncre] << std::endl;
                 //continue;
             }
-
+            
             MomDirFileStream >> posX >> posY >> posZ ;
             MomDirecsList[EventIncre] = G4ThreeVector( posX , posY , posZ);
-
+            
             //if( G4Threading::G4GetThreadId() == 3  && rank == 3){
             //  std::cout << EventsNumPerThreadRank << " " << EventIncre << " " << MomDirecs[EventIncre] << std::endl;
             //}
-
+            
             EventIncre++;
         }
-
+        
         MomDirFileStream.close();
-
+        
         //std::cout << "End of MomDir File reading"<< std::endl;
     }
-
+    
     std::cout << "    ----> Getting Events Data has done. Now is time for Events simulation" << std::endl;
-
+    
     //for ( int ff = 0 ; ff < EventsNumPerThreadRank ; ff++ ) {
     //std::cout << "Energies[ff] " << Energies[ff]<< std::endl;
     //std::cout << "Positions[ff] " << Positions[ff]<< std::endl;
     //std::cout << "MomDirecs[ff] " << MomDirecs[ff]<< std::endl;
     //}
-
+    
 }

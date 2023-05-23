@@ -38,13 +38,15 @@
 
 #include "G4TVolumeConstruction.hh"
 #include "G4TUserPhysicsList.hh"
+#include "G4TNeutronPhysicsList.hh"
+
 #include "G4TRunAction.hh"
 //#include "G4TDirectPrimaryGeneratorAction.hh"
 //#include "G4TReadPrimaryGeneratorAction.hh"
 
 #include "G4TActionInitialization.hh"
-#include "FTFP_BERT.hh"
-#include "FTFP_BERT_HP.hh"
+//#include "FTFP_BERT.hh"
+//#include "FTFP_BERT_HP.hh"
 
 #include "G4PhysListFactory.hh"
 #include "G4EmStandardPhysics.hh"
@@ -69,6 +71,8 @@
 #include "G4UIterminal.hh"
 //#endif
 
+#include "G4ProcessManager.hh"
+#include "G4ProcessVector.hh"
 
 #ifdef G4MPI_USE
 #include "mpi.h"
@@ -208,6 +212,30 @@ bool MaterialNameAsRegionName;
 double* SourceEnergies;
 double* SourcePositions;
 double* SourceMomDirs;
+
+
+
+G4bool IsEcutsSet;
+G4bool IsDcutsSet;
+G4double CutsEnergy;
+G4double CutsDistance;
+G4String ParticlePysics;
+G4String PhotoElectricEffectModel;
+G4String PolarizedPhotoElectricEffectModel;
+G4String ComptonScatteringModel;
+G4String PolarizedComptonModel;
+G4String GammaConversionModel;
+G4String PolarizedGammaConversionModel;
+G4String RayleighScatteringModel;
+G4String GammaConversionToMuonModel;
+G4String ElectronIonisationModel;
+G4String ElectronBremModel;
+G4String HadronIonisationModel;
+G4String HadronBremModel;
+G4String IonIonisationModel;
+G4bool GenerateCrossSectionTableFlag;
+G4String ParticleForCrossSection;
+std::vector<G4double> EnergiesForCrossSectionValues;
 
 //G4Navigator* aNavigator;
 
@@ -387,14 +415,41 @@ int main(int argc,char** argv){
         VolCon->setUseVoxelsColour(true);
 
         runManager->SetUserInitialization(VolCon);
-        runManager->SetUserInitialization(new G4TUserPhysicsList);
-        //runManager->SetUserAction(new G4TRunAction);
-        //runManager->SetUserAction(new G4TDirectPrimaryGeneratorAction);
 
         G4UImanager* UImanager = G4UImanager::GetUIpointer();
         UImanager->SetIgnoreCmdNotFound(true);
         UImanager->SetVerboseLevel(0);
         UImanager->ExecuteMacroFile(MacrosStartingFile.c_str());
+
+        if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
+            if(ParticleName == "neutron"){
+                runManager->SetUserInitialization(new G4TNeutronPhysicsList("NeutronHP"));
+
+            }else{
+                runManager->SetUserInitialization(new G4TUserPhysicsList());
+            }
+        }else{
+
+            if(ParticleName == "neutron"){
+                std::vector<std::string> RefPhyLists;
+                RefPhyLists.push_back("FTFP_BERT"); RefPhyLists.push_back("FTFP_BERT_ATL"); RefPhyLists.push_back("FTFP_BERT_TRV"); RefPhyLists.push_back("QGSP_FTFP_BERT"); RefPhyLists.push_back("QGSP_BERT"); RefPhyLists.push_back("QGSP_BERT_HP"); RefPhyLists.push_back("QGSP_BIC"); RefPhyLists.push_back("QGSP_BIC_AllHP"); RefPhyLists.push_back("INCLXX"); RefPhyLists.push_back("Shielding"); RefPhyLists.push_back("ShieldingLEND");
+                bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
+
+                if(isIn == false ){
+                    ParticlePysics = "QGSP_BERT_HP";
+                    G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
+                }
+
+                G4PhysListFactory* physFactory = new G4PhysListFactory();
+                G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(ParticlePysics);
+
+                physicsList->SetCutsWithDefault();
+                runManager->SetUserInitialization(physicsList);
+            }else{
+                ParticlePysics = "EMS3";
+                runManager->SetUserInitialization(new G4TUserPhysicsList());
+            }
+        }
 
         // depend on the input to the VolumeConstructor then it called after ExecuteMacroFile(MacrosStartingFile.c_str());
         runManager->SetUserInitialization(new G4TActionInitialization());
@@ -558,10 +613,40 @@ int main(int argc,char** argv){
         }
 
         runManager->SetUserInitialization(VolCon);
-        runManager->SetUserInitialization(new G4TUserPhysicsList);
         G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
         UImanager->ExecuteMacroFile(MacrosStartingFile.c_str());
+
+        if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
+            if(ParticleName == "neutron"){
+                runManager->SetUserInitialization(new G4TNeutronPhysicsList("NeutronHP"));
+
+            }else{
+                runManager->SetUserInitialization(new G4TUserPhysicsList());
+            }
+        }else{
+
+            if(ParticleName == "neutron"){
+                std::vector<std::string> RefPhyLists;
+                RefPhyLists.push_back("FTFP_BERT"); RefPhyLists.push_back("FTFP_BERT_ATL"); RefPhyLists.push_back("FTFP_BERT_TRV"); RefPhyLists.push_back("QGSP_FTFP_BERT"); RefPhyLists.push_back("QGSP_BERT"); RefPhyLists.push_back("QGSP_BERT_HP"); RefPhyLists.push_back("QGSP_BIC"); RefPhyLists.push_back("QGSP_BIC_AllHP"); RefPhyLists.push_back("INCLXX"); RefPhyLists.push_back("Shielding"); RefPhyLists.push_back("ShieldingLEND");
+                bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
+
+                if(isIn == false ){
+                    ParticlePysics = "QGSP_BERT_HP";
+                    G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
+                }
+
+                G4PhysListFactory* physFactory = new G4PhysListFactory();
+                G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(ParticlePysics);
+
+                physicsList->SetCutsWithDefault();
+                runManager->SetUserInitialization(physicsList);
+            }else{
+                ParticlePysics = "EMS3";
+                runManager->SetUserInitialization(new G4TUserPhysicsList());
+            }
+        }
+
 
         // depend on the input to the VolumeConstructor then it called after ExecuteMacroFile(MacrosStartingFile.c_str());
         runManager->SetUserInitialization(new G4TActionInitialization());
@@ -598,27 +683,40 @@ int main(int argc,char** argv){
     G4TVolumeConstruction* VolCon= new G4TVolumeConstruction();
     runManager->SetUserInitialization(VolCon);
 
-    G4bool UseRefPhy = false;
-    if(UseRefPhy == false){
-        runManager->SetUserInitialization(new G4TUserPhysicsList());
-    }else if (UseRefPhy == true){
-        // Initialize the physics list
-        G4PhysListFactory* physFactory = new G4PhysListFactory();
-        G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList("QGSP_BERT_HP");
-        physicsList->RegisterPhysics(new G4EmStandardPhysics());
-        physicsList->RegisterPhysics(new G4HadronElasticPhysics());
-        physicsList->RegisterPhysics(new G4HadronInelasticQBBC());
-        physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
-        physicsList->RegisterPhysics(new G4StepLimiterPhysics());
-        runManager->SetUserInitialization(physicsList);
-        //runManager->SetUserInitialization(new FTFP_BERT_HP);
-    }
-
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     UImanager->SetIgnoreCmdNotFound(true);
     UImanager->SetVerboseLevel(0);
-
     UImanager->ExecuteMacroFile(MacrosStartingFile.c_str());
+
+    if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
+        if(ParticleName == "neutron"){
+            runManager->SetUserInitialization(new G4TNeutronPhysicsList("NeutronHP"));
+
+        }else{
+            runManager->SetUserInitialization(new G4TUserPhysicsList());
+        }
+    }else{
+
+        if(ParticleName == "neutron"){
+            std::vector<std::string> RefPhyLists;
+            RefPhyLists.push_back("FTFP_BERT"); RefPhyLists.push_back("FTFP_BERT_ATL"); RefPhyLists.push_back("FTFP_BERT_TRV"); RefPhyLists.push_back("QGSP_FTFP_BERT"); RefPhyLists.push_back("QGSP_BERT"); RefPhyLists.push_back("QGSP_BERT_HP"); RefPhyLists.push_back("QGSP_BIC"); RefPhyLists.push_back("QGSP_BIC_AllHP"); RefPhyLists.push_back("INCLXX"); RefPhyLists.push_back("Shielding"); RefPhyLists.push_back("ShieldingLEND");
+            bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
+
+            if(isIn == false ){
+                ParticlePysics = "QGSP_BERT_HP";
+                G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
+            }
+
+            G4PhysListFactory* physFactory = new G4PhysListFactory();
+            G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(ParticlePysics);
+
+            physicsList->SetCutsWithDefault();
+            runManager->SetUserInitialization(physicsList);
+        }else{
+            ParticlePysics = "EMS3";
+            runManager->SetUserInitialization(new G4TUserPhysicsList());
+        }
+    }
 
     G4int par = ParamType ; // because ParamType is unset accidentally !!
     VolCon->setParamType(par);  // because ParamType is unset accidentally !!

@@ -34,7 +34,8 @@
 #ifndef G4TPhysicsMessenger_h
 #define G4TPhysicsMessenger_h 1
 
-class G4TUserPhysicsList;
+//class G4TUserPhysicsList;
+class G4TVolumeConstruction;
 
 class G4UIcommand;
 class G4UIdirectory;
@@ -53,7 +54,7 @@ class G4UIcmdWith3VectorAndUnit;
 class G4TPhysicsMessenger: public G4UImessenger
 {
 public:
-    G4TPhysicsMessenger(G4TUserPhysicsList*);
+    G4TPhysicsMessenger(G4TVolumeConstruction*);
 
     ~G4TPhysicsMessenger();
 
@@ -66,7 +67,7 @@ public:
 
 private:
 
-    G4TUserPhysicsList*  myUserPhysics;
+    G4TVolumeConstruction*  myUserPhysics;
 
 
     G4UIdirectory*				 physicsDataDir;

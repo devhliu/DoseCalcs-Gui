@@ -86,9 +86,11 @@ FORMS    += gui/mainwindow.ui \
 RESOURCES += \
     gui/Resources.qrc
 
-copypackages.commands = $(COPY_DIR) $$PWD/PackagesAndFiles $$OUT_PWD
-first.depends = $(first) copypackages
-export(first.depends)
-export(copypackages.commands)
-QMAKE_EXTRA_TARGETS += first copypackages
 
+if(!exists( $$OUT_PWD/PackagesAndFiles/Config) ) {
+    copypackages.commands = $(COPY_DIR) $$PWD/PackagesAndFiles $$OUT_PWD
+    first.depends = $(first) copypackages
+    export(first.depends)
+    export(copypackages.commands)
+    QMAKE_EXTRA_TARGETS += first copypackages
+}

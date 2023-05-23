@@ -932,7 +932,6 @@ void G4TResultCalculation::ReadSimulationData(){
             }
             else if(ParameterName =="/RunAndScoreData/setRadioTracerData"){// to evaluate the last 4 lines
                 
-
                 G4String filename, type;
 
                 LineString >> RadioTracerName ;

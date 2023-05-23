@@ -32,7 +32,8 @@
 //
 
 #include "G4TPhysicsMessenger.hh"
-#include "G4TUserPhysicsList.hh"
+//#include "G4TUserPhysicsList.hh"
+#include "G4TVolumeConstruction.hh"
 
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
@@ -49,7 +50,7 @@
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
 
-G4TPhysicsMessenger::G4TPhysicsMessenger(G4TUserPhysicsList* G4TPhysicsObj):myUserPhysics(G4TPhysicsObj){
+G4TPhysicsMessenger::G4TPhysicsMessenger(G4TVolumeConstruction* G4TPhysicsObj):myUserPhysics(G4TPhysicsObj){
     
     
     physicsDataDir = new G4UIdirectory("/PhysicsData/");

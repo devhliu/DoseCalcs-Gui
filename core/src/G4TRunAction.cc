@@ -166,7 +166,8 @@ G4TRunAction::~G4TRunAction(){
 
 void G4TRunAction::WriteMacroscopicCrossSection(){
 
-    const G4TUserPhysicsList* PH = static_cast<const G4TUserPhysicsList*> (G4RunManager::GetRunManager()->GetUserPhysicsList());
+    const G4TVolumeConstruction* PH = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    //const G4TUserPhysicsList* PH = static_cast<const G4TUserPhysicsList*> (G4RunManager::GetRunManager()->GetUserPhysicsList());
     if(PH->getGenerateCrossSectionTableFlag() == false) {
         GenerateCrossSectionGraph = "no";
         return;
@@ -869,8 +870,8 @@ void G4TRunAction::CreateSimulationDataFile(){
 
         file1 << "GeometrySymbol                   " << GeometrySymbol <<  "\n\n" ;
 
-        file1 << "CutsDistance                     " << Phy1->getCutsDistance() <<  "\n" ;
-        file1 << "CutsEnergy                       " << Phy1->getCutsEnergy() <<  "\n" ;
+        file1 << "CutsDistance                     " << CutsDistance <<  "\n" ;
+        file1 << "CutsEnergy                       " << CutsEnergy <<  "\n" ;
         file1 << "ParticleName                     " << NewRankSourceParticlesNamesValues[0] <<  "\n" ;
         file1 << "SourceType                       " << TConstruction2->getSourceType() <<  "\n" ;
         file1 << "SourceRegionName                 " << NewRankSourceRegionsNamesValues[0] <<  "\n" ;
