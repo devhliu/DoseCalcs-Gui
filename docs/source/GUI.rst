@@ -19,11 +19,11 @@ When the user download the DoseCalcs package and unpack it under Ubuntu, the Dos
 
 1. core: contains the source and header files of DoseCalcs-Core.
 
-2. gui: contains the source, header, and ".ui" files of the Qt5 C++ user interface. The input components (checkboxes, buttons, lists of choices, and input text fields) are supported by tooltips when the cursor passes through them in order to give the necessary information and message about how to fill the input component. Also, when filling in the input components, the entered values can be checked and verified before being used in simulation.
+2. gui: contains the source, header, ".ui", and resources files of the Qt5 C++ DoseCalcs-Gui. 
 
-3. PackagesAndFiles: It will be used to install the GUI prerequisite packages. Also, it contains the following:
+3. PackagesAndFiles: It will be used to held the installed prerequisite packages using the DoseCalcs-GUI. Also, it contains the following:
 
-- [Config] file, which is used by the DoseCalcs-GUI application to get and fill the default inputs such as the default [macros] file,  CMAKE "bin" directory path, Geant4 install "bin" directory path, ROOT install "bin" directory path, MPI install "bin" directory path,  DCMTK, install directory path, and DoseCalcs-Core directory path. An example of a [Config] file is given in (ConfigFile).
+- [Config] file, which is used by the DoseCalcs-GUI application to get and fill the default inputs such as the default [macros] file,  CMAKE "bin" directory path, Geant4 install "bin" directory path, ROOT install "bin" directory path, MPI install "bin" directory path, DCMTK install directory path, and DoseCalcs-Core source directory path. An example of a [Config] file is given in (ConfigFile).
 
 .. .. _ConfigFile:
 
@@ -33,7 +33,7 @@ When the user download the DoseCalcs package and unpack it under Ubuntu, the Dos
 
 - [PreDefinedGeometry] directory, which contains several [macros] files and the corresponding geometry files. These files are used when the user would use a geometry from this provided list, which covers all DoseCalcs geometry methods.
 
-The [ICRPDATA] and [PreDefinedGeometry] do not come with DoseCalcs-Gui package, they can be downloaded from (`Download ICRPDATA and PreDefinedGeometry Zip file. <https://drive.google.com/file/d/1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD/view?usp=sharing>`_) in the form of a zip file (DoseCalcsSupplementary.tar.xz), then unzipped in the PackagesAndFiles directory before building the DoseCalcs-Gui package.
+The [ICRPDATA] and [PreDefinedGeometry] do not come with DoseCalcs-Gui package, they can be downloaded from (`Download ICRPDATA and PreDefinedGeometry Zip file. <https://drive.google.com/file/d/1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD/view?usp=sharing>`_) in the form of a zip file (DoseCalcsSupplementary.tar.xz), then unzipped in the PackagesAndFiles directory before building the DoseCalcs-Gui package. Or you can just click on "Download DoseCalcs Supplementary Files" button in DoseCalcs-GUI Installations window, and the ICRPDATA and PreDefinedGeometry will be downloaded and added to PackagesAndFiles directory in the DoseCalcs-Gui build directory.
 
 Installing the DoseCalcs-GUI component
 -------------------------------------------
@@ -55,6 +55,18 @@ Package Requirements
 
    $ sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5charts5-dev qttools5-dev
 
+On CentOs, you can use "yum".
+
+* scp 
+
+If the user will install DoseCalcs on Rocks-Cluster, it should be noted that to get the result from the cluster to the personal computer by DoseCalcs, it is recommended to install scp:
+
+ .. code-block:: bash
+
+   $ sudo apt-get install -y openssh-client openssh-server
+
+On CentOs, use "sudo yum install -y openssh-clients openssh"
+
 .. The DoseCalcs application uses the Qt network library for automatic download of prerequisites, and the Qt Painter library for saving data to pdf files; this necessitates the full Qt5 installation by online or offline method.
 
 DoseCalcs-GUI Installation
@@ -69,14 +81,13 @@ Unpack the DoseCalcs source package "DoseCalcs.XX.tar.gz" to a location of your 
   $ cd /home/User/Desktop
   $ mkdir DoseCalcs_install
   $ cd /home/User/Desktop/DoseCalcs_install
-  $ /home/User/Desktop/Qt5/bin/qmake /home/User/Desktop/DoseCalcs.XX/DoseCalcs.pro
+  $ qmake /home/User/Desktop/DoseCalcs.XX/DoseCalcs.pro
 
-To run the DoseCalcs-GUI application, from terminal /home/User/Desktop/DoseCalcs_install, run:  
+Now, to run the DoseCalcs-GUI application, from terminal /home/User/Desktop/DoseCalcs_install, run:  
 
  .. code-block:: bash
 
    $ ./DoseCalcs
-
 
 Installation window and DoseCalcs-Core component Installing 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -86,17 +97,19 @@ After installing and running DoseCalcs-GUI, DoseCalcs-Core is ready for installa
 .. image:: /images/InsWin.png
 
 
-It can be opened from menu items or from the menubar. Follow the next steps:
+The "Installations" window can be opened from menu items or from the menubar. Follow the next steps:
 
-- Install the DoseCalcs-Core package requirement, either by choosing the directory paths of already installed packages or installing them by clicking on the "Download", "Generate", and "Install" buttons for each package and following the instructions;
+- Install the DoseCalcs-Core package requirement (the packages CMAKE, Prerequisites, and Geant4 are essentials) by clicking first on the "Installations" button, which shows the list of packages to be installed. For each package, click on "Generate", The installation commands will be generated automatically in the "Input" text field, and the user can modify and add other commands. Then, click on "Save" below the "Input" text field. Finally, the "Install" button will execute the installation commands saved for that package in "Terminal", Follow "Terminal" if an inout is required to continue the installation;
 
-- Choose the DoseCalcs-Core directory, check configurations and library paths (Geant4 and CMAKE are required; other packages such as DCMTK, MPI, and ROOT are used if you are selected for the building process) that will be considered in the building process; 
+- Choose the DoseCalcs-Core directory, which is in the DoseCalcs downloaded source directory (i.e., ../../DoseCalcs/core), check configurations (checkbox) and library paths (Geant4 and CMAKE are required; other packages such as DCMTK, MPI, and ROOT are used if the user checked their checkbox for the building process) that will be considered in the building process;
 
-- Click on the "Generate" button to generate the building CMAKE command. You can edit the text of the command shown in the "Input" field and save the generated command by clicking on "Save" below the "Input" text field.
+- Click on the "Generate" button to generate the building CMAKE command. You can edit the text of the commands shown in the "Input" field and save the generated command by clicking on "Save" below the "Input" text field.
 
-- Click on the "Build" button to build the DoseCalcs-Code, and the building process output will be shown in the "Terminal" field. 
+- Click on the "Build" button to build the DoseCalcs-Core, and the building process output will be shown in the "Terminal" field.
 
-- Don't forget to save the input paths used in the building process to the [Config] file by clicking on the "Save Data To Config File" button. Then you can use the same configuration each time you want to build DoseCalcs-Core.
+- Click on "Download DoseCalcs Supplementary Files" to download the ICRPDATA and PreDefinedGeometry files to the PackagesAndFiles directory. These files are used in simulation inputs if the user will use the pre-defined DoseCalcs geometries and ICRP radiation data files for the radiation source. 
+
+- Don't forget to click on "Check Paths" at the top of the "Installations" window to check what packages are installed and are known by DoseCalcs-Gui, which are the library paths used in the DoseCalcs-Core building process and also will be used in the simulation process. After checking, save these paths to the [Config] file (/../DoseCalcs_install/PackagesAndFiles/Config) by clicking on the "Save Data To Config File" button. Then you can use the same configuration each time you want to re-build DoseCalcs-Core.
 
 .. .. _InsWinForDownload: 
 
@@ -111,7 +124,6 @@ The [Config] file is manipulated by the installation window. The input fields ca
 
 .. image:: /images/ConfFileEdit.png
 
-
 If the current package directory paths in the [Config] file are not found, the default paths will be:
 cmake  : /usr/bin.
 geant4 : /usr/local/bin
@@ -120,9 +132,22 @@ dcmtk  : /usr/local/bin
 mpich  : /usr/local/bin
 default DoseCalcs source directory  : /usr/local/bin
 
-
 The user default path of the [macros] file can be set by clicking on the "Default DoseCalcs Inputs" button, choosing the file path, and clicking on the "Save Data To Config File" button. The default macros file path is: /usr/local/bin. Also, the user should check the latest package download link and update it in the [Config] file.
 
+
+After Installations
+---------------------
+
+Now we have installed DoseCalcs-GUI; also, the prerequired packages and DoseCalcs-Core are installed, and DoseCalcs supplementary files were downloaded. The directory tree in DoseCalcs_install should be:
+
+/../DoseCalcs_install/DoseCalcs : executable to be used to run DoseCalcs-GUI "./DoseCalcs".
+/../DoseCalcs_install/core_build : Here we found DoseCalcs-Core installed executables such as [simulate], [merge], and [analysis]; also, the DoseCalcs-Core results directory, and all generated macro files of simulations, etc.
+/../DoseCalcs_install/PackagesAndFiles : contains all installed package directories (Geant4_install, cmake_install, etc.), the [Config] file, and the downloaded files ICRPDATA and PreDefinedGeometry.
+
+The user can investigate the terminal to reach any of these directories and manipulate any file, especially the core_build that contains macro files of previous simulations, and the result files that will be saved from DoseCalcs by default in the directory "/../DoseCalcs/core_build/Results".
+
+
+In addition to this instructions, the input components in DoseCalcs-Gui (checkboxes, buttons, lists of choices, and input text fields) are supported by tooltips when the cursor passes through them in order to give the necessary information and message about how to fill that input component. Also, when filling in the input components, the entered values can be checked and verified before being used in simulation.
 
 Main window
 -------------------
@@ -335,6 +360,3 @@ It should be noted that this frame uses just the run, score, and ROOT Analysis i
 .. --------------
 
 .. To check the use of DoseCalcs-GUI, please follow the installation instructions, launch DoseCalcs-GUI, and read any of the [macros] files. An example is given in the video below.
-
-
-
