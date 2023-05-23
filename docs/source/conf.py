@@ -18,7 +18,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'DoseCalcsDocs'
+project = 'DoseCalcs'
 copyright = '2023, Tarik El Ghalbzouri'
 author = 'Tarik El Ghalbzouri'
 
