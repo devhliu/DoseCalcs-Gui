@@ -371,7 +371,7 @@ void PlotDialog::InitializeCustomPlotForStyledPlot(){
 void PlotDialog::create_graphs(QMap<double, double> E_Scor,QString GraphLeg, QString Graph_Title, int WhichGraph){
     
     if(E_Scor.isEmpty()){
-        ShowMessageBox(" Canno't find data of " + GraphLeg + " for graph: "+ Graph_Title);
+        QMessageBox::information(this, tr(""), " Canno't find data of " + GraphLeg + " for graph: "+ Graph_Title);
         return;
     }
 
@@ -672,12 +672,12 @@ void PlotDialog::setComboboxInputs()
     QuantityGeometryParticleSourceTargetsNames.clear();QuantityGeometryParticleSourceTargetsNames.empty();
 
     if(ResultTable.size() == 0){
-        ShowMessageBox("Canno't find result data to fill the components for particles, check the file path or file data");
+        QMessageBox::information(this, tr(""), "Canno't find result data to fill the components for particles, check the file path or file data");
         ui->plotMessageLabel->setText("Canno't save data from file, check the file path or file data");
     }
     else if(ResultQuantityGeometryRadioTracerSourceTargetValues.size() == 0 ){
 
-        ShowMessageBox("Canno't find result data to fill the components for radiotracers, check the file path or file data");
+        QMessageBox::information(this, tr(""), "Canno't find result data to fill the components for radiotracers, check the file path or file data");
         ui->plotMessageLabel->setText("Canno't save data from file, check the file path or file data");
     }
     else{
@@ -1778,7 +1778,7 @@ void PlotDialog::create_RatioData_For_ParticleAndRadiotracer_In_RatioPlot(){
         QTextStream(stdout) << " ----------------- 222 ------------------------------- \n";
 
         if(RationInYforXData.size() == 0 ){
-            ShowMessageBox("No ratio data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the reference file");
+            QMessageBox::information(this, tr(""), "No ratio data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the reference file");
             return;
         }
 
@@ -1828,7 +1828,7 @@ void PlotDialog::create_RatioData_For_ParticleAndRadiotracer_In_RatioPlot(){
         QTextStream(stdout) << " ----------------- 222 ------------------------------- \n";
 
         if(ResultsDataforRatioPlot.size() == 0){
-            ShowMessageBox("No ratio data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the reference file");
+            QMessageBox::information(this, tr(""), "No ratio data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the reference file");
             return;
         }
 
@@ -2090,7 +2090,7 @@ void PlotDialog::create_QuantitiesData_For_Radiotracer_In_Plot_Bars(){
     }
 
     if(ResultsDataforBarPlot.size() == 0){
-        ShowMessageBox("No data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the result file");
+        QMessageBox::information(this, tr(""), "No data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the result file");
         return;
     }
 
@@ -2564,7 +2564,7 @@ void PlotDialog::create_QuantitiesData_For_Radiotracer_In_Plot_Graphs(){
     }
 
     if(GraphNameXYValues.size() == 0){
-        ShowMessageBox("No data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the result file");
+        QMessageBox::information(this, tr(""), "No data for " + QuantitiesToScore +", geometry, radiotracer (or particle), source and/or target are registered for plot, check the result file");
         return;
     }
 
@@ -2765,7 +2765,7 @@ void PlotDialog::on_plotButtonGenerateRelErrGraphs_clicked()
 
     if(ui->checkBoxDiffForRadiotracerOr->isChecked()){
         if(ReferenceQuantityGeometryRadioTracerSourceTargetValues.size() == 0){
-            ShowMessageBox("Canno't save radiotracers reference 1 data from file, check the file path or file data");
+            QMessageBox::information(this, tr(""), "Canno't save radiotracers reference 1 data from file, check the file path or file data");
             return;
         }
 
@@ -2782,7 +2782,7 @@ void PlotDialog::on_plotButtonGenerateRelErrGraphs_clicked()
     else if ( !ui->checkBoxDiffForRadiotracerOr->isChecked() ){ // for particles
 
         if(ReferenceTable.size() == 0){
-            ShowMessageBox("Canno't save particles reference 1 data from file, check the file path or file data");
+            QMessageBox::information(this, tr(""), "Canno't save particles reference 1 data from file, check the file path or file data");
             return;
         }
 
@@ -2944,7 +2944,7 @@ void PlotDialog::on_PlotButtonReadReferenceFile_clicked()
 
     if(ReferenceTable.size() == 0){
 
-        ShowMessageBox("Canno't save reference 1 data from file, check the file path or file data");
+        QMessageBox::information(this, tr(""), "Canno't save reference 1 data from file, check the file path or file data");
         ui->plotMessageLabel->setText("Canno't save data from file, check the file path or file data of Reference");
     }else{
         ui->plotMessageLabel->setText("Now you can compare the result with reference, if reference graph not shown, please check if required data exists in reference file(The chosen organs should be listed in source and target list in file)");
@@ -2964,7 +2964,7 @@ void PlotDialog::on_PlotButtonReadReferenceFile_2_clicked()
     }
     if(ReferenceFilePath_2.size() == 0){
 
-        ShowMessageBox("Canno't save reference 2 data from file, check the file path or file data");
+        QMessageBox::information(this, tr(""), "Canno't save reference 2 data from file, check the file path or file data");
 
         ui->plotMessageLabel->setText("Canno't save data from file, check the file path or file data of Reference_2");
     }else{
@@ -3019,7 +3019,7 @@ void PlotDialog::on_PlotButtonReadSimulationInpFile_clicked()
 
     if(AnalysisInputMap.size() == 0){
 
-        ShowMessageBox("Canno't save simulation data from macros file, check the file path or macros data");
+        QMessageBox::information(this, tr(""), "Canno't save simulation data from macros file, check the file path or macros data");
 
         ui->plotMessageLabel->setText("Canno't save Analysis input from file, check the file path or file data of Reference");
     }
@@ -3114,7 +3114,7 @@ void PlotDialog::on_PlotButtonReadCrossSectionFile_clicked()
     
     if(ParticleMaterialProcessEnergySigmaMap.size() == 0){
 
-        ShowMessageBox("Canno't save cross section data from file, check the file path or file data");
+        QMessageBox::information(this, tr(""), "Canno't save cross section data from file, check the file path or file data");
 
         ui->plotMessageLabel->setText("Canno't save cross section data from file, check the file path or file data of Reference");
     }else{
@@ -5988,7 +5988,7 @@ void PlotDialog::on_pushButtonOpenInRoot_clicked()
     }else{
 
 
-        ShowMessageBox("Canno't find ROOT file and/or analysis executable, check the files paths.");
+        QMessageBox::information(this, tr(""), "Canno't find ROOT file and/or analysis executable, check the files paths.");
 
 
         showResultsOutput("Cannot find the analysis executable \""+ DoseCalcs_build_dir_path+"/"+GraphExecutableName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
@@ -6079,15 +6079,6 @@ void PlotDialog::AddAllCombinationBtnSlot(){
     }
 }
 
-
-void PlotDialog::ShowMessageBox(QString message ){
-
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("");
-    msgBox.setText(message);
-    if(msgBox.exec() == QDialog::Accepted){}
-    else{}
-}
 
 void PlotDialog::closeEvent(QCloseEvent *event)  // show prompt when user wants to close app
 {

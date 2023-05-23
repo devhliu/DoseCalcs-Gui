@@ -12,8 +12,7 @@
 #include <QScrollBar>
 
 //! [0]
-CustomTextEdit::CustomTextEdit(QWidget *parent)
-    : QTextEdit(parent)
+CustomTextEdit::CustomTextEdit(QWidget *parent): QPlainTextEdit(parent)
 {
     //setPlainText(tr("This CustomTextEdit provides autocompletions for words that have more than" " 3 characters. You can trigger autocompletion using ") +
     //              QKeySequence("Ctrl+E").toString(QKeySequence::NativeText));
@@ -84,7 +83,7 @@ void CustomTextEdit::focusInEvent(QFocusEvent *e)
 {
     if (c)
         c->setWidget(this);
-    QTextEdit::focusInEvent(e);
+    QPlainTextEdit::focusInEvent(e);
 }
 //! [6]
 
@@ -108,7 +107,7 @@ void CustomTextEdit::keyPressEvent(QKeyEvent *e)
 
     const bool isShortcut = (e->modifiers().testFlag(Qt::ControlModifier) && e->key() == Qt::Key_E); // CTRL+E
     if (!c || !isShortcut) // do not process the shortcut when we have a completer
-        QTextEdit::keyPressEvent(e);
+        QPlainTextEdit::keyPressEvent(e);
     //! [7]
 
     //! [8]

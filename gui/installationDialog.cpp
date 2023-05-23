@@ -30,6 +30,7 @@ extern QString DoseCalcsExecutingFileName;
 
 extern QString GUIConfigFileName;
 extern QString GUIPackagesAndFilesDirPath;
+extern QString GUIPackagesAndFilesDirName;
 
 extern QString CENTOS_ROCKS_CLUSTER ;
 extern QString MPI_USE ;
@@ -46,7 +47,7 @@ extern int NumberOfCPUCores ;
 
 extern QString OSNameVersion ;
 
-extern bool TestPackagesPathsBeforToRun(QString text);
+extern QString TestPackagesPathsBeforToRun();
 
 InstallationDialog::InstallationDialog(QWidget *parent) : QDialog(parent), ui(new Ui::InstallationDialog)
 {
@@ -93,6 +94,7 @@ InstallationDialog::InstallationDialog(QWidget *parent) : QDialog(parent), ui(ne
     MPI_Lib_dir_path = "";
     
     Geant4_Url_String = "https/....";
+    //Supplementary_Url_String = "https/....";
     MPI_Url_String = "https/....";
     Root_Url_String = "https/....";
     DCMTK_Url_String = "https/....";
@@ -100,7 +102,8 @@ InstallationDialog::InstallationDialog(QWidget *parent) : QDialog(parent), ui(ne
     
     // first read the paths and Urls
     getConfigurationDataForInstallation();
-    
+
+    Supplementary_sh_path = GUIPackagesAndFilesDirPath+"/DownloadSupplementary_installer.sh";
     Prequests_sh_path = GUIPackagesAndFilesDirPath+"/Prerequesite_installer.sh";
     Geant4_sh_path  = GUIPackagesAndFilesDirPath+"/geant4_installer.sh";
     MPI_sh_path  = GUIPackagesAndFilesDirPath+"/MPI_installer.sh";
@@ -157,6 +160,7 @@ void InstallationDialog::getConfigurationDataForInstallation(){
     CMAKE_Url_String = lines["CMAKE_DOWNLOAD_URL"] ;
     Xerces_Url_String = lines["XERCES_DOWNLOAD_URL"] ;
     Geant4_Url_String = lines["GEANT4_DOWNLOAD_URL"] ;
+    //Supplementary_Url_String = lines["SUPPLEMENTARY_DOWNLOAD_URL"] ;
     MPI_Url_String = lines["MPI_DOWNLOAD_URL"] ;
     Root_Url_String = lines["ROOT_DOWNLOAD_URL"] ;
     DCMTK_Url_String = lines["DCMTK_DOWNLOAD_URL"] ;
@@ -215,9 +219,10 @@ void InstallationDialog::create_Xerces_and_PrerequestGeant4Install_sh_file(){
                 "sudo apt-get install -y build-essential  #Installation of build-essential \n"
                 "sudo apt-get install -y libxaw7-dev libxaw7  #Installation of X11 Xmu library and/or headers \n"
                 "//sudo apt-get install -y qt5-default   #Installation of Qt User Interface and Visualization \n"
-                "sudo apt-get install -y mesa-common-dev ; sudo apt-get install libglu1-mesa-dev -y  #Installation of MesaGL headers and libraries \n"
-                "sudo apt-get install -y libxerces-c-dev ; sudo apt-get install libglu1-mesa-dev -y  #Installation of MesaGL headers and libraries \n"
+                "sudo apt-get install -y mesa-common-dev ; sudo apt-get install -y libglu1-mesa-dev  #Installation of MesaGL headers and libraries \n"
+                "sudo apt-get install -y libxerces-c-dev ; # xerces-c for GDML headers and libraries \n"
                 "sudo apt-get install -y libexpat1-dev ; sudo apt-get install libglu1-mesa-dev -y  #Installation of MesaGL headers and libraries \n"
+                "sudo apt-get install -y wget \n"
 
                 "\n# -------- CMAKE installation commands \n\n"
 
@@ -236,12 +241,15 @@ void InstallationDialog::create_Xerces_and_PrerequestGeant4Install_sh_file(){
     {
         Prequest_text_shFile =
 
+                "\n# -------- Prerequisites installation commands \n\n"
+
                 "sudo yum install -y build-essential  #Installation of build-essential \n"
                 "sudo yum install -y libxaw7-dev libxaw7  #Installation of X11 Xmu library and/or headers \n"
                 "//sudo yum install -y qt5-default   #Installation of Qt User Interface and Visualization \n"
-                "sudo yum install -y mesa-common-dev ; sudo apt-get install libglu1-mesa-dev -y  #Installation of MesaGL headers and libraries \n"
-                "sudo yum install -y libxerces-c-dev ; sudo apt-get install libglu1-mesa-dev -y  #Installation of MesaGL headers and libraries \n"
-                "sudo yum install -y libexpat1-dev ; sudo apt-get install libglu1-mesa-dev -y  #Installation of MesaGL headers and libraries \n"
+                "sudo yum install -y mesa-common-dev ; sudo yum install -y libglu1-mesa-dev  #Installation of MesaGL headers and libraries \n"
+                "sudo yum install -y libxerces-c-dev ; \n"
+                "sudo yum install -y libexpat1-dev \n"
+                "sudo yum install -y wget \n"
 
                 "\n# -------- CMAKE installation commands \n\n"
 
@@ -845,14 +853,7 @@ void InstallationDialog::on_installCodeGeant4Button_clicked()
 
 void InstallationDialog::on_pushButtonUpdatePaths_clicked()
 {
-    TestPackagesPathsBeforToRun("");
-}
-void InstallationDialog::ShowMessageBox(QString message ){
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("");
-    msgBox.setText(message);
-    if(msgBox.exec() == QDialog::Accepted){}
-    else{}
+    QMessageBox::information(this, tr(""), TestPackagesPathsBeforToRun());
 }
 
 
@@ -860,7 +861,7 @@ void InstallationDialog::ShowMessageBox(QString message ){
 void InstallationDialog::on_openAndInstallPrerequesiteBtn_clicked()
 {
     EditFlag = 1;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(Prequests_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(Prequests_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"CMAKE and Prerequisites installer");
 
@@ -873,7 +874,7 @@ void InstallationDialog::on_openAndInstallGeant4Btn_clicked()
 {
     
     EditFlag = 3;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(Geant4_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(Geant4_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"GEANT4 installer");
 
@@ -886,7 +887,7 @@ void InstallationDialog::on_openAndInstallMPIBtn_clicked()
 {
 
     EditFlag = 4;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(MPI_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(MPI_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"MPI installer");
 
@@ -899,7 +900,7 @@ void InstallationDialog::on_openAndInstallROOTBtn_clicked()
 {
 
     EditFlag = 5;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(Root_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(Root_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"ROOT installer");
 
@@ -912,7 +913,7 @@ void InstallationDialog::on_openAndInstallDCMTKBtn_clicked()
 {
 
     EditFlag = 6;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(DCMTK_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(DCMTK_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"DCMTK installer");
 
@@ -925,7 +926,7 @@ void InstallationDialog::on_openAndInstallAPPBtn_clicked()
 {
 
     EditFlag = 7;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(App_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(App_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"DoseCalcs Builder");
 
@@ -1015,15 +1016,15 @@ void InstallationDialog::showResultsOutput(QString text , int level){
     }
     if(level == 1){
         QTextStream(stdout) << " ---------------------> " << text << "\n";
-        ui->installationDialogTextOutput->append(" ---------------------> "+text);
+        ui->installationDialogTextOutput->appendPlainText(" ---------------------> "+text);
     }
     if(level == 4){
         QTextStream(stdout) << text << "\n";
-        ui->installationDialogTextOutput->append("\n"+text);
+        ui->installationDialogTextOutput->appendPlainText("\n"+text);
     }
     if(level == 3){
         QTextStream(stdout) << "!!!!!!!!!!!!!!!!! " << text << "\n";
-        ui->installationDialogTextOutput->append("!!!!!!!!!!!!!!!!! "+text);
+        ui->installationDialogTextOutput->appendPlainText("!!!!!!!!!!!!!!!!! "+text);
     }
 }
 
@@ -1089,7 +1090,7 @@ void InstallationDialog::on_pushButtonGenerateInstallerFoAll_clicked()
     
     filesManagerObj->WriteTextToFile(AllPackagesInstall_sh_path, InstallAll_text_shFile);
     EditFlag = 8;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(AllPackagesInstall_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(AllPackagesInstall_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"All packages installer");
 }
@@ -1122,7 +1123,7 @@ void InstallationDialog::on_pushButtonInstallAllPrerequisites_clicked()
 void InstallationDialog::on_pushButtonLoadForAll_clicked()
 {
     EditFlag = 8;
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(AllPackagesInstall_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(AllPackagesInstall_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1," All packages installer");
 }
@@ -1137,7 +1138,7 @@ void InstallationDialog::on_EditPathsFilepushButton_clicked()
 {
     EditFlag = 9;
 
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(GUIPackagesAndFilesDirPath+"/"+GUIConfigFileName));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(GUIPackagesAndFilesDirPath+"/"+GUIConfigFileName));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,GUIConfigFileName);
 
@@ -1175,7 +1176,8 @@ void InstallationDialog::on_pushButton_7_clicked()
             "MPI_DOWNLOAD_URL       "+ MPI_Url_String +"\n"+
             "ROOT_DOWNLOAD_URL      "+ Root_Url_String +"\n"+
             "DCMTK_DOWNLOAD_URL     "+ DCMTK_Url_String +"\n\n"+
-            
+            //"SUPPLEMENTARY_DOWNLOAD_URL    "+ Supplementary_Url_String +"\n"+
+
 
             "VERBOSE_USE            "+ VERBOSE_USE +"\n"+
             "GDML_USE               "+ GDML_USE +"\n"+
@@ -1380,7 +1382,7 @@ void InstallationDialog::on_pushButtonGenerate_clicked()
 
     create_Xerces_and_PrerequestGeant4Install_sh_file();
     filesManagerObj->WriteTextToFile(Prequests_sh_path,Prequest_text_shFile);
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(Prequests_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(Prequests_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"CMAKE and Prerequisites installer");
 }
@@ -1390,7 +1392,7 @@ void InstallationDialog::on_pushButtonGEANTGenerate_clicked()
 
     create_Geant4Install_sh_file();
     filesManagerObj->WriteTextToFile(Geant4_sh_path,Geant4_text_shFile);
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(Geant4_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(Geant4_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"GEANT4 installer");
 }
@@ -1400,7 +1402,7 @@ void InstallationDialog::on_pushButtonMPIGenerate_clicked()
 
     create_MPIInstall_sh_file();
     filesManagerObj->WriteTextToFile(MPI_sh_path,MPI_text_shFile);
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(MPI_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(MPI_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"MPI installer");
 }
@@ -1410,7 +1412,7 @@ void InstallationDialog::on_pushButtonROOTGenerate_clicked()
 
     create_RootInstall_sh_file();
     filesManagerObj->WriteTextToFile(Root_sh_path,Root_text_shFile);
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(Root_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(Root_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"ROOT installer");
 }
@@ -1420,7 +1422,7 @@ void InstallationDialog::on_pushButtonDCMTKGenerate_clicked()
 
     create_DCMTK_Install_sh_file();
     filesManagerObj->WriteTextToFile(DCMTK_sh_path,DCMTK_text_shFile);
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(DCMTK_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(DCMTK_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"DCMTK installer");
 }
@@ -1430,7 +1432,7 @@ void InstallationDialog::on_pushButtonGenerateDoseCalcsBuilder_clicked()
 
     create_AppInstall_sh_file();
     filesManagerObj->WriteTextToFile(App_sh_path,App_text_shFile);
-    ui->textEditInput->setText(filesManagerObj->ReadTextFromFileInOneString(App_sh_path));
+    ui->textEditInput->setPlainText(filesManagerObj->ReadTextFromFileInOneString(App_sh_path));
     ui->tabWidget->setCurrentIndex(1);
     ui->tabWidget->setTabText(1,"DoseCalcs Builder");
 }
@@ -1481,4 +1483,44 @@ void InstallationDialog::keyPressEvent(QKeyEvent *e) {
 }
 
 
+
+
+void InstallationDialog::on_pushButtonOpenPackagesFilesDir_clicked()
+{
+    if(QFile::exists(GUIPackagesAndFilesDirPath)){
+        QString command = GUIPackagesAndFilesDirPath;
+        QProcess process;
+        QStringList qsl = {command};
+        process.startDetached("nautilus", qsl);
+    }else{
+
+        QString nn = "The directory "+ GUIPackagesAndFilesDirName + " will be created";
+        if(QMessageBox::Yes == QMessageBox::question(this, tr("Directory not found !!"), nn)){
+            QDir(QDir::currentPath()).mkdir("GUIPackagesAndFilesDirName");
+        }else{
+
+        }
+    }
+}
+void InstallationDialog::on_pushButtonDownloadSupplement_clicked()
+{
+    if(QMessageBox::Yes == QMessageBox::question(this, tr("DoseCalcs Supplementaries installation"), "When you click on \"Yes\", the .tar.xz file containing the ICRPDATA and PreDefinedGeometry directories will be downloaded from Google Drive. Then, it will be unziped under the directory "+
+                                                 GUIPackagesAndFilesDirPath+", the download and unzip will be done on terminal. After finishing, please check the files in "+ GUIPackagesAndFilesDirName +" directory.")){
+
+        QString text_shFile =
+                "cd "+GUIPackagesAndFilesDirPath+"\n"+
+                "wget --load-cookies /tmp/cookies.txt \"https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\\1\\n/p')&id=1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD\" -O DoseCalcsSupplementaries.tar.xz && rm -rf /tmp/cookies.txt \n"+
+                //"wget "+ Supplementary_Url_String +"\n"+
+                "tar xvf "+ GUIPackagesAndFilesDirPath+"/DoseCalcsSupplementaries.tar.xz"+ +"\n"
+                ;
+        filesManagerObj->WriteTextToFile(Supplementary_sh_path,text_shFile);
+
+        showResultsOutput("DoseCalcs Supplementary Download shell file : " + Supplementary_sh_path + " is created." , 0);
+        execShProcess( Supplementary_sh_path);
+
+    }else{
+
+    }
+
+}
 

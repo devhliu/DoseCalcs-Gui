@@ -21,7 +21,6 @@ class PlotDialog : public QDialog
 
 public:
 
-    void ShowMessageBox(QString);
     void keyPressEvent(QKeyEvent*);
     explicit PlotDialog(QWidget *parent = 0);
     ~PlotDialog();

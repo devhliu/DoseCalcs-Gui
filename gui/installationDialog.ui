@@ -83,7 +83,7 @@
         <x>0</x>
         <y>0</y>
         <width>1090</width>
-        <height>663</height>
+        <height>694</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -203,84 +203,128 @@
           <string>Configuration Variables</string>
          </property>
          <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
+          <item row="0" column="1">
+           <widget class="QFrame" name="frame_10">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="pushButtonDownloadSupplement">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;When you click on &amp;quot;Yes&amp;quot;, the .tar.xz file containing the ICRPDATA and PreDefinedGeometry directories will be downloaded from GoogleDrive. Then, it will be unziped under the directory &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; color:#ce5c00;&quot;&gt;PackagesAndFiles, &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;the download and unzip will be done on terminal. After finishing, please check the files in &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; color:#ce5c00;&quot;&gt;PackagesAndFiles&lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt; directory&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Download DoseCalcs Supplementary Files </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonOpenPackagesFilesDir">
+               <property name="text">
+                <string>Open Files and Installation Packages Directory</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
            <widget class="QPushButton" name="pushButton_8">
             <property name="text">
-             <string>CMAKE Install Dir</string>
+             <string>CMAKE Install Direrctory  </string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <widget class="QLineEdit" name="lineEdit_13">
             <property name="placeholderText">
              <string>/home/.../cmake/bin</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QPushButton" name="pushButton">
             <property name="text">
-             <string>GEANT4 Install Dir</string>
+             <string>GEANT4 Install Direrctory</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QLineEdit" name="lineEdit">
             <property name="placeholderText">
              <string>/home/.../geant4/bin</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QPushButton" name="pushButton_2">
             <property name="text">
-             <string>MPI Install Dir</string>
+             <string>MPI Install Direrctory         </string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="1">
            <widget class="QLineEdit" name="lineEdit_2">
             <property name="placeholderText">
              <string>/home/.../mpich/install/bin</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QPushButton" name="pushButton_3">
             <property name="text">
-             <string>ROOT Install Dir</string>
+             <string>ROOT Install Direrctory     </string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QLineEdit" name="lineEdit_3">
             <property name="placeholderText">
              <string>/home/.../root/bin</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QPushButton" name="pushButton_4">
             <property name="text">
-             <string>DCMTK Install Dir</string>
+             <string>DCMTK Install Direrctory  </string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <widget class="QLineEdit" name="lineEdit_4">
             <property name="placeholderText">
              <string>/home/.../dcmtk/Install/usr/local/lib/cmake/dcmtk</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QPushButton" name="pushButton_6">
             <property name="text">
              <string>Default DoseCalcs Inputs</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="6" column="1">
            <widget class="QLineEdit" name="lineEdit_11">
             <property name="placeholderText">
              <string>/home/.../macros.mac</string>
@@ -335,31 +379,24 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="3" column="1" colspan="3">
-             <widget class="QFrame" name="frame_3">
+            <item row="4" column="1" colspan="2">
+             <widget class="QFrame" name="frame_4">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
               <property name="frameShadow">
                <enum>QFrame::Raised</enum>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
-                <widget class="QCheckBox" name="checkBoxInstallMPI">
+                <widget class="QCheckBox" name="checkBoxInstallDCMTK">
                  <property name="text">
-                  <string/>
+                  <string>DCMTK Installation                                      </string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="DownloadMPIButton">
-                 <property name="text">
-                  <string>Download MPI zip       </string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButtonMPIGenerate">
+                <widget class="QPushButton" name="pushButtonDCMTKGenerate">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a shell file that contains commands for installation. You can edit and save the file to be used in the installation process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -369,7 +406,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="openAndInstallMPIBtn">
+                <widget class="QPushButton" name="openAndInstallDCMTKBtn">
                  <property name="toolTip">
                   <string>Load an already created shell file that contains commands for installation. You can edit and save the file to be used in the installation process.</string>
                  </property>
@@ -379,7 +416,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="InstallMPIButton">
+                <widget class="QPushButton" name="InstallDCMTKButton">
                  <property name="toolTip">
                   <string>You will be asked to add a zip file that will be unzipped automatically (you should wait!) and then choose the unzipped source directory of the package to be installed. If you already generated an installation file, ignore the file dialog inputs. The Installation directory will be PackagesAndFiles.</string>
                  </property>
@@ -389,16 +426,72 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="MPIDirlineEdit">
+                <widget class="QLineEdit" name="DCMTKDirlineEdit">
                  <property name="placeholderText">
-                  <string>MPI_installer.sh </string>
+                  <string>DCMTK_installer.sh </string>
                  </property>
                 </widget>
                </item>
               </layout>
              </widget>
             </item>
-            <item row="5" column="1" colspan="3">
+            <item row="1" column="1" colspan="2">
+             <widget class="QFrame" name="frame">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QCheckBox" name="checkBoxInstallXerces">
+                 <property name="text">
+                  <string>CMAKE and Prerequisites Installations</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButtonGenerate">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a shell file that contains commands for installation. You can edit and save the file to be used in the installation process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Generate</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="openAndInstallPrerequesiteBtn">
+                 <property name="toolTip">
+                  <string>Load an already created shell file that contains commands for installation. You can edit and save the file to be used in the installation process.</string>
+                 </property>
+                 <property name="text">
+                  <string>Load</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="installXercesButton">
+                 <property name="toolTip">
+                  <string>You will be asked to add a zip file that will be unzipped automatically (you should wait!) and then choose the unzipped source directory of the package to be installed. If you already generated an installation file, ignore the file dialog inputs. The Installation directory will be PackagesAndFiles.</string>
+                 </property>
+                 <property name="text">
+                  <string>Install</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="XercesDirlineEdit">
+                 <property name="placeholderText">
+                  <string>Prerequisite_installer.sh </string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="5" column="1" colspan="2">
              <widget class="QFrame" name="frame_5">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -410,14 +503,7 @@
                <item>
                 <widget class="QCheckBox" name="checkBoxInstallROOT">
                  <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="DownloadROOTButton">
-                 <property name="text">
-                  <string>Download ROOT zip   </string>
+                  <string>ROOT Installation                                         </string>
                  </property>
                 </widget>
                </item>
@@ -471,7 +557,7 @@
               </layout>
              </widget>
             </item>
-            <item row="2" column="1" colspan="3">
+            <item row="2" column="1" colspan="2">
              <widget class="QFrame" name="frame_2">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -483,14 +569,7 @@
                <item>
                 <widget class="QCheckBox" name="checkBoxInstallGeant4">
                  <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="DownloadGeant4Button">
-                 <property name="text">
-                  <string>Download Geant4 zip</string>
+                  <string>Geant4 Installation                                      </string>
                  </property>
                 </widget>
                </item>
@@ -534,31 +613,24 @@
               </layout>
              </widget>
             </item>
-            <item row="1" column="1" colspan="3">
-             <widget class="QFrame" name="frame">
+            <item row="3" column="1" colspan="2">
+             <widget class="QFrame" name="frame_3">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
               <property name="frameShadow">
                <enum>QFrame::Raised</enum>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
-                <widget class="QCheckBox" name="checkBoxInstallXerces">
+                <widget class="QCheckBox" name="checkBoxInstallMPI">
                  <property name="text">
-                  <string/>
+                  <string>MPI Installation                                             </string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>CMAKE and Prerequisites Installations</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButtonGenerate">
+                <widget class="QPushButton" name="pushButtonMPIGenerate">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a shell file that contains commands for installation. You can edit and save the file to be used in the installation process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -568,7 +640,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="openAndInstallPrerequesiteBtn">
+                <widget class="QPushButton" name="openAndInstallMPIBtn">
                  <property name="toolTip">
                   <string>Load an already created shell file that contains commands for installation. You can edit and save the file to be used in the installation process.</string>
                  </property>
@@ -578,7 +650,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="installXercesButton">
+                <widget class="QPushButton" name="InstallMPIButton">
                  <property name="toolTip">
                   <string>You will be asked to add a zip file that will be unzipped automatically (you should wait!) and then choose the unzipped source directory of the package to be installed. If you already generated an installation file, ignore the file dialog inputs. The Installation directory will be PackagesAndFiles.</string>
                  </property>
@@ -588,72 +660,9 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="XercesDirlineEdit">
+                <widget class="QLineEdit" name="MPIDirlineEdit">
                  <property name="placeholderText">
-                  <string>Prerequisite_installer.sh </string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="1" colspan="3">
-             <widget class="QFrame" name="frame_4">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <item>
-                <widget class="QCheckBox" name="checkBoxInstallDCMTK">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="DownloadDCMTKButton">
-                 <property name="text">
-                  <string>Download DCMTK zip</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButtonDCMTKGenerate">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a shell file that contains commands for installation. You can edit and save the file to be used in the installation process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Generate</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="openAndInstallDCMTKBtn">
-                 <property name="toolTip">
-                  <string>Load an already created shell file that contains commands for installation. You can edit and save the file to be used in the installation process.</string>
-                 </property>
-                 <property name="text">
-                  <string>Load</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="InstallDCMTKButton">
-                 <property name="toolTip">
-                  <string>You will be asked to add a zip file that will be unzipped automatically (you should wait!) and then choose the unzipped source directory of the package to be installed. If you already generated an installation file, ignore the file dialog inputs. The Installation directory will be PackagesAndFiles.</string>
-                 </property>
-                 <property name="text">
-                  <string>Install</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="DCMTKDirlineEdit">
-                 <property name="placeholderText">
-                  <string>DCMTK_installer.sh </string>
+                  <string>MPI_installer.sh </string>
                  </property>
                 </widget>
                </item>
@@ -735,7 +744,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
@@ -759,11 +768,7 @@
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
-           <widget class="QTextEdit" name="installationDialogTextOutput">
-            <property name="lineWrapMode">
-             <enum>QTextEdit::NoWrap</enum>
-            </property>
-           </widget>
+           <widget class="QPlainTextEdit" name="installationDialogTextOutput"/>
           </item>
          </layout>
         </widget>

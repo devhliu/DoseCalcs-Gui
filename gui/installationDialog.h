@@ -23,7 +23,6 @@ public:
     explicit InstallationDialog(QWidget *parent = 0);
     ~InstallationDialog();
 
-    void ShowMessageBox(QString );
     void keyPressEvent(QKeyEvent*);
     void closeEvent(QCloseEvent *event);  // show prompt when user wants to close app
     void getConfigurationDataForInstallation();
@@ -86,6 +85,7 @@ public:
     QString DCMTK_sh_path ;
     QString Root_sh_path ;
     QString App_sh_path ;
+    QString Supplementary_sh_path ;
     QString Prequests_sh_path ;
     QString AllPackagesInstall_sh_path;
 
@@ -96,6 +96,7 @@ public:
     QString chosen_Dir;
 
     QString Geant4_Url_String ;
+    //QString Supplementary_Url_String ;
     QString MPI_Url_String;
     QString CMAKE_Url_String;
     QString Xerces_Url_String;
@@ -197,6 +198,10 @@ private slots:
     void on_ClearTerButton_clicked();
 
     void on_pushButtonUpdatePaths_clicked();
+
+    void on_pushButtonOpenPackagesFilesDir_clicked();
+
+    void on_pushButtonDownloadSupplement_clicked();
 
 private:
     Highlighter* highlighter ;

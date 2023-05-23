@@ -4,14 +4,14 @@
 #ifndef CUSTOMTEXTEDIT_H
 #define CUSTOMTEXTEDIT_H
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 QT_BEGIN_NAMESPACE
 class QCompleter;
 QT_END_NAMESPACE
 
 //! [0]
-class CustomTextEdit : public QTextEdit
+class CustomTextEdit : public QPlainTextEdit
 {
     Q_OBJECT
 

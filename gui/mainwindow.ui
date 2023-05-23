@@ -1310,66 +1310,17 @@
                  <property name="rightMargin">
                   <number>72</number>
                  </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="VariableToScoreLabel">
-                   <property name="text">
-                    <string>Quantities To Score</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_10">
-                   <property name="text">
-                    <string>Quantities Units</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLineEdit" name="AnalysisLineEditVarToScore">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add quantities to score: AE (Absorbed Energy), AD (Absorbed Dose), AF(Absorbed Fraction), SAF(Specific Absorbed Fraction), S(S-Values), H(Equivalent Dose), E(Effective Dose), DR(Dose Ratio).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="radiationEnergyFactor">
                    <property name="placeholderText">
-                    <string>The quantities names must be separated by space</string>
+                    <string>Particle1 Energy1 WR1 Particle2 Energy2 WR2 ...</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="AnalysisLineEdit_ScorOrg">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add source volume names where the scored quantities will be performed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="placeholderText">
-                    <string>source Brain Liver Kidneys:LeftKidney:RightKidney target Brain Liver Kidneys:LeftKidney:RightKidney</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QLineEdit" name="TissueFactorLineEdit">
-                   <property name="placeholderText">
-                    <string>Region1 WT1  Region2 WT2 ...</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_11">
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_9">
                    <property name="text">
-                    <string>Radiation Factors</string>
+                    <string>Radiotracer Biokinetic</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1386,13 +1337,20 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_9">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="VariableToScoreLabel">
                    <property name="text">
-                    <string>Radiotracer Biokinetic</string>
+                    <string>Quantities To Score</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="TissueFactorLineEdit">
+                   <property name="placeholderText">
+                    <string>Region1 WT1  Region2 WT2 ...</string>
                    </property>
                   </widget>
                  </item>
@@ -1469,10 +1427,49 @@
                    </layout>
                   </widget>
                  </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="radiationEnergyFactor">
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Radiation Factors</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>Quantities Units</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="AnalysisLineEditVarToScore">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add quantities to score: AE (Absorbed Energy), AD (Absorbed Dose), AF(Absorbed Fraction), SAF(Specific Absorbed Fraction), S(S-Values), H(Equivalent Dose), E(Effective Dose), DR(Dose Ratio).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="statusTip">
+                    <string/>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
                    <property name="placeholderText">
-                    <string>Particle1 Energy1 WR1 Particle2 Energy2 WR2 ...</string>
+                    <string>The quantities names must be separated by space</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>Tissue Factors</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -1611,13 +1608,16 @@
                    </layout>
                   </widget>
                  </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_15">
-                   <property name="text">
-                    <string>Tissue Factors</string>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="AnalysisLineEdit_ScorOrg">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add source volume names where the scored quantities will be performed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   <property name="statusTip">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>source Brain Liver Kidneys:LeftKidney:RightKidney target Brain Liver Kidneys:LeftKidney:RightKidney</string>
                    </property>
                   </widget>
                  </item>
@@ -2473,7 +2473,7 @@
              </size>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <property name="movable">
              <bool>false</bool>
@@ -2535,18 +2535,12 @@
              </attribute>
              <layout class="QGridLayout" name="gridLayout_7">
               <item row="0" column="1">
-               <widget class="QTextEdit" name="outputTextConsole">
+               <widget class="QPlainTextEdit" name="outputTextConsole">
                 <property name="horizontalScrollBarPolicy">
                  <enum>Qt::ScrollBarAlwaysOn</enum>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-                </property>
-                <property name="lineWrapMode">
-                 <enum>QTextEdit::NoWrap</enum>
-                </property>
-                <property name="lineWrapColumnOrWidth">
-                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -2594,6 +2588,7 @@
     </property>
     <addaction name="actionHow_To_Use"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionSend_Results"/>
    </widget>
    <widget class="QMenu" name="menuBuild">
     <property name="title">
@@ -2662,7 +2657,7 @@
      <normaloff>:/icons/res/open-file-icon.png</normaloff>:/icons/res/open-file-icon.png</iconset>
    </property>
    <property name="text">
-    <string>Open Command File</string>
+    <string>Open Inputs File</string>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open a DoseCalcs macro file that contains the DoseCalcs commands to fill in the GUI components.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -2683,7 +2678,7 @@
      <normaloff>:/icons/res/Save-icon.png</normaloff>:/icons/res/Save-icon.png</iconset>
    </property>
    <property name="text">
-    <string>Save Command Data</string>
+    <string>Save inputs</string>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the GUI inputs to a macro file. If no file is chosen, the opened macros file or the default file will be used to save GUI component data in macro commands format. If you don't want to save the data, close the file editor.  &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -2818,7 +2813,7 @@
      <normaloff>:/icons/res/Clear-icon.png</normaloff>:/icons/res/Clear-icon.png</iconset>
    </property>
    <property name="text">
-    <string>Clear Output</string>
+    <string>Clear Output or Terminal</string>
    </property>
    <property name="toolTip">
     <string>Clear output text or terminal</string>
@@ -2912,8 +2907,26 @@
    </property>
   </action>
   <action name="actionSave_Inputs_To_Default_File">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/saveDefault.png</normaloff>:/icons/res/saveDefault.png</iconset>
+   </property>
    <property name="text">
     <string>Save Inputs To Default File</string>
+   </property>
+  </action>
+  <action name="actionSend_Results">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/send.png</normaloff>:/icons/res/send.png</iconset>
+   </property>
+   <property name="text">
+    <string>Send Results</string>
+   </property>
+  </action>
+  <action name="actionActualize">
+   <property name="text">
+    <string>Actualize</string>
    </property>
   </action>
  </widget>

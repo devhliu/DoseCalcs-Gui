@@ -16,7 +16,7 @@
 
 extern QStringList CompleterWords;
 
-extern bool TestPackagesPathsBeforToRun(QString text);
+extern QString  TestPackagesPathsBeforToRun();
 
 extern int NumberOfCPUCores ;
 extern qint64 pidOfPreviousNotKilled;
@@ -97,18 +97,43 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->comboBoxPhantom->addItems(ICRPPhantoms);
 
 
-    QStringList PreDefinedGeom=(QStringList()<<"VoxICRPAdultMale"<<"VoxICRPAdultFemale"
-                                <<"VoxICRPMale15"<<"VoxICRPFemale15"
-                                <<"VoxICRPMale10"<<"VoxICRPFemale10"
-                                <<"VoxICRPMale05"<<"VoxICRPFemale05"
-                                <<"VoxICRPMale01"<<"VoxICRPFemale01"
-                                <<"VoxICRPMale00"<<"VoxICRPFemale00"
-                                <<"TetICRPAdultMale"<<"TetICRPAdultFemale"
-                                <<"DICOM_CT_Phantom"<<"DoseCalcs_Voxelized_Geometry"
-                                <<"Stylized_CPP_MIRD_AdultFemale"<<"Stylized_GDML_MIRD_AdultFemale"
-                                <<"Stylized_TEXT_MIRD_AdultFemale"<<"Constructed_GDML_CPP_TEXT_STL_STAN_Example"
-                                <<"STL_Solids_Example" <<"Geant4_STANDARDs_Example"
+    QStringList PreDefinedGeom=(QStringList()<<"ICRP110 Voxel-based Adult Male"<<"ICRP110 Voxel-based Adult Female"
+                                <<"ICRP143 Voxel-based Male 15-years-old"<<"ICRP143 Voxel-based Female 15-years-old"
+                                <<"ICRP143 Voxel-based Male 10-years-old"<<"ICRP143 Voxel-based Female 10-years-old"
+                                <<"ICRP143 Voxel-based Male 05-years-old"<<"ICRP143 Voxel-based Female 05-years-old"
+                                <<"ICRP143 Voxel-based Male 01-years-old"<<"ICRP143 Voxel-based Female 01-years-old"
+                                <<"ICRP143 Voxel-based Male Newborn"<<"ICRP143 Voxel-based Female Newborn"
+                                <<"ICRP145 tetrahedral-based Adult Male"<<"ICRP145 tetrahedral-based Adult Female"
+                                <<"Phantom Constructed using DICOM/CT Files"<<"Simple Voxelized Geometry Using DoseCalcs Commands"
+                                <<"Stylized MIRD Adult Female Phantom using CPP (../DoseCalcs/core/src/G4TCPPGeometryFormat.cc) Geometry Method"<<"Stylized MIRD Adult Female Phantom using GDML (.gdml) Geometry Method"
+                                <<"Stylized MIRD Adult Female Phantom using TEXT (.geom) Geometry Method"<<"Phantom Constructed using a Combination of GDML, CPP, TEXT, STL, and STANDARD methods"
+                                <<"Simple Geometry using STL Solids and DoseCalcs Commands" <<"Simple Geometry using Geant4 Standard Solids and DoseCalcs Commands"
                                 );
+
+    PreDefinedGeomMap[PreDefinedGeom[0]]="VoxICRPAdultMale";
+    PreDefinedGeomMap[PreDefinedGeom[1]]="VoxICRPAdultFemale";
+    PreDefinedGeomMap[PreDefinedGeom[2]]="VoxICRPMale15";
+    PreDefinedGeomMap[PreDefinedGeom[3]]="VoxICRPFemale15";
+    PreDefinedGeomMap[PreDefinedGeom[4]]="VoxICRPMale10";
+    PreDefinedGeomMap[PreDefinedGeom[5]]="VoxICRPFemale10";
+    PreDefinedGeomMap[PreDefinedGeom[6]]="VoxICRPMale05";
+    PreDefinedGeomMap[PreDefinedGeom[7]]="VoxICRPFemale05";
+    PreDefinedGeomMap[PreDefinedGeom[8]]="VoxICRPMale01";
+    PreDefinedGeomMap[PreDefinedGeom[9]]="VoxICRPFemale01";
+    PreDefinedGeomMap[PreDefinedGeom[10]]="VoxICRPMale00";
+    PreDefinedGeomMap[PreDefinedGeom[11]]="VoxICRPFemale00";
+    PreDefinedGeomMap[PreDefinedGeom[12]]="TetICRPAdultMale";
+    PreDefinedGeomMap[PreDefinedGeom[13]]="TetICRPAdultFemale";
+    PreDefinedGeomMap[PreDefinedGeom[14]]="DICOM_CT_Phantom";
+    PreDefinedGeomMap[PreDefinedGeom[15]]="DoseCalcs_Voxelized_Geometry";
+    PreDefinedGeomMap[PreDefinedGeom[16]]="Stylized_CPP_MIRD_AdultFemale";
+    PreDefinedGeomMap[PreDefinedGeom[17]]="Stylized_GDML_MIRD_AdultFemale";
+    PreDefinedGeomMap[PreDefinedGeom[18]]="Stylized_TEXT_MIRD_AdultFemale";
+    PreDefinedGeomMap[PreDefinedGeom[19]]="Constructed_GDML_CPP_TEXT_STL_STAN_Example";
+    PreDefinedGeomMap[PreDefinedGeom[20]]="STL_Solids_Example";
+    PreDefinedGeomMap[PreDefinedGeom[21]]="Geant4_STANDARDs_Example";
+
+
     ui->comboBoxPreDefinedGeom->addItems(PreDefinedGeom);
 
     QStringList SourceOrTargetOrCombination=(QStringList()<<"Sources"<<"Targets"<<"Combinations"<<"Phantom");
@@ -1029,7 +1054,7 @@ void MainWindow::initializeVariable(){
     //process->setReadChannel(QProcess::StandardOutput);
 
     //connect(Process, &QProcess::readyReadStandardOutput, [process, this](){ processOutput()});
-    //connect(process, &QProcess::readyReadStandardError, [=](){ ui->outputTextConsole->append(process->readAllStandardError()); });
+    //connect(process, &QProcess::readyReadStandardError, [=](){ ui->outputTextConsole->appendPlainText(process->readAllStandardError()); });
 
     connect (&CoreProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processOutput()));  // connect process signals with your code
     connect (&CoreProcess, SIGNAL(readyReadStandardError()), this, SLOT(processOutput()));
@@ -1040,6 +1065,9 @@ void MainWindow::initializeVariable(){
     //QObject::connect (process, SIGNAL(readyReadStandardError()), this, SLOT(processOutput()));  // same here
 
     NumberOfExecutions = 1;
+
+    Path1 = "user1@10.13.1.17:/home/user1/DoseCalcs/Results";
+    Path2 = "user2@10.13.1.17:/home/user2/DoseCalcs";
 
     isInexec = true;
 
@@ -1780,22 +1808,24 @@ void MainWindow::on_RunButton_clicked()
 
     if(ui->checkBoxUseMacroCommandFile->isChecked()){
         if(EditFlag == 8){
-            on_pushButtonEditGeomFile_clicked();
+            on_pushButtonEditGeomFile_clicked(); // save data to MacroFileName
         }
         //fill the components by the text in the saved command file
-        FillComponentsFromInputsFile(DoseCalcs_build_dir_path+"/"+MacroFileName);
+        FillComponentsFromInputsFile(DoseCalcs_build_dir_path+"/"+MacroFileName); // fill data from MacroFileName
 
-    }else{
-        fileManagerObject->WriteTextToFile(DoseCalcs_build_dir_path+"/"+MacroFileName , generateInputUserTextForinputFile());
+        if(!TestSimulateExecutableInputsToRun()){
+            return;
+        }
     }
 
+    initializeVariable();
+    SaveDataFromInputComponents(); // get the same componenet data but the four under variable values are related to the SaveEnePharOrgLists() data that is called one time when the the run in pushed
+    CreateUserCommands(); //fill the variables with all values to save it to user file and not inputFile executed by the geant4 application core
+
+    QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac";
+    fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , generateInputUserTextForinputFile());
+
     if(ui->checkBoxRocks->isChecked()){
-
-        // this file name is used just in exe.sh file in rocks cluster simulations
-        //QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/"+MacroFileName;
-        QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
-
-        fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , generateInputUserTextForinputFile());
 
         BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path
                 + "\n qsub "+DoseCalcs_build_dir_path+"/"+ExeFileName;
@@ -1810,22 +1840,20 @@ void MainWindow::on_RunButton_clicked()
         on_pushButtonGenerateExe_clicked();
         on_pushButtonEditGeomFile_clicked();
         //}
-        ui->outputTextConsole->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
+        ui->outputTextConsole->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
         ui->tabWidget->setCurrentIndex(1);
 
         if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName) && QFile::exists(DoseCalcs_build_dir_path+"/"+ExeFileName)){
 
             if(!ShowImportantSimulationData()){return;}
             showResultsOutput("Computation Run" , 1);
-
             ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
     }else{
 
-        if(QFile::exists(DoseCalcs_build_dir_path+"/"+MacroFileName) && QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
+        if(QFile::exists(QsubSeparatedMacroFilePath) && QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
 
             if(MPI_USE=="YES"){
-
 
                 if(!QFile::exists(MPI_Lib_dir_path+"/mpirun")){
                     MPI_Lib_dir_path = ShowMessageBoxAndGetPath("Directory containing mpirun or mpiexec Not Found, Click OK to Choose the Directory");
@@ -1835,16 +1863,16 @@ void MainWindow::on_RunButton_clicked()
                 QString andd = "";
                 if(ui->checkBoxnohup->isChecked()){
                     if(!QFile::exists("/usr/bin/nohup")){
-                        ShowMessageBox("/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
+                        QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                         return;
                     }
                     nohup = "/usr/bin/nohup ";
-                    andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & "; macrosfileinc++;
+                    andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
                 }
 
                 BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n"
                         + nohup + " " + MPI_Lib_dir_path+"/mpirun " + Execution_setNumberOfRanksOrThreads + " "
-                        + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + MacroFileName + " " + Execution_setEventNumber + " " +andd
+                        + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                         ;
             }else{
 
@@ -1858,18 +1886,18 @@ void MainWindow::on_RunButton_clicked()
                 QString andd = "";
                 if(ui->checkBoxnohup->isChecked()){
                     if(!QFile::exists("/usr/bin/nohup")){
-                        ShowMessageBox("/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
+                        QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                         return;
                     }
                     nohup = "/usr/bin/nohup ";
-                    andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";macrosfileinc++;
+                    andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
                 }
 
                 BashCommandsForExecuting = "#! /bin/bash \n" +f
                         + "cd " +geant4_Lib_dir_path +"\n"+
                         + ". ./geant4.sh\n" +f +
                         + "cd " + DoseCalcs_build_dir_path + "\n"
-                        + nohup + " "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + MacroFileName + " " + Execution_setEventNumber + " " +andd
+                        + nohup + " "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                         ;
             }
 
@@ -1882,16 +1910,9 @@ void MainWindow::on_RunButton_clicked()
             fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
             if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-                //CoreProcess.execute("sh " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
-
-                //QProcess process;
-                //QStringList ff=(QStringList() << "-hold" << "-e" << "sh" << DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
-                //process.startDetached("xterm", ff);
 
                 if(!ShowImportantSimulationData()){return;}
-
                 showResultsOutput("Computation Run" , 1);
-
                 ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
             else{
@@ -1903,9 +1924,13 @@ void MainWindow::on_RunButton_clicked()
             //process->close();
 
         }else{
-            showResultsOutput("Verify that the simulate binary and the inputs.mac are existed in " + DoseCalcs_build_dir_path+"/"+MacroFileName, 0);
+            showResultsOutput("Verify that the simulate binary and the inputs.mac are existed in " + QsubSeparatedMacroFilePath, 0);
         }
     }
+
+    macrosfileinc++;
+
+
 }
 void MainWindow::on_openResultsDirButton_clicked()
 {
@@ -1946,7 +1971,7 @@ void MainWindow::on_pushButtonMerge_clicked()
     fileManagerObject->WriteTextToFile( MacrosFileForAnalysis , generateInputUserTextForinputFile());
 
     if(!QFile::exists(MacrosFileForAnalysis)){
-        ShowMessageBox("Cannot find macros file for analysis in this directory." );
+        QMessageBox::information(this, tr(""), "Cannot find macros file for analysis in this directory." );
         MacrosFileForAnalysis = QFileDialog::getOpenFileName( this, tr("Open a macros file for analysis"), DoseCalcs_build_dir_path, "All files (*.*)" );
     }
 
@@ -1996,7 +2021,7 @@ void MainWindow::on_pushButtonOpenResultsFile_clicked()
     ui->tabWidget->setTabText(0,ResultFileName);
     ui->GeometryFileTextEdit->clear();
     showResultsOutput("getting "+ResultFileName+" data", 4);
-    ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(UserCurrentResultsDirPath+"/"+ResultFileName));
+    ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(UserCurrentResultsDirPath+"/"+ResultFileName));
     ui->tabWidget->setCurrentIndex(0);
 
     EditFlag = 9;
@@ -2011,7 +2036,7 @@ void MainWindow::on_pushButton_clicked()
         QStringList qsl = {command};
         process.startDetached("nautilus", qsl);
     }else{
-        showResultsOutput("cannot find results directory", 4);
+        QMessageBox::information(this, tr(""), "Cannot find "+ UserCurrentResultsDirPath +" directory");
     }
 
     /*
@@ -2042,7 +2067,7 @@ void MainWindow::on_pushButton_clicked()
         if(IDs->text()!=""){
 
             if(QFile::exists(DoseCalcs_build_dir_path+"/"+ResultDirectoryName+"/"+IDs->text())){
-                ShowMessageBox("The directory name ("+IDs->text()+") is already exists. Choose another name for results directory !" );
+                QMessageBox::information(this, tr(""), "The directory name ("+IDs->text()+") is already exists. Choose another name for results directory !" );
             }else{
 
                 showResultsOutput("Creating DoseCalcs Results Directory: "+ IDs->text() , 1);
@@ -2122,7 +2147,7 @@ void MainWindow::on_pushButtonLoadExe_clicked()
     ui->tabWidget->setTabText(0,ExeFileName);
     ui->GeometryFileTextEdit->clear();
     showResultsOutput("getting exe.sh data", 4);
-    ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
+    ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
     ui->tabWidget->setCurrentIndex(0);
     EditFlag = 1;
 }
@@ -2163,7 +2188,7 @@ void MainWindow::on_pushButtonGenerateExe_clicked()
     ui->tabWidget->setTabText(0,ExeFileName);
     ui->GeometryFileTextEdit->clear();
     showResultsOutput("getting exe.sh data", 4);
-    ui->GeometryFileTextEdit->setText(ExeDataText);
+    ui->GeometryFileTextEdit->setPlainText(ExeDataText);
     ui->tabWidget->setCurrentIndex(0);
     EditFlag = 1;
 }
@@ -3115,12 +3140,12 @@ void MainWindow::on_pushButtonEditMacros_clicked()
         ui->tabWidget->setTabText(0,MacroFileName);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+MacroFileName));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+MacroFileName));
         ui->tabWidget->setCurrentIndex(0);
     }else{
-        ui->outputTextConsole->setText("");
+        ui->outputTextConsole->setPlainText("");
         showResultsOutput("Macros file data",1);
-        ui->outputTextConsole->append(generateInputUserTextForinputFile());
+        ui->outputTextConsole->appendPlainText(generateInputUserTextForinputFile());
         ui->tabWidget->setCurrentIndex(1);
     }
 }
@@ -3152,12 +3177,12 @@ void MainWindow::on_actionEditFile_triggered()
         ui->tabWidget->setTabText(0,MacroFileName);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+MacroFileName));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+MacroFileName));
         ui->tabWidget->setCurrentIndex(0);
     }else{
-        ui->outputTextConsole->setText("");
+        ui->outputTextConsole->setPlainText("");
         showResultsOutput("Macros file data",1);
-        ui->outputTextConsole->append(generateInputUserTextForinputFile());
+        ui->outputTextConsole->appendPlainText(generateInputUserTextForinputFile());
         ui->tabWidget->setCurrentIndex(1);
     }
 }
@@ -3317,7 +3342,7 @@ void MainWindow::on_actionVisualization_triggered()
 
             ui->outputTextConsole->clear();
             showResultsOutput("Visualization commands", 1);
-            ui->outputTextConsole->setText(commandsText);
+            ui->outputTextConsole->setPlainText(commandsText);
             ui->tabWidget->setCurrentIndex(1);
 
             if(MPI_USE=="YES"){
@@ -3452,12 +3477,12 @@ void MainWindow::on_actionSave_triggered()
     if(SaveMacrosFilePath != NULL && SaveMacrosFilePath != "" ){
 
         showResultsOutput("Chosen file is " + SaveMacrosFilePath , 0);
-        ShowMessageBox("You can edit the macro commands in File editor \" " + SaveMacrosFilePath + " \" and then click Save/Close button.");
+        QMessageBox::information(this, tr(""), "You can edit the macro commands in File editor \" " + SaveMacrosFilePath + " \" and then click Save/Close button.");
 
         on_pushButtonEditGeomFile_clicked();
         ui->tabWidget->setTabText(0,QFileInfo(SaveMacrosFilePath).fileName());
         ui->GeometryFileTextEdit->clear();
-        ui->GeometryFileTextEdit->setText(generateInputUserTextForinputFile());
+        ui->GeometryFileTextEdit->setPlainText(generateInputUserTextForinputFile());
         ui->tabWidget->setCurrentIndex(0);
 
         EditFlag = 10;
@@ -3480,12 +3505,12 @@ void MainWindow::on_actionRead_File_triggered()
 
         showResultsOutput("Chosen file is " + AnyOpenedFilePath , 0);
 
-        ShowMessageBox("You can edit the file in File editor \" " + AnyOpenedFilePath + " \" and then click Save/Close button.");
+        QMessageBox::information(this, tr(""), "You can edit the file in File editor \" " + AnyOpenedFilePath + " \" and then click Save/Close button.");
 
         on_pushButtonEditGeomFile_clicked();
         ui->tabWidget->setTabText(0,QFileInfo(AnyOpenedFilePath).fileName());
         ui->GeometryFileTextEdit->clear();
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(AnyOpenedFilePath));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(AnyOpenedFilePath));
         ui->tabWidget->setCurrentIndex(0);
 
         EditFlag = 11;
@@ -3505,11 +3530,11 @@ void MainWindow::on_actionCheck_Inputs_triggered()
             }
         }
         if(matgeomedatagood){
-            ShowMessageBox("The first inputs check \"GOOD\"");
+            QMessageBox::information(this, tr(""), "The first inputs check \"GOOD\"");
         }
     }else{
         if(TestSimulateExecutableInputsToRun()){
-            ShowMessageBox("The first inputs check \"GOOD\"");
+            QMessageBox::information(this, tr(""), "The first inputs check \"GOOD\"");
         }
     }
 }
@@ -3555,7 +3580,7 @@ void MainWindow::on_actionHow_To_Use_triggered()
 }
 void MainWindow::on_actionPackages_Statut_triggered()
 {
-    TestPackagesPathsBeforToRun("");
+    QMessageBox::information(this, tr(""), TestPackagesPathsBeforToRun());
 }
 void MainWindow::on_actionSave_Inputs_To_Default_File_triggered()
 {
@@ -3570,6 +3595,112 @@ void MainWindow::on_actionSave_Inputs_To_Default_File_triggered()
     fileManagerObject->WriteTextToFile( DEFAULT_INPUTS, generateInputUserTextForinputFile());
 
 }
+void MainWindow::on_actionSend_Results_triggered()
+{
+    if(!QFile::exists("/usr/bin/scp")){
+
+        if(QMessageBox::Yes == QMessageBox::question(this, tr("scp not found")," Install \"scp\" by typing the command below in your terminal: \n\"openssh-client openssh-server\" on ubuntu, \n or \n\"sudo yum install -y openssh-clients openssh\". Install it on xterm ?")){
+
+            if(OSNameVersion.toLower().contains("centos")){
+                BashCommandsForExecuting = "#! /bin/bash \n"
+                                           "sudo yum install -y openssh-clients openssh\n"
+                                           "\n bash \n"
+                        ;
+            }
+            else if(OSNameVersion.toLower().contains("ubuntu")){
+                BashCommandsForExecuting = "#! /bin/bash \n"
+                                           "sudo apt-get install -y openssh-client openssh-server\n"
+                                           "\n bash \n"
+                        ;
+            }
+
+            showResultsOutput("Writing Run Commands : \n", 0);
+            showResultsOutput(BashCommandsForExecuting , 0);
+            showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+
+            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+
+            if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+                ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            }
+        }else{
+            return;
+        }
+    }
+    QDialog * d = new QDialog(); d->setWindowTitle("Send results using scp command");
+
+    QGridLayout* GraphLayout = new QGridLayout;
+
+    QPushButton* chooseFromDirectory = new QPushButton("."); connect(chooseFromDirectory, SIGNAL(clicked()), this, SLOT(btnChooseADir1_slot()));
+    FromPath = new QLineEdit(Path1); FromPath->setToolTip("user@10.13.1.17:/home/user/DoseCalcs or select directory");
+
+    QLabel* fromtolbl= new QLabel("from ---> to");
+
+    QPushButton* chooseToDirectory = new QPushButton("."); connect(chooseToDirectory, SIGNAL(clicked()), this, SLOT(btnChooseADir2_slot()));
+    ToPath = new QLineEdit(Path2); FromPath->setToolTip("user@10.13.1.17:/home/user/DoseCalcs or select directory");
+
+    int ii = 0, jj=0;
+
+    GraphLayout->addWidget(chooseFromDirectory, jj,ii,1,1);
+    GraphLayout->addWidget(FromPath, jj,++ii,1,1);
+    GraphLayout->addWidget(fromtolbl, jj,++ii,1,1);
+    GraphLayout->addWidget(ToPath, jj,++ii,1,1);
+    GraphLayout->addWidget(chooseToDirectory, jj,++ii,1,1);
+
+    QDialogButtonBox * buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), d, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), d, SLOT(reject()));
+
+    GraphLayout->addWidget(buttonBox);
+
+    d->setLayout(GraphLayout);
+
+    int result = d->exec();
+
+    if(result == QDialog::Accepted)
+    {
+
+        BashCommandsForExecuting = "#! /bin/bash \n"
+                                   "scp -r " +FromPath->text() +" " + ToPath->text() + "\n"
+                ;
+
+        BashCommandsForExecuting += "\n bash \n";
+
+        showResultsOutput("Writing Run Commands : \n", 0);
+        showResultsOutput(BashCommandsForExecuting , 0);
+        showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+
+        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+
+        if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+            ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        }
+        else{
+            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+        }
+    }
+
+}
+void MainWindow::btnChooseADir1_slot(){
+    QString chosen_DirPath = QFileDialog::getExistingDirectory(0, ("Choose Directory"), UserCurrentResultsDirPath) ;
+    if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
+
+    }else{
+        Path1 = chosen_DirPath;
+        FromPath->setText(Path1);
+    }
+}
+void MainWindow::btnChooseADir2_slot(){
+    QString chosen_DirPath = QFileDialog::getExistingDirectory(0, ("Choose Directory"), UserCurrentResultsDirPath) ;
+    if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
+
+    }else{
+        Path2 = chosen_DirPath;
+        ToPath->setText(Path2);
+
+    }
+}
+
 
 
 int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
@@ -3614,6 +3745,22 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
 
     QVector< QPair<QString,QString>> Commlines = fileManagerObject->ReadTextFromFileInQStringList(FilePathString);
     QMap <QString,QString> lines = fileManagerObject->ReadLinesFromFileWithFirstWordIndicator(FilePathString);
+
+    // to fixe the paths when using predefined geometries from PackagesAndFiles directory
+    if(ui->checkBoxUsePreDefinedGeom->isChecked() && ui->checkBoxFixGeometryCommands->isChecked()){
+        QString s1 = "../"+GUIPackagesAndFilesDirName;
+        for(int dd=0; dd < Commlines.size();dd++){
+            if(Commlines[dd].second.contains(s1)){ // /GeometryData/createVolume
+                Commlines[dd].second = Commlines[dd].second.replace(s1,GUIPackagesAndFilesDirPath);
+            }
+        }
+        for ( auto Abeg = lines.begin(); Abeg != lines.end(); ++Abeg  ){
+
+            if(Abeg.value().contains(s1)){ // "/AnalysisData/generateRelativeErrGraph"
+                lines[Abeg.key()] = lines[Abeg.key()].replace(s1,GUIPackagesAndFilesDirPath);
+            }
+        }
+    }
 
     for(int dd=0; dd < Commlines.size();dd++){
         QStringList InputsVals;
@@ -4294,7 +4441,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
 
             double TotNumOfEvt = ui->lineEditNumberOfRanksOrThreads->text().toLong()*ui->lineEditNumberOfEvent->text().toLong();
             if(TotNumOfEvt > INT32_MAX ){
-                ShowMessageBox("In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in MT simulations should not exceed \"" + QString::number(INT32_MAX) + "\". Reduce the number of simulations \""+ ui->lineEditNumberOfRanksOrThreads->text() +"\" or number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
+                QMessageBox::information(this, tr(""), "In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in MT simulations should not exceed \"" + QString::number(INT32_MAX) + "\". Reduce the number of simulations \""+ ui->lineEditNumberOfRanksOrThreads->text() +"\" or number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
                 return false;
             }
         }
@@ -4302,7 +4449,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
 
             long TotNumOfEvt = ui->lineEditNumberOfEvent->text().toLong();
             if(TotNumOfEvt > INT32_MAX ){
-                ShowMessageBox("In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in an MPI simulation should not exceed \"" + QString::number(INT32_MAX) + "\". Please reduve the number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
+                QMessageBox::information(this, tr(""), "In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in an MPI simulation should not exceed \"" + QString::number(INT32_MAX) + "\". Please reduve the number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
                 return false;
             }
         }
@@ -4312,7 +4459,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
 
             long TotNumOfEvt = ui->lineEditNumberOfEvent->text().toLong();
             if(TotNumOfEvt > INT32_MAX ){
-                ShowMessageBox("In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in an MPI simulation should not exceed \"" + QString::number(INT32_MAX) + "\". Please reduve the number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
+                QMessageBox::information(this, tr(""), "In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in an MPI simulation should not exceed \"" + QString::number(INT32_MAX) + "\". Please reduve the number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
                 return false;
             }
         }
@@ -4320,7 +4467,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
 
             double TotNumOfEvt = ui->lineEditNumberOfRanksOrThreads->text().toLong()*ui->lineEditNumberOfEvent->text().toLong();
             if(TotNumOfEvt > INT32_MAX ){
-                ShowMessageBox("In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in MT simulations should not exceed \"" + QString::number(INT32_MAX) + "\". Reduce the number of simulations \""+ ui->lineEditNumberOfRanksOrThreads->text() +"\" or number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
+                QMessageBox::information(this, tr(""), "In Geant4, the total number of events \""+QString::number(TotNumOfEvt)+"\" in MT simulations should not exceed \"" + QString::number(INT32_MAX) + "\". Reduce the number of simulations \""+ ui->lineEditNumberOfRanksOrThreads->text() +"\" or number of events per simulation \""+ui->lineEditNumberOfEvent->text()+"\"");
                 return false;
             }
         }
@@ -4350,7 +4497,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
             if(xl < vxl || yl < vyl || zl < vzl){
                 sizes = "("+QString::number(xl)+";"+QString::number(vxl)+"), ("+QString::number(yl)+";"+QString::number(vyl)+"), ("+QString::number(zl)+";"+QString::number(vzl)+")";
                 ui->Tab->setCurrentIndex(0);
-                ShowMessageBox("The Voxelized phantom geometrical limits exceed the simulation world dimensions " + sizes +" . Edit the world dimension (i.e. 100 100 100) or voxel data (half x, y, and z).");
+                QMessageBox::information(this, tr(""), "The Voxelized phantom geometrical limits exceed the simulation world dimensions " + sizes +" . Edit the world dimension (i.e. 100 100 100) or voxel data (half x, y, and z).");
                 return false;
             }
         }
@@ -4360,14 +4507,14 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
         QString mat = "";mat = ui->PhantomWorldMaterialLineEdit->currentText();
         if(mat == "" || InputsVals.size() < 3){
             ui->Tab->setCurrentIndex(0);
-            ShowMessageBox("Add materials, specify the world material, and world box dimension (i.e. 100 100 100)");
+            QMessageBox::information(this, tr(""), "Add materials, specify the world material, and world box dimension (i.e. 100 100 100)");
             return false;
         }
     }else{
         InputsVals = ui->PhantomWorldHalfSizeslineEdit->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
         if(InputsVals.size() == 0){
             ui->Tab->setCurrentIndex(0);
-            ShowMessageBox("Add world geometry file (i.e. World.c++, World.cpp, World.gdml, or World.geom )");
+            QMessageBox::information(this, tr(""), "Add world geometry file (i.e. World.c++, World.cpp, World.gdml, or World.geom )");
             return false;
         }else{
 
@@ -4375,7 +4522,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
             if(dd == "gdml" || dd == "geom" || dd == "c++" || dd == "cpp" || dd == "cc"){}
             else{
                 ui->Tab->setCurrentIndex(0);
-                ShowMessageBox("The name of world geometry file should be one of (i.e.World.c++, World.cpp, World.gdml, or World.geom )");
+                QMessageBox::information(this, tr(""), "The name of world geometry file should be one of (i.e.World.c++, World.cpp, World.gdml, or World.geom )");
                 return false;
             }
         }
@@ -4389,7 +4536,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
                 QFile::exists(DoseCalcs_source_dir_path+"/"+ui->lineEditVoxIDsFilePath->text())){
         }else{
             ui->Tab->setCurrentIndex(0);
-            ShowMessageBox("Canno't find the voxels IDs data file. Add the file path to the LineEdit widget");
+            QMessageBox::information(this, tr(""), "Canno't find the voxels IDs data file. Add the file path to the LineEdit widget");
             on_pushButtonChooseVoxIDsFile_clicked();
             return false;
         }
@@ -4399,13 +4546,13 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
         InputsVals = ui->lineEditVoxIDsFilePath->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
         if(InputsVals.size() < 2){
             ui->Tab->setCurrentIndex(0);
-            ShowMessageBox("Add the two file paths to the LineEdit widget, the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
+            QMessageBox::information(this, tr(""), "Add the two file paths to the LineEdit widget, the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
             on_pushButtonChooseVoxIDsFile_clicked();
             return false;
         }else{
             if((QFile::exists(InputsVals[0]) || QFile::exists(DoseCalcs_build_dir_path+"/"+InputsVals[0])|| QFile::exists(DoseCalcs_source_dir_path+"/"+InputsVals[0])) && (QFile::exists(InputsVals[1]) || QFile::exists(DoseCalcs_build_dir_path+"/"+InputsVals[1]) || QFile::exists(DoseCalcs_source_dir_path+"/"+InputsVals[1]))){
             }else{ui->Tab->setCurrentIndex(0);
-                ShowMessageBox("Add the two file paths to the LineEdit widget, the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
+                QMessageBox::information(this, tr(""), "Add the two file paths to the LineEdit widget, the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
                 on_pushButtonChooseVoxIDsFile_clicked();
                 return false;
             }
@@ -4417,13 +4564,13 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
     if(ui->comboBoxTypeOfSources->currentText()=="Volume"){
         if(InputsVals.size() < 4){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add region name with box dimension (i.e. 10 25 15)");
+            QMessageBox::information(this, tr(""), "Add region name with box dimension (i.e. 10 25 15)");
             return false;
         }
     }else if(ui->comboBoxTypeOfSources->currentText()=="Voxels" || ui->comboBoxTypeOfSources->currentText()=="TET"){
         if(InputsVals.size() < 1){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add region/s name (i.e. Liver)");
+            QMessageBox::information(this, tr(""), "Add region/s name (i.e. Liver)");
             return false;
         }else{
 
@@ -4452,7 +4599,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
 
                     if(IsIn == false){
                         ui->Tab->setCurrentIndex(1);
-                        ShowMessageBox("The region\""+ InputsVals[aa] +"\" is not defined. Remove it from the source region LineEdit widget or add the \""+ InputsVals[aa] +"\" region data");
+                        QMessageBox::information(this, tr(""), "The region\""+ InputsVals[aa] +"\" is not defined. Remove it from the source region LineEdit widget or add the \""+ InputsVals[aa] +"\" region data");
                         return false;
                     }
                 }
@@ -4462,20 +4609,20 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
     if(ui->radioButtonGDML->isChecked() || ui->radioButtonTEXT->isChecked() || ui->radioButtonCpp->isChecked() || ui->radioButtonSTL->isChecked() || ui->radioButtonConstruct->isChecked()){
         if(ui->comboBoxTypeOfSources->currentText()=="Voxels"){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("You can't use Voxels source with standart volumes geometry");
+            QMessageBox::information(this, tr(""), "You can't use Voxels source with standart volumes geometry");
             return false;
         }
     }else if(ui->radioButtonDICOM->isChecked() || ui->radioButtonVoxIDs->isChecked() || ui->radioButtonVoxel->isChecked() ){
         if(ui->comboBoxTypeOfSources->currentText()!="Voxels"){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Use Voxels source with Voxelized geometry");
+            QMessageBox::information(this, tr(""), "Use Voxels source with Voxelized geometry");
             return false;
         }
     }
     else if(ui->radioButtonTET->isChecked() ){
         if(ui->comboBoxTypeOfSources->currentText()!="TET"){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Use TET source with Tetrahedral geometry");
+            QMessageBox::information(this, tr(""), "Use TET source with Tetrahedral geometry");
             return false;
         }
     }
@@ -4484,7 +4631,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
     InputsVals = ui->SourcelineEditParName->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
     if(InputsVals.size() < 1){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("Add particle name (i.e. gamma, e-, e+, alpha and proton)");
+        QMessageBox::information(this, tr(""), "Add particle name (i.e. gamma, e-, e+, alpha and proton)");
         return false;
     }else{
         for(int aa=0; aa < InputsVals.size();aa++){
@@ -4492,7 +4639,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
             for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals[aa]){ IsIn = true;}}
             if(IsIn == false){
                 ui->Tab->setCurrentIndex(1);
-                ShowMessageBox("The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the source particle LineEdit widget");
+                QMessageBox::information(this, tr(""), "The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the source particle LineEdit widget");
                 return false;
             }
         }
@@ -4504,14 +4651,14 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
         InputsVals = ui->lineEditSpecialEnergyDistributionParameter->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
         if(InputsVals.size() < 1){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add an energy value");
+            QMessageBox::information(this, tr(""), "Add an energy value");
             return false;
         }
         for(int aa=0; aa < InputsVals.size();aa++){
             QString val = InputsVals[aa];
             if(val.toDouble() == 0. || val.isEmpty() || val.isNull()){
                 ui->Tab->setCurrentIndex(1);
-                ShowMessageBox("The value: \"" + val + "\" not accepted.");
+                QMessageBox::information(this, tr(""), "The value: \"" + val + "\" not accepted.");
                 return false;
             }
         }
@@ -4521,7 +4668,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
     InputsVals = ui->lineEditSpecialEnergyDistributionParameter->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
     if(InputsVals.size() == 0){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("Add energy value (i.e. 0.5)");
+        QMessageBox::information(this, tr(""), "Add energy value (i.e. 0.5)");
         return false;
     }
 
@@ -4529,7 +4676,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
         InputsVals = ui->lineEditSpecialAngulatDistributionParameter->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
         if(InputsVals.size() < 2){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add theta and phi values for directed momentum distribution (i.e. Liver)");
+            QMessageBox::information(this, tr(""), "Add theta and phi values for directed momentum distribution (i.e. Liver)");
             return false;
         }
     }
@@ -4538,13 +4685,13 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
     QString val = ui->lineEditNumberOfEvent->text();
     if(val.toDouble() == 0. || val.isEmpty() || val.isNull() || val.toInt() >= INT32_MAX){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("The number of events: \"" + val + "\" not accepted.");
+        QMessageBox::information(this, tr(""), "The number of events: \"" + val + "\" not accepted.");
         return false;
     }
     val = ui->lineEditNumberOfRanksOrThreads->text();
     if(val.toInt() == 0. || val.isEmpty() || val.isNull()){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("The number of sub-simulations: \"" + val + "\" not accepted.");
+        QMessageBox::information(this, tr(""), "The number of sub-simulations: \"" + val + "\" not accepted.");
         return false;
     }
 
@@ -4559,7 +4706,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
         if (ui->AnalysisLineEdit_ScorOrg->text() == "all" || ui->AnalysisLineEdit_ScorOrg->text() == "All"){}
         else{
             ui->Tab->setCurrentIndex(2);
-            ShowMessageBox("set \"all\" value in volume to score");
+            QMessageBox::information(this, tr(""), "set \"all\" value in volume to score");
             return false;
         }
     }
@@ -4577,12 +4724,12 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
         }
         if(!IsIn || !IsIn2){
             ui->Tab->setCurrentIndex(2);
-            ShowMessageBox("Please add \"source\" word followed by source volumes, and \"target\" word followed by target volumes");
+            QMessageBox::information(this, tr(""), "Please add \"source\" word followed by source volumes, and \"target\" word followed by target volumes");
             return false;
         }
     }else if(InputsVals.size() == 0){
         ui->Tab->setCurrentIndex(2);
-        ShowMessageBox("Please add \"source\" word followed by source volumes, and \"target\" word followed by target volumes");
+        QMessageBox::information(this, tr(""), "Please add \"source\" word followed by source volumes, and \"target\" word followed by target volumes");
         return false;
     }
 
@@ -4590,7 +4737,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
     InputsVals = ui->AnalysisLineEditVarToScore->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
     if(InputsVals.size() < 1){
         ui->Tab->setCurrentIndex(2);
-        ShowMessageBox("Add a quantity to score (i.e. SAF)");
+        QMessageBox::information(this, tr(""), "Add a quantity to score (i.e. SAF)");
         return false;
     }else{
         for(int aa=0; aa < InputsVals.size();aa++){
@@ -4598,7 +4745,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
             for(int dd=0; dd < VarToScorellist.size();dd++){ if(VarToScorellist[dd] == InputsVals[aa]){ IsIn = true;}}
             if(IsIn == false){
                 ui->Tab->setCurrentIndex(2);
-                ShowMessageBox("The quantity\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the quantities to score LineEdit widget");
+                QMessageBox::information(this, tr(""), "The quantity\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the quantities to score LineEdit widget");
                 return false;
             }
         }
@@ -4610,7 +4757,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
             if(InputsVals.size() < 3){
                 if(!QFile::exists(InputsVals[0])){
                     ui->Tab->setCurrentIndex(2);
-                    ShowMessageBox("The file ");
+                    QMessageBox::information(this, tr(""), "The file ");
                     return false;
                 }
             }
@@ -4620,7 +4767,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
                 for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals[aa]){ IsIn = true;}}
                 if(IsIn == false){
                     ui->Tab->setCurrentIndex(2);
-                    ShowMessageBox("Warning: The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the radiation factors LineEdit widget");
+                    QMessageBox::information(this, tr(""), "Warning: The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the radiation factors LineEdit widget");
                     break;
                     //return false;
                 }
@@ -4639,7 +4786,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
             for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals[aa]){ IsIn = true;}}
             if(IsIn == false){
                 ui->Tab->setCurrentIndex(2);
-                ShowMessageBox("Warning: The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the radionuclide particles-yields LineEdit widget");
+                QMessageBox::information(this, tr(""), "Warning: The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the radionuclide particles-yields LineEdit widget");
                 break;
                 //return false; just warning
             }
@@ -4653,7 +4800,7 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
     if(QFile::exists(UserCurrentResultsDirPath)){}else{
         while(!QFile::exists(UserCurrentResultsDirPath)){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Canno't find the results directory \""+ UserCurrentResultsDirPath +"\". Please choose a new directory path.");
+            QMessageBox::information(this, tr(""), "Canno't find the results directory \""+ UserCurrentResultsDirPath +"\". Please choose a new directory path.");
             on_openResultsDirButton_clicked();
         }
     }
@@ -4683,7 +4830,6 @@ bool MainWindow::TestVisualizingInputsToRun(){
 
     return true;
 }
-
 bool MainWindow::ShowImportantSimulationData(){
 
     //showResultsOutput("31 : \n", 0);
@@ -4739,19 +4885,11 @@ bool MainWindow::ShowImportantSimulationData(){
 
     //ImportantSimulationInputs += "*** simulation number: " + SimulationsNumberDataString+ "\n\n";
 
-
     if(QMessageBox::Yes == QMessageBox::question(this, tr("The simulation will be executed for:"), ImportantSimulationInputs)){
         return true;
     }else{
         return false;
     }
-}
-void MainWindow::ShowMessageBox(QString message ){
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("");
-    msgBox.setText(message);
-    if(msgBox.exec() == QDialog::Accepted){}
-    else{}
 }
 QString MainWindow::ShowMessageBoxAndGetPath(QString message ){
 
@@ -4792,13 +4930,13 @@ void MainWindow::processOutput()
     //showResultsOutput(" .............................. ", 4);
 
     QString outputText = CoreProcess.readAllStandardOutput();
-    ui->outputTextConsole->append(outputText); ui->outputTextConsole->update();
+    ui->outputTextConsole->appendPlainText(outputText); ui->outputTextConsole->update();
     /*
     bytes = CoreProcess.readAllStandardOutput();
 
     QStringList lines = QString(bytes).split(" ");
     foreach (QString line, lines) {
-        ui->outputTextConsole->append(line); ui->outputTextConsole->update();
+        ui->outputTextConsole->appendPlainText(line); ui->outputTextConsole->update();
 
         qDebug() << line;
     }
@@ -4813,15 +4951,15 @@ void MainWindow::showResultsOutput(QString text, int level){
     }
     if(level == 1){
         QTextStream(stdout) << " ---------------------> " << text << "\n";
-        ui->outputTextConsole->append(" ---------------------> "+text);
+        ui->outputTextConsole->appendPlainText(" ---------------------> "+text);
     }
     if(level == 4){
         //QTextStream(stdout) << text << "\n";
-        ui->outputTextConsole->append("\n"+text);
+        ui->outputTextConsole->appendPlainText("\n"+text);
     }
     if(level == 3){
         QTextStream(stdout) << "!!!!!!!!!!!!!!!!! " << text << "\n";
-        ui->outputTextConsole->append("!!!!!!!!!!!!!!!!! "+text);
+        ui->outputTextConsole->appendPlainText("!!!!!!!!!!!!!!!!! "+text);
     }
 
 }
@@ -4867,7 +5005,7 @@ void MainWindow::on_pushButtonEditGeometryFile_clicked()
         ui->tabWidget->setTabText(0,flnm);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(ui->PhantomWorldHalfSizeslineEdit->text()));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(ui->PhantomWorldHalfSizeslineEdit->text()));
         ui->tabWidget->setCurrentIndex(0);
     }
     else if(ext == "c++" || ext == "cpp"  || ext == "cc"){
@@ -4875,7 +5013,7 @@ void MainWindow::on_pushButtonEditGeometryFile_clicked()
         ui->tabWidget->setTabText(0,"G4TCPPGeometryFormat.cc");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
         ui->tabWidget->setCurrentIndex(0);
     }
 }
@@ -4891,8 +5029,8 @@ void MainWindow::on_WorldDataShowButtonpushButton_clicked()
         WorldData = GeometryCommands[0] + " " + ui->PhantomWorldHalfSizeslineEdit->text() + " " ;
     }
 
-    ui->outputTextConsole->append("\n============ World Volume Command ============\n");
-    ui->outputTextConsole->append(WorldData);
+    ui->outputTextConsole->appendPlainText("\n============ World Volume Command ============\n");
+    ui->outputTextConsole->appendPlainText(WorldData);
     ui->tabWidget->setCurrentIndex(1);
 }
 
@@ -4906,7 +5044,7 @@ void MainWindow::on_EditGeometyDataBtn_clicked()
         ui->tabWidget->setTabText(0,"Volumes reading macros");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(CONSCommandsString);
+        ui->GeometryFileTextEdit->setPlainText(CONSCommandsString);
 
         RemoveDynamiqueGeomAndMatFrame();
         showConstructVolumeGDMLTEXTCPPCommandsFrame();
@@ -4916,7 +5054,7 @@ void MainWindow::on_EditGeometyDataBtn_clicked()
         ui->tabWidget->setTabText(0,"Volumes creation by .stl solid macros");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(CONSCommandsString);
+        ui->GeometryFileTextEdit->setPlainText(CONSCommandsString);
 
         RemoveDynamiqueGeomAndMatFrame();
         showConstructSTLCommandsFrame();
@@ -4926,7 +5064,7 @@ void MainWindow::on_EditGeometyDataBtn_clicked()
         ui->tabWidget->setTabText(0,"Voxelized data macros");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("getting the saved Voxelized Geometry Commands", 4);
-        ui->GeometryFileTextEdit->setText(VOXELCommandsString);
+        ui->GeometryFileTextEdit->setPlainText(VOXELCommandsString);
 
         RemoveDynamiqueGeomAndMatFrame();
         showConstructVoxelizedCommandsFrame();
@@ -4936,7 +5074,7 @@ void MainWindow::on_EditGeometyDataBtn_clicked()
         ui->tabWidget->setTabText(0,"TET data macros");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("getting the saved TET Geometry Commands", 4);
-        ui->GeometryFileTextEdit->setText(VOXELCommandsString);
+        ui->GeometryFileTextEdit->setPlainText(VOXELCommandsString);
 
         RemoveDynamiqueGeomAndMatFrame();
         showConstructVoxelizedCommandsFrame();
@@ -4946,7 +5084,7 @@ void MainWindow::on_EditGeometyDataBtn_clicked()
         ui->tabWidget->setTabText(0,"Volumes creation macros");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("getting the saved Volumes Constructing Commands", 4);
-        ui->GeometryFileTextEdit->setText(CONSCommandsString);
+        ui->GeometryFileTextEdit->setPlainText(CONSCommandsString);
 
         RemoveDynamiqueGeomAndMatFrame();
         showConstructSolidAndVolumeCommandsFrame();
@@ -4961,33 +5099,44 @@ void MainWindow::on_ViewGeometyDataBtn_clicked()
 }
 void MainWindow::on_GeometryDataShowButton_clicked()
 {
-    ui->outputTextConsole->append("\n============ Geometry Commands ============\n");
+    ui->outputTextConsole->appendPlainText("\n============ Geometry Commands ============\n");
     if(ui->radioButtonTET->isChecked() || ui->radioButtonVoxIDs->isChecked() || ui->radioButtonDICOM->isChecked() || ui->radioButtonVoxel->isChecked()){
-        ui->outputTextConsole->append(VOXELCommandsString);
+        ui->outputTextConsole->appendPlainText(VOXELCommandsString);
     }else{
-        ui->outputTextConsole->append(CONSCommandsString);
+        ui->outputTextConsole->appendPlainText(CONSCommandsString);
     }
     ui->tabWidget->setCurrentIndex(1);
 }
 void MainWindow::on_comboBoxPreDefinedGeom_currentTextChanged(const QString &arg1)
 {
-    /*
-     *
-     <<"VoxICRPAdultMale"<<"VoxICRPAdultFemale"
-                                <<"VoxICRPMale15"<<"VoxICRPFemale15"
-                                <<"VoxICRPMale10"<<"VoxICRPFemale10"
-                                <<"VoxICRPMale05"<<"VoxICRPFemale05"
-                                <<"VoxICRPMale01"<<"VoxICRPFemale01"
-                                <<"VoxICRPMale00"<<"VoxICRPFemale00"
-                                <<"TetICRPAdultMale"<<"TetICRPAdultFemale"
-                                <<"Stylized_CPP_MIRD_AdultFemale"<<"Stylized_GDML_MIRD_AdultFemale"
-                                <<"Stylized_TEXT_MIRD_AdultFemale"<<"Stylized_GeomMETHODS_MIRD_AdultFemale"
-*/
 
     if(ui->checkBoxUsePreDefinedGeom->isChecked()){
-        FillComponentsFromInputsFile(GUIPackagesAndFilesDirPath+"/PreDefinedGeometry/macros"+arg1+".mac");
+        FillComponentsFromInputsFile(GUIPackagesAndFilesDirPath+"/PreDefinedGeometry/macros"+PreDefinedGeomMap[arg1]+".mac");
     }
 
+}
+void MainWindow::on_checkBoxUsePreDefinedGeom_stateChanged(int arg1)
+{
+
+    if(ui->checkBoxUsePreDefinedGeom->isChecked()){
+        if(!QFile::exists(GUIPackagesAndFilesDirPath+"/PreDefinedGeometry")){
+            QString n = "To use the predefined geometries macros, you should download the files "
+                        "unzip them under the directory \"" + GUIPackagesAndFilesDirPath+
+                    "\". This can be automatically from \"Installations\" window by clicking on "
+                    "\"Download DoseCalcs Supplementary Files \"button.\n"
+                    "You can check this files by clicking on \"Open Files and Installation Packages Directory\" button"
+                    "\n\n You read the message, Download PreDefinedGeometry Data ?"
+                    ;
+            if (QMessageBox::Yes == QMessageBox::question(this, tr("PreDefined Geometry Files not found"), n)){
+                on_actionInstallations_triggered();
+                if(!QFile::exists(GUIPackagesAndFilesDirPath+"/PreDefinedGeometry")){
+                    ui->checkBoxUsePreDefinedGeom->setCheckState(Qt::Unchecked);
+                }
+            }else{
+                ui->checkBoxUsePreDefinedGeom->setCheckState(Qt::Unchecked);
+            }
+        }
+    }
 }
 
 // edit and save from and to String buttons
@@ -4998,7 +5147,7 @@ void MainWindow::on_MaterialsDataEditButton_clicked()
     ui->tabWidget->setTabText(0,"Materials creation macros");
     ui->GeometryFileTextEdit->clear();
     showResultsOutput("getting the saved Materials Data Commands", 4);
-    ui->GeometryFileTextEdit->setText(MaterialsDataCommandsString);
+    ui->GeometryFileTextEdit->setPlainText(MaterialsDataCommandsString);
 
     ui->tabWidget->setCurrentIndex(0);
 
@@ -5009,8 +5158,8 @@ void MainWindow::on_MaterialsDataEditButton_clicked()
 }
 void MainWindow::on_MaterialsDataShowButton_clicked()
 {
-    ui->outputTextConsole->append("\n============ Materials Commands ============\n");
-    ui->outputTextConsole->append(MaterialsDataCommandsString);
+    ui->outputTextConsole->appendPlainText("\n============ Materials Commands ============\n");
+    ui->outputTextConsole->appendPlainText(MaterialsDataCommandsString);
     ui->tabWidget->setCurrentIndex(1);
 }
 
@@ -5280,7 +5429,7 @@ void MainWindow::showConstructVoxelizedCommandsFrame(){
 }
 void MainWindow::showConstructSolidAndVolumeCommandsFrame(){
 
-    //ui->GeometryFileTextEdit->append("ComboxLogVolSolid_slot " );
+    //ui->GeometryFileTextEdit->appendPlainText("ComboxLogVolSolid_slot " );
 
     framLay = new QGridLayout;
 
@@ -5332,7 +5481,7 @@ void MainWindow::showConstructSolidAndVolumeCommandsFrame(){
 }
 void MainWindow::showConstructSTLCommandsFrame(){
 
-    //ui->GeometryFileTextEdit->append("ComboxLogVolSolid_slot " );
+    //ui->GeometryFileTextEdit->appendPlainText("ComboxLogVolSolid_slot " );
 
     framLay = new QGridLayout;
 
@@ -5434,7 +5583,7 @@ void MainWindow::btnSaveElem_slot(){
                 + " " + ElementsSymbolA[MatElemComb->currentText()]
                 + " " + ElementsSymbolName[MatElemComb->currentText()];
 
-        ui->GeometryFileTextEdit->append(ElemCommandToAdd );
+        ui->GeometryFileTextEdit->appendPlainText(ElemCommandToAdd );
     }
 
 
@@ -5443,11 +5592,11 @@ void MainWindow::btnAddElem_slot(){
 
     if(MatCommandToAddElem == ""){
         MatCommandToAddElem = "C";
-        ui->GeometryFileTextEdit->append( "\n" + MaterialCommands[2] + " " + ElemComb->currentText() + " " + EleFraOrNumInMat->text() + " " );
+        ui->GeometryFileTextEdit->appendPlainText( "\n" + MaterialCommands[2] + " " + ElemComb->currentText() + " " + EleFraOrNumInMat->text() + " " );
     }
     else{
         QString tx = ui->GeometryFileTextEdit->toPlainText();
-        ui->GeometryFileTextEdit->setText(tx + " " + ElemComb->currentText() + " " + EleFraOrNumInMat->text() + " ");
+        ui->GeometryFileTextEdit->setPlainText(tx + " " + ElemComb->currentText() + " " + EleFraOrNumInMat->text() + " ");
     }
     ui->tabWidget->setCurrentIndex(0);
 }
@@ -5479,7 +5628,7 @@ void MainWindow::btnAddMat_slot(){
                 + " " + MaterialDensity->text()
                 + " " + frOrNum;
 
-        ui->GeometryFileTextEdit->append(MatCommandToAdd);
+        ui->GeometryFileTextEdit->appendPlainText(MatCommandToAdd);
     }
     ui->tabWidget->setCurrentIndex(0);
 }
@@ -5499,7 +5648,7 @@ void MainWindow::btnAddNistMat_slot(){
         MaterialsNames.push_back(NistMatComb->currentText());
         MaterialRegionsNames.push_back(NistMatComb->currentText());
         MaterialsNameIDs[MaterialName->text()] = NistMaterialID->text();
-        ui->GeometryFileTextEdit->append("\n"+MaterialCommands[4] + " " + NistMatComb->currentText()+ " " + NistMaterialID->text());
+        ui->GeometryFileTextEdit->appendPlainText("\n"+MaterialCommands[4] + " " + NistMatComb->currentText()+ " " + NistMaterialID->text());
     }
     ui->tabWidget->setCurrentIndex(0);
 }
@@ -5530,14 +5679,14 @@ void MainWindow::btnAddVoxelsRegionData_slot(){
     DefinedRegionsNames.push_back(VoxRegionName->text());
 
     ui->tabWidget->setCurrentIndex(0);
-    ui->GeometryFileTextEdit->append(RegionDataCommands);
+    ui->GeometryFileTextEdit->appendPlainText(RegionDataCommands);
 
 }
 void MainWindow::UseMaterialsAsRegionNames_slot(){
 
     ui->tabWidget->setCurrentIndex(0);
     if(!UseMaterialsAsRegionNames->isChecked()){
-        ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[11], VOXELCommands[11] + " yes "));
+        ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[11], VOXELCommands[11] + " yes "));
         VoxRegionName->setEnabled(false);
         if(!ui->radioButtonTET->isChecked()){
             VoxRegionMinMaxX->setEnabled(false);
@@ -5559,18 +5708,18 @@ void MainWindow::UseMaterialsAsRegionNames_slot(){
         VoxRegionMinMaxDensity->setEnabled(true);
         btnAddVoxelsRegionData->setEnabled(true);
 
-        ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[11], VOXELCommands[11] + " no "));
+        ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[11], VOXELCommands[11] + " no "));
     }
 }
 
 void MainWindow::btnAddVoxelsData_slot(){
 
-    ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[0], VOXELCommands[0] + " " + XYZVoxelsNumb->text() + " " + ValuesOfInputs[ParamType->currentText()] + " " + LogVolMatName->currentText() + " " + XYZVoxelsHalfSize->text()));
-    ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[1], VOXELCommands[1] + " " + VoxContainerPos->text()));
-    ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[2], VOXELCommands[2] + " " + VoxContainerRot->text()));
+    ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[0], VOXELCommands[0] + " " + XYZVoxelsNumb->text() + " " + ValuesOfInputs[ParamType->currentText()] + " " + LogVolMatName->currentText() + " " + XYZVoxelsHalfSize->text()));
+    ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[1], VOXELCommands[1] + " " + VoxContainerPos->text()));
+    ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[2], VOXELCommands[2] + " " + VoxContainerRot->text()));
 
     ui->tabWidget->setCurrentIndex(0);
-    //ui->GeometryFileTextEdit->append(VoxString);
+    //ui->GeometryFileTextEdit->appendPlainText(VoxString);
 }
 void MainWindow::btnAddDcmMatOrdered_slot(){
 
@@ -5582,16 +5731,16 @@ void MainWindow::btnAddDcmMatOrdered_slot(){
         {
             DcmCtDensCommands += " " + MaterialsNames[kk];
         }
-        ui->GeometryFileTextEdit->append(DcmCtDensCommands + " \n");
+        ui->GeometryFileTextEdit->appendPlainText(DcmCtDensCommands + " \n");
 
     }else{
         if(FirstTimeAdd){
             DcmCtDensCommands = VOXELCommands[6] + " " + NumbOfDCMMat->text() + " " + LogVolMatName->currentText() ;
-            ui->GeometryFileTextEdit->append(DcmCtDensCommands);
+            ui->GeometryFileTextEdit->appendPlainText(DcmCtDensCommands);
             FirstTimeAdd = false;
         }else{
             QString tx = ui->GeometryFileTextEdit->toPlainText();
-            ui->GeometryFileTextEdit->setText( tx + " " + LogVolMatName->currentText());
+            ui->GeometryFileTextEdit->setPlainText( tx + " " + LogVolMatName->currentText());
         }
     }
     ui->tabWidget->setCurrentIndex(0);
@@ -5601,14 +5750,14 @@ void MainWindow::btnAddDcmCTNumDen_slot(){
             + " " + DcmCtNumber->text()
             + " " + DcmCtDensity->text();
     ui->tabWidget->setCurrentIndex(0);
-    ui->GeometryFileTextEdit->append(DcmCtDensCommands);
+    ui->GeometryFileTextEdit->appendPlainText(DcmCtDensCommands);
 }
 void MainWindow::btnAddDcmTypeDir_slot(){
     DcmTypeDirCommands = VOXELCommands[7]
             + " " + DcmType->currentText()
             + " " + DcmDataDir->text();
     ui->tabWidget->setCurrentIndex(0);
-    ui->GeometryFileTextEdit->append(DcmTypeDirCommands);
+    ui->GeometryFileTextEdit->appendPlainText(DcmTypeDirCommands);
 }
 void MainWindow::btnChooseDcmDir_slot(){
     QString chosen_DirPath = QFileDialog::getExistingDirectory(0, ("Choose modality files"), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName) ;
@@ -5619,13 +5768,13 @@ void MainWindow::btnChooseDcmDir_slot(){
     }
 }
 void MainWindow::btnAddVisualizationLimits_slot(){
-    //  ui->GeometryFileTextEdit->append(VOXELCommands[9] + " " + LimitsPlan->currentText() + " " + LimitsValues->text() + "\n" );
+    //  ui->GeometryFileTextEdit->appendPlainText(VOXELCommands[9] + " " + LimitsPlan->currentText() + " " + LimitsValues->text() + "\n" );
     ui->tabWidget->setCurrentIndex(0);
 
     if(ui->radioButtonTET->isChecked()){
-        ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[10], VOXELCommands[10] + " " + LimitsPlan->currentText() + " " + LimitsValues->text()));
+        ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[10], VOXELCommands[10] + " " + LimitsPlan->currentText() + " " + LimitsValues->text()));
     }else{
-        ui->GeometryFileTextEdit->setText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[9], VOXELCommands[9] + " " + LimitsPlan->currentText() + " " + LimitsValues->text()));
+        ui->GeometryFileTextEdit->setPlainText(changeArgumentOfACommandFromText(ui->GeometryFileTextEdit->toPlainText(),VOXELCommands[9], VOXELCommands[9] + " " + LimitsPlan->currentText() + " " + LimitsValues->text()));
     }
 
 }
@@ -5661,7 +5810,7 @@ void MainWindow::BtnEditVolFile_slot(){
         ui->tabWidget->setTabText(0,flnm);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(PhyVolName->text()));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(PhyVolName->text()));
         ui->tabWidget->setCurrentIndex(0);
     }
     else if(ext == "c++" || ext == "cpp"  || ext == "cc"){
@@ -5669,7 +5818,7 @@ void MainWindow::BtnEditVolFile_slot(){
         ui->tabWidget->setTabText(0,"G4TCPPGeometryFormat.cc");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
         ui->tabWidget->setCurrentIndex(0);
     }
 }
@@ -5696,7 +5845,7 @@ void MainWindow::btnAddSol_slot(){
 
         ui->tabWidget->setCurrentIndex(0);
 
-        ui->GeometryFileTextEdit->append(SolidCommandToAdd );
+        ui->GeometryFileTextEdit->appendPlainText(SolidCommandToAdd );
         //CONSCommandsString += SolidCommandToAdd + "\n";
 
     }
@@ -5778,7 +5927,7 @@ void MainWindow::btnAddVol_slot(){
             NotForcedVolumesCommand = GeometryCommands[3] + " World ";
         }
 
-        ui->GeometryFileTextEdit->append(VolumeCommandToAdd );
+        ui->GeometryFileTextEdit->appendPlainText(VolumeCommandToAdd );
 
         ui->tabWidget->setCurrentIndex(0);
 
@@ -6179,7 +6328,7 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
     if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){UserCurrentResultsDirPath = DoseCalcs_build_dir_path + "/" + ResultDirectoryName;}
 
     if(!QFile::exists(DoseCalcs_build_dir_path+"/"+MacroFileName) || !QFile::exists(UserCurrentResultsDirPath+"/"+ResultFileName)){
-        ShowMessageBox("Cannot find macros file and/or ResultsData files in this directory. Choose a result directory that contains ResultsData file to perform root analysis tasks." );
+        QMessageBox::information(this, tr(""), "Cannot find macros file and/or ResultsData files in this directory. Choose a result directory that contains ResultsData file to perform root analysis tasks." );
         UserCurrentResultsDirPath = QFileDialog::getExistingDirectory(0, ("Choose results directory"), UserCurrentResultsDirPath);
         if(UserCurrentResultsDirPath.isEmpty()){
             return;
@@ -6355,7 +6504,7 @@ void MainWindow::ReadLoadICRPSpectrumData(){
 
         if(ICRPRadioNuclideDataDiscSpec[RadioList->currentText()][RadioPart->currentText()]["Spectrum"].size()==0)
         {
-            ShowMessageBox("Warning! There is no spectrum data for the particle "+RadioPart->currentText()+" emitted from " +RadioList->currentText());
+            QMessageBox::information(this, tr(""), "Warning! There is no spectrum data for the particle "+RadioPart->currentText()+" emitted from " +RadioList->currentText());
             return;
         }
 
@@ -6370,7 +6519,7 @@ void MainWindow::ReadLoadICRPSpectrumData(){
         }
 
         if(ui->SourcelineEditParName->text() != RadioPart->currentText() ){
-            ShowMessageBox("Warning! The particle of spectrum not the same as the particle given in the source radiation particle inputs, the source particle will be changed to "+RadioPart->currentText()+".");
+            QMessageBox::information(this, tr(""), "Warning! The particle of spectrum not the same as the particle given in the source radiation particle inputs, the source particle will be changed to "+RadioPart->currentText()+".");
             ui->SourcelineEditParName->setText(RadioPart->currentText());
         }
         ui->lineEditSpecialEnergyDistributionParameter->setText(QString::number(mean/ICRPRadioNuclideDataDiscSpec[RadioList->currentText()][RadioPart->currentText()]["Spectrum"].size())+" " +textt);
@@ -6403,7 +6552,7 @@ void MainWindow::OpenROOTCanvas()
             ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
     }else{
-        ShowMessageBox("Install ROOT Analysis System before run the ROOT-View");
+        QMessageBox::information(this, tr(""), "Install ROOT Analysis System before run the ROOT-View");
     }
 }
 void MainWindow::CreateROOTFile()
@@ -6582,7 +6731,7 @@ void MainWindow::CreateROOTFile()
         }
     }else{
         open = false;
-        ShowMessageBox("Please add spectrum, Rayleigh or Gauss distributions data in energy line input");
+        QMessageBox::information(this, tr(""), "Please add spectrum, Rayleigh or Gauss distributions data in energy line input");
     }
 
     //QTextStream(stdout) << " InputsVals[0].toDouble()= " << InputsVals[0].toDouble()  << " InputsVals[1].toDouble()= " << InputsVals[1].toDouble() << "\n";
@@ -7204,16 +7353,6 @@ QString MainWindow::changeArgumentOfACommandFromText(QString Text,QString comman
 }
 
 
-void MainWindow::validateGDMLText(){
-
-}
-void MainWindow::validateTEXText(){
-
-}
-void MainWindow::validateCommandText(){
-
-}
-
 
 
 // for multi Geometry files and one physicssourcce data
@@ -7368,18 +7507,14 @@ void MainWindow::RunForMultiGeomeries()
                 RunAndScoreCommands[5] + " " + ValuesOfInputs[Score_setSimNumOnRanksLineEdit]+ "\n"+
                 RunAndScoreCommands[10] + " " + UserCurrentResultsDirPath + "\n\n";
 
-        QString DoseCalcsMacrosfilenamee= DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
+        QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
 
-        fileManagerObject->WriteTextToFile(DoseCalcsMacrosfilenamee , MacrosText);
-        FillComponentsFromInputsFile(DoseCalcsMacrosfilenamee);
+        fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , MacrosText);
+        FillComponentsFromInputsFile(QsubSeparatedMacroFilePath);
 
         if(ui->checkBoxRocks->isChecked()){
 
             // this file name is used just in exe.sh file in rocks cluster simulations
-            //QsubSeparatedMacroFilePath = DoseCalcsMacrosfilenamee;
-            QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
-
-            fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , MacrosText);
 
             BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path
                     + "\n qsub "+DoseCalcs_build_dir_path+"/"+ExeFileName;
@@ -7394,7 +7529,7 @@ void MainWindow::RunForMultiGeomeries()
             on_pushButtonGenerateExe_clicked();
             on_pushButtonEditGeomFile_clicked();
             //}
-            ui->outputTextConsole->setText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
+            ui->outputTextConsole->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
             ui->tabWidget->setCurrentIndex(0);
 
             if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName) && QFile::exists(DoseCalcs_build_dir_path+"/"+ExeFileName)){
@@ -7406,7 +7541,7 @@ void MainWindow::RunForMultiGeomeries()
             }
         }else{
 
-            if(QFile::exists(DoseCalcsMacrosfilenamee) && QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
+            if(QFile::exists(QsubSeparatedMacroFilePath) && QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
 
                 if(MPI_USE=="YES"){
 
@@ -7418,16 +7553,16 @@ void MainWindow::RunForMultiGeomeries()
                     QString andd = "";
                     if(ui->checkBoxnohup->isChecked()){
                         if(!QFile::exists("/usr/bin/nohup")){
-                            ShowMessageBox("/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
+                            QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                             return;
                         }
                         nohup = "/usr/bin/nohup ";
-                        andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & "; macrosfileinc++;
+                        andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
                     }
 
                     BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n"
                             + nohup + " "+MPI_Lib_dir_path+"/mpirun " + Execution_setNumberOfRanksOrThreads + " "
-                            + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + DoseCalcsMacrosfilenamee + " " + Execution_setEventNumber + " " +andd
+                            + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                             ;
                 }else{
 
@@ -7441,18 +7576,18 @@ void MainWindow::RunForMultiGeomeries()
                     QString andd = "";
                     if(ui->checkBoxnohup->isChecked()){
                         if(!QFile::exists("/usr/bin/nohup")){
-                            ShowMessageBox("/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
+                            QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                             return;
                         }
                         nohup = "/usr/bin/nohup ";
-                        andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & "; macrosfileinc++;
+                        andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
                     }
 
                     BashCommandsForExecuting = "#! /bin/bash \n" +f
                             + "cd " +geant4_Lib_dir_path +"\n"+
                             + ". ./geant4.sh\n" +f +
                             + "cd " + DoseCalcs_build_dir_path + "\n"
-                            + nohup +" "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + DoseCalcsMacrosfilenamee + " " + Execution_setEventNumber + " " +andd
+                            + nohup +" "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                             ;
                 }
                 BashCommandsForExecuting += "\n bash \n";
@@ -7463,16 +7598,9 @@ void MainWindow::RunForMultiGeomeries()
                 fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
                 if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-                    //CoreProcess.execute("sh " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
-
-                    //QProcess process;
-                    //QStringList ff=(QStringList() << "-hold" << "-e" << "sh" << DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
-                    //process.startDetached("xterm", ff);
 
                     if(!ShowImportantSimulationData()){return;}
-
                     showResultsOutput("Computation Run" , 1);
-
                     ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
                 }
                 else{
@@ -7484,7 +7612,7 @@ void MainWindow::RunForMultiGeomeries()
                 //process->close();
 
             }else{
-                showResultsOutput("Verify that the simulate binary and the inputs.mac are existed in " + DoseCalcs_build_dir_path+"/"+MacroFileName, 0);
+                showResultsOutput("Verify that the simulate binary and the inputs.mac are existed in " + QsubSeparatedMacroFilePath, 0);
             }
         }
     }
@@ -7496,10 +7624,10 @@ bool MainWindow::CheckInputsForGeometryFiles(){
 
     // check World data
 
-    //ShowMessageBox(getArgumentOfACommandFromText(GeometryCommands[2], 10)[0]);
-    //ShowMessageBox(getArgumentOfACommandFromText(GeometryCommands[2], 10)[1]);
-    //ShowMessageBox(getArgumentOfACommandFromText(GeometryCommands[0], 10)[0]);
-    //ShowMessageBox(getArgumentOfACommandFromText(GeometryCommands[0], 10)[1]);
+    //QMessageBox::information(this, tr(""), getArgumentOfACommandFromText(GeometryCommands[2], 10)[0]);
+    //QMessageBox::information(this, tr(""), getArgumentOfACommandFromText(GeometryCommands[2], 10)[1]);
+    //QMessageBox::information(this, tr(""), getArgumentOfACommandFromText(GeometryCommands[0], 10)[0]);
+    //QMessageBox::information(this, tr(""), getArgumentOfACommandFromText(GeometryCommands[0], 10)[1]);
 
     if(getArgumentOfACommandFromText(GeometryCommands[2], 10).size() > 0){
 
@@ -7528,12 +7656,12 @@ bool MainWindow::CheckInputsForGeometryFiles(){
                 if(xl < vxl || yl < vyl || zl < vzl){
                     sizes = "("+QString::number(xl)+";"+QString::number(vxl)+"), ("+QString::number(yl)+";"+QString::number(vyl)+"), ("+QString::number(zl)+";"+QString::number(vzl)+")";
                     ui->Tab->setCurrentIndex(0);
-                    ShowMessageBox("The Voxelized phantom geometrical limits in command("+ VOXELCommands[0] +") exceed the simulation world dimensions " + sizes +". Edit the world dimension (i.e. 100 100 100) using (" + GeometryCommands[0] +") or voxel data (half x, y, and z) in " + MacrosFilePathReadForMultiGeometryAndOneSource);
+                    QMessageBox::information(this, tr(""), "The Voxelized phantom geometrical limits in command("+ VOXELCommands[0] +") exceed the simulation world dimensions " + sizes +". Edit the world dimension (i.e. 100 100 100) using (" + GeometryCommands[0] +") or voxel data (half x, y, and z) in " + MacrosFilePathReadForMultiGeometryAndOneSource);
                     return false;
                 }
             }else{
                 ui->Tab->setCurrentIndex(0);
-                ShowMessageBox("Canno't find the World volume data (" + GeometryCommands[0] +") in " + MacrosFilePathReadForMultiGeometryAndOneSource);
+                QMessageBox::information(this, tr(""), "Canno't find the World volume data (" + GeometryCommands[0] +") in " + MacrosFilePathReadForMultiGeometryAndOneSource);
                 return false;
             }
         }
@@ -7549,11 +7677,11 @@ bool MainWindow::CheckInputsForGeometryFiles(){
 
                 }else{
                     ui->Tab->setCurrentIndex(0);
-                    ShowMessageBox("Canno't find the voxels IDs data file in macros file command " + MacrosFilePathReadForMultiGeometryAndOneSource);
+                    QMessageBox::information(this, tr(""), "Canno't find the voxels IDs data file in macros file command " + MacrosFilePathReadForMultiGeometryAndOneSource);
                     return false;
                 }
             }else{
-                ShowMessageBox("Canno't find the voxels IDs data file in macros file command " + MacrosFilePathReadForMultiGeometryAndOneSource);
+                QMessageBox::information(this, tr(""), "Canno't find the voxels IDs data file in macros file command " + MacrosFilePathReadForMultiGeometryAndOneSource);
                 return false;
             }
         }
@@ -7562,12 +7690,12 @@ bool MainWindow::CheckInputsForGeometryFiles(){
         if(getArgumentOfACommandFromText(GeometryCommands[0], 10)[0] == "TET"){
             if(getArgumentOfACommandFromText(GeometryCommands[0], 10).size() < 2){
                 ui->Tab->setCurrentIndex(0);
-                ShowMessageBox("Add the two geometry file paths in macros file "  + MacrosFilePathReadForMultiGeometryAndOneSource +", the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
+                QMessageBox::information(this, tr(""), "Add the two geometry file paths in macros file "  + MacrosFilePathReadForMultiGeometryAndOneSource +", the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
                 return false;
             }else{
                 if(QFile::exists(getArgumentOfACommandFromText(GeometryCommands[0], 10)[1]) && QFile::exists(InputsVals[1])){
                 }else{ui->Tab->setCurrentIndex(0);
-                    ShowMessageBox("Add the two geometry file paths in macros file "  + MacrosFilePathReadForMultiGeometryAndOneSource +", the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
+                    QMessageBox::information(this, tr(""), "Add the two geometry file paths in macros file "  + MacrosFilePathReadForMultiGeometryAndOneSource +", the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
                     return false;
                 }
             }
@@ -7578,7 +7706,7 @@ bool MainWindow::CheckInputsForGeometryFiles(){
     InputsVals = ui->SourcelineEditParName->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
     if(InputsVals.size() < 1){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("Add particle name (i.e. gamma, e-, e+, alpha and proton)");
+        QMessageBox::information(this, tr(""), "Add particle name (i.e. gamma, e-, e+, alpha and proton)");
         return false;
     }else{
         for(int aa=0; aa < InputsVals.size();aa++){
@@ -7586,7 +7714,7 @@ bool MainWindow::CheckInputsForGeometryFiles(){
             for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals[aa]){ IsIn = true;}}
             if(IsIn == false){
                 ui->Tab->setCurrentIndex(1);
-                ShowMessageBox("The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the source particle LineEdit widget");
+                QMessageBox::information(this, tr(""), "The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the source particle LineEdit widget");
                 return false;
             }
         }
@@ -7598,13 +7726,13 @@ bool MainWindow::CheckInputsForGeometryFiles(){
     if(ui->comboBoxTypeOfSources->currentText()=="Volume"){
         if(InputsVals.size() < 4){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add region name with box dimension (i.e. 10 25 15)");
+            QMessageBox::information(this, tr(""), "Add region name with box dimension (i.e. 10 25 15)");
             return false;
         }
     }else if(ui->comboBoxTypeOfSources->currentText()=="Voxels" || ui->comboBoxTypeOfSources->currentText()=="TET"){
         if(InputsVals.size() < 1){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add region/s name (i.e. Liver)");
+            QMessageBox::information(this, tr(""), "Add region/s name (i.e. Liver)");
             return false;
         }else{
 
@@ -7633,7 +7761,7 @@ bool MainWindow::CheckInputsForGeometryFiles(){
 
                     if(IsIn == false){
                         ui->Tab->setCurrentIndex(1);
-                        ShowMessageBox("The region\""+ InputsVals[aa] +"\" is not defined. Remove it from the source region LineEdit widget or add the \""+ InputsVals[aa] +"\" region data");
+                        QMessageBox::information(this, tr(""), "The region\""+ InputsVals[aa] +"\" is not defined. Remove it from the source region LineEdit widget or add the \""+ InputsVals[aa] +"\" region data");
                         return false;
                     }
                 }
@@ -7647,14 +7775,14 @@ bool MainWindow::CheckInputsForGeometryFiles(){
         InputsVals = ui->lineEditSpecialEnergyDistributionParameter->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
         if(InputsVals.size() < 1){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add an energy value");
+            QMessageBox::information(this, tr(""), "Add an energy value");
             return false;
         }
         for(int aa=0; aa < InputsVals.size();aa++){
             QString val = InputsVals[aa];
             if(val.toDouble() == 0. || val.isEmpty() || val.isNull()){
                 ui->Tab->setCurrentIndex(1);
-                ShowMessageBox("The value: \"" + val + "\" not accepted.");
+                QMessageBox::information(this, tr(""), "The value: \"" + val + "\" not accepted.");
                 return false;
             }
         }
@@ -7665,7 +7793,7 @@ bool MainWindow::CheckInputsForGeometryFiles(){
     InputsVals = ui->lineEditSpecialEnergyDistributionParameter->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
     if(InputsVals.size() == 0){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("Add energy value (i.e. 0.5)");
+        QMessageBox::information(this, tr(""), "Add energy value (i.e. 0.5)");
         return false;
     }
 
@@ -7673,7 +7801,7 @@ bool MainWindow::CheckInputsForGeometryFiles(){
         InputsVals = ui->lineEditSpecialAngulatDistributionParameter->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
         if(InputsVals.size() < 2){
             ui->Tab->setCurrentIndex(1);
-            ShowMessageBox("Add theta and phi values for directed momentum distribution (i.e. Liver)");
+            QMessageBox::information(this, tr(""), "Add theta and phi values for directed momentum distribution (i.e. Liver)");
             return false;
         }
     }
@@ -7682,13 +7810,13 @@ bool MainWindow::CheckInputsForGeometryFiles(){
     QString val = ui->lineEditNumberOfEvent->text();
     if(val.toDouble() == 0. || val.isEmpty() || val.isNull() || val.toInt() >= INT32_MAX){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("The number of events: \"" + val + "\" not accepted.");
+        QMessageBox::information(this, tr(""), "The number of events: \"" + val + "\" not accepted.");
         return false;
     }
     val = ui->lineEditNumberOfRanksOrThreads->text();
     if(val.toInt() == 0. || val.isEmpty() || val.isNull()){
         ui->Tab->setCurrentIndex(1);
-        ShowMessageBox("The number of sub-simulations: \"" + val + "\" not accepted.");
+        QMessageBox::information(this, tr(""), "The number of sub-simulations: \"" + val + "\" not accepted.");
         return false;
     }
 
@@ -7714,12 +7842,12 @@ void MainWindow::on_pushButtonCheckMatGeoCommandsOfFiles_clicked()
         }
     }
     if(matgeomedatagood){
-        ShowMessageBox("The first inputs check \"GOOD\"");
+        QMessageBox::information(this, tr(""), "The first inputs check \"GOOD\"");
     }
 }
 
 void MainWindow::removeHugFiles_slot(){
-//    ShowMessageBox("Remove File");
+//    QMessageBox::information(this, tr(""), "Remove File");
 
     if(ui->checkBoxRocks->isChecked()){
 
@@ -7734,7 +7862,7 @@ void MainWindow::removeHugFiles_slot(){
             }
         }
         if(pvr){
-            ShowMessageBox("The files: \n" + files + " are removed. Please check the simulations output files to resubmite the failed simulations");
+            QMessageBox::information(this, tr(""), "The files: \n" + files + " are removed. Please check the simulations output files to resubmite the failed simulations");
         }
 
         timer.singleShot(60000, this, SLOT(removeHugFiles_slot()));
@@ -8614,8 +8742,6 @@ void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
 {
 
 }
-
-
 
 
 

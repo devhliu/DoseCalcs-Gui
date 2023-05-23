@@ -8,10 +8,7 @@ extern qint64 pidOfPreviousNotKilled;
 terminal::terminal(QWidget *parent) : QWidget(parent)
 {
     if(!QFile::exists("/usr/bin/xterm")){
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("");
-        msgBox.setText(" Install \"xterm\" by typing the command below in your terminal: \n sudo apt-get install xterm");
-        msgBox.exec();
+        QMessageBox::information(this, tr("xterm not found")," Install \"xterm\" by typing the command below in your terminal: \n\"sudo apt-get install xterm\" on ubuntu, \n or \n\"sudo yum install xterm\"");
     }
 }
 void terminal::executeCommand(QString command){

@@ -42,9 +42,6 @@ private:
 
     bool CheckInputsForGeometryFiles();
 
-    void validateGDMLText();
-    void validateTEXText();
-    void validateCommandText();
     void UpdateMatVolSolList(int);
     QStringList getArgumentOfACommandFromText(QString, int);
     QString changeArgumentOfACommandFromText(QString, QString, QString);
@@ -81,7 +78,6 @@ private:
     bool TestSimulateExecutableInputsToRun();
     bool TestMergeExecutableInputsToRun();
     bool TestVisualizingInputsToRun();
-    void ShowMessageBox(QString);
     QString ShowMessageBoxAndGetPath(QString);
 
     bool ShowImportantSimulationData();
@@ -220,6 +216,8 @@ private:
     QVector <QString> VolsNames ;
     QVector <QString> PhyVolsNames ;
     QStringList DefinedParticlesNames;
+
+    QMap <QString,QString> PreDefinedGeomMap ;
 
     QMap <QString,QString> ElementsSymbolZ ;
     QMap <QString,QString> ElementsSymbolA ;
@@ -452,6 +450,8 @@ private slots:
     void btnAddDcmTypeDir_slot();
     void btnChooseDcmDir_slot();
     void btnAddVol_slot();
+    void btnChooseADir1_slot();
+    void btnChooseADir2_slot();
     void btnAddSol_slot();
     void BtnAddSolPath_slot();
     void BtnAddVolPath_slot();
@@ -605,7 +605,17 @@ private slots:
 
     void on_actionSave_Inputs_To_Default_File_triggered();
 
+    void on_actionSend_Results_triggered();
+
+    void on_checkBoxUsePreDefinedGeom_stateChanged(int arg1);
+
 private:
+
+    QString Path1;
+    QString Path2;
+
+    QLineEdit* FromPath;
+    QLineEdit* ToPath;
 
     bool IsICRPFilesAreRead ;
     QStringList MacrosFiles;

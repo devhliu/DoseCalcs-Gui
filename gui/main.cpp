@@ -79,7 +79,7 @@ void getOSName(){
     fp = popen("lsb_release -ds", "r");
     fgets(buffer, 50, fp);
     pclose(fp);
-    printf("Name of the OS is : %s",buffer);
+    printf("Using DoseCalcs on %s",buffer);
     OSNameVersion = buffer;
 
     if(OSNameVersion.toLower().contains("ubuntu")){QTextStream(stdout) << "Welcome from Ubuntu: (" << buffer << ")"<< "\n";}
@@ -101,9 +101,15 @@ std::string getFileExt(const std::string& s) {
     return("");
 }
 
-extern bool TestPackagesPathsBeforToRun(QString PN){
+extern QString TestPackagesPathsBeforToRun(){
 
     QString PackagesInfo = "The needed files and directories for DoseCalcs simulation:\n\n";
+
+    if(!QFile::exists("/usr/bin/xterm")){
+        PackagesInfo += "***** xterm (Not Found) - /usr/bin/xterm\n\n";
+    }else{
+        PackagesInfo += "***** xterm (Found) - /usr/bin/xterm \n\n";
+    }
 
     if(!QFile::exists(DoseCalcs_build_dir_path+"/simulate")){
         PackagesInfo += "***** DoseCalcs Executable (Not Found) - "+DoseCalcs_build_dir_path+"/simulate"+"\n\n";
@@ -147,11 +153,13 @@ extern bool TestPackagesPathsBeforToRun(QString PN){
         PackagesInfo += "*** DCMTK (Found) - "+DCMTK_Lib_dir_path+"\n\n";
     }
 
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("");
-    msgBox.setText(PackagesInfo);
-    if(msgBox.exec() == QDialog::Accepted){}
-    else{}
+    if(!QFile::exists("/usr/bin/scp")){
+        PackagesInfo += "*** scp (Not Found) - /usr/bin/scp\n\n";
+    }else{
+        PackagesInfo += "*** scp (Found) - /usr/bin/scp \n\n";
+    }
+
+    return PackagesInfo;
 }
 
 
