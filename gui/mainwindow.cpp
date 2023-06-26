@@ -3585,28 +3585,23 @@ void MainWindow::on_actionHow_To_Use_triggered()
 void MainWindow::on_actionUpdate_triggered()
 {
 
-    if(QMessageBox::Yes == QMessageBox::question(this, tr("Update"), "Automatic download and installation of the latest version of DoseCalcs on the terminal. Restart DoseCalcs-Gui after finishing")){
+    if(QMessageBox::Yes == QMessageBox::question(this, tr("Update"), "Automatic download and installation of the latest version of DoseCalcs on the terminal. Modify the download and installation commands if necessary and click Save/Close button. Restart DoseCalcs-Gui after finishing")){
 
         BashCommandsForExecuting = "cd "+QDir::currentPath()+"/..\n"+
                 "wget "+ DoseCalcsDownloadURL +"\n"+
                 "tar xvf main.tar.gz -C " + QDir::currentPath()+"/..\n"+
                 "cd "+ QDir::currentPath() + "\n"+
+                "rm -r Makefile gui DoseCalcs \n"+
                 "qmake "+QDir::currentPath()+"/../DoseCalcs-Gui-main/DoseCalcs.pro \n"+
                 "make -j" + QString::number(NumberOfCPUCores) + "\n"
+                "bash \n"
                 ;
-
-        BashCommandsForExecuting += "\n bash \n";
-
-        showResultsOutput("Writing Run Commands : \n", 0);
-        showResultsOutput(BashCommandsForExecuting , 0);
-        showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
-
-        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-
-        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-            showResultsOutput("Download, Uptate, and Restart commands" , 1);
-            ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
-        }
+        EditFlag = 12;
+        ui->tabWidget->setTabText(0,"Update DoseCalcs Commands");
+        ui->GeometryFileTextEdit->clear();
+        showResultsOutput("", 4);
+        ui->GeometryFileTextEdit->setPlainText(BashCommandsForExecuting);
+        ui->tabWidget->setCurrentIndex(0);
     }
 }
 void MainWindow::on_actionRestart_triggered()
@@ -7235,6 +7230,10 @@ void MainWindow::on_pushButtonEditGeomFile_clicked()
     }
     else if (EditFlag == 11){ // SaveMacrosFilePath file text saving
         fileManagerObject->WriteTextToFile( AnyOpenedFilePath , ui->GeometryFileTextEdit->toPlainText());
+    }
+    else if (EditFlag == 12){ // DoseCalcs update (download and install) commands file text saving
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , ui->GeometryFileTextEdit->toPlainText());
+        ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     }
 
     ui->tabWidget->setTabText(0,"Inputs Edit");
