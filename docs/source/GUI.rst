@@ -77,6 +77,7 @@ Now, to run the DoseCalcs-Gui application, from terminal /home/User/Desktop/Dose
 
  .. code-block:: bash
 
+   $ export QT_QPA_PLATFORM=xcb
    $ ./DoseCalcs
 
 Installation window and DoseCalcs-Core component Installing 
@@ -177,6 +178,8 @@ Several menu items in the menubar can be investigated, such as:
 - Return: refill the GUI components if they are cleared.
 - Clear edit text and terminal window. 
 - Exit: Close the DoseCalcs-Gui window.
+- Update: Automatically the latest version of DoseCalcs downloading and installing on terminal.
+- Restart: Closing the DoseCalcs-Gui window and reopening it.
 - About: Read information about the developer and documentation. 
 
 .. .. _MenuItems: 
