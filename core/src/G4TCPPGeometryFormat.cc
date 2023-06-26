@@ -6,8 +6,8 @@
 // * the Geant4 Collaboration.  It is provided  under  the terms  and *
 // * conditions of the Geant4 Software License,  included in the file *
 // * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
+// * include a list of copyright holders.                             * 
+// *                                                                  *  
 // * Neither the authors of this software system, nor their employing *
 // * institutes,nor the agencies providing financial support for this *
 // * work  make  any representation or  warranty, express or implied, *
@@ -2118,12 +2118,29 @@ void G4TCPPGeometryFormat::ConstructLogicalVolumes(){
     matAir->AddElement(elN,0.7);
     matAir->AddElement(elO,0.3);
 
+    d = 1.04 *g/cm3;
+    soft = new G4Material("Brain_soft_tissue",d,18);
+    soft->AddElement(elH,0.10454);
+    soft->AddElement(elC,0.22663);
+    soft->AddElement(elN,0.02490);
+    soft->AddElement(elO,0.63525);
+    soft->AddElement(elNa,0.00112);
+    soft->AddElement(elMg,0.00013);
+    soft->AddElement(elSi,0.00030);
+    soft->AddElement(elP,0.00134);
+    soft->AddElement(elS,0.00204);
+    soft->AddElement(elCl,0.00133);
+    soft->AddElement(elK,0.00208);
+    soft->AddElement(elCa,0.00024);
+    soft->AddElement(elFe,0.00005);
+    soft->AddElement(elZn,0.00003);
+    soft->AddElement(elRb,0.00001);
+    soft->AddElement(elZr,0.00001);
+
     G4double ax = 6.84 * cm;
     G4double by= 8.7 * cm;
     G4double cz = 5.9 * cm;
-
     G4Ellipsoid* brain = new G4Ellipsoid("Brain", ax, by, cz);
-
     G4LogicalVolume* logicBrain =  new G4LogicalVolume(brain, soft, "Brain", 0, 0, 0);
 
 /*

@@ -24,5 +24,7 @@
         <file>res/ValidatePackages.png</file>
         <file>res/send.png</file>
         <file>res/saveDefault.png</file>
+        <file>res/Restart.png</file>
+        <file>res/Update.png</file>
     </qresource>
 </RCC>

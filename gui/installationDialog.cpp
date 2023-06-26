@@ -19,8 +19,8 @@ extern QString DCMTK_Lib_dir_path ;
 extern QString MPI_Lib_dir_path ;
 extern QString CMAKE_Lib_dir_path ;
 extern QString Root_Lib_dir_path ;
-extern QString DoseCalcs_source_dir_path ;
-extern QString DoseCalcs_build_dir_path;
+extern QString DoseCalcsCore_source_dir_path ;
+extern QString DoseCalcsCore_build_dir_path;
 extern QString DoseCalcs_build_dir_name;
 
 extern QString UserCurrentResultsDirPath;
@@ -80,7 +80,7 @@ InstallationDialog::InstallationDialog(QWidget *parent) : QDialog(parent), ui(ne
     MPI_zip_path = "";
     Xerces_zip_path = "";
     DCMTK_zip_path = "";
-    DoseCalcs_source_dir_path = GUIPackagesAndFilesDirPath+"/DoseCalcsCore";
+    DoseCalcsCore_source_dir_path = GUIPackagesAndFilesDirPath+"/DoseCalcsCore";
     
     Geant4_install_dir_path = "";
     DCMTK_install_dir = "";
@@ -117,16 +117,18 @@ InstallationDialog::InstallationDialog(QWidget *parent) : QDialog(parent), ui(ne
 
     showResultsOutput("Installation dir : " + GUIPackagesAndFilesDirPath , 0);
 
-    QString BashCommandsForExecuting = "#! /bin/bash \n bash \n ";
-    filesManagerObj->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-    execShProcess(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    QString BashCommandsForExecuting = "#! /bin/bash \n "
+                                           "cd "+DoseCalcsCore_build_dir_path+"\n"
+                                           "bash \n ";
+    filesManagerObj->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    execShProcess(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
     setCompleters();
 }
 
 InstallationDialog::~InstallationDialog()
 {
-    UserCurrentResultsDirPath = DoseCalcs_build_dir_path + "/" + ResultDirectoryName;
+    UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path + "/" + ResultDirectoryName;
     delete ui;
     delete filesManagerObj;
 }
@@ -144,17 +146,17 @@ void InstallationDialog::getConfigurationDataForInstallation(){
     Root_Lib_dir_path = lines["ROOT_INSTALL_DIR"];
     DCMTK_Lib_dir_path = lines["DCMTK_INSTALL_DIR"];
 
-    DoseCalcs_source_dir_path = lines["DoseCalcs_SOURCE_DIR"];
-    if(!QFile::exists(DoseCalcs_source_dir_path)){ // create install dir for DCMTK
-        DoseCalcs_source_dir_path = GUIPackagesAndFilesDirPath+"/DoseCalcsCore";
-        showResultsOutput("Default DoseCalcs source directory " + DoseCalcs_source_dir_path + " is used", 4);
+    DoseCalcsCore_source_dir_path = lines["DoseCalcs_SOURCE_DIR"];
+    if(!QFile::exists(DoseCalcsCore_source_dir_path)){ // create install dir for DCMTK
+        DoseCalcsCore_source_dir_path = GUIPackagesAndFilesDirPath+"/DoseCalcsCore";
+        showResultsOutput("Default DoseCalcs source directory " + DoseCalcsCore_source_dir_path + " is used", 4);
     }
 
     QDir dir = QDir(QCoreApplication::applicationDirPath());
-    DoseCalcs_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
-    if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
+    DoseCalcsCore_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
+    if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
         dir.mkdir(DoseCalcs_build_dir_name);
-        showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
+        showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
     }
 
     CMAKE_Url_String = lines["CMAKE_DOWNLOAD_URL"] ;
@@ -170,7 +172,7 @@ void InstallationDialog::getConfigurationDataForInstallation(){
     ui->lineEdit_2->setText(MPI_Lib_dir_path);
     ui->lineEdit_3->setText(Root_Lib_dir_path);
     ui->lineEdit_4->setText(DCMTK_Lib_dir_path);
-    ui->lineEdit_5->setText(DoseCalcs_source_dir_path);
+    ui->lineEdit_5->setText(DoseCalcsCore_source_dir_path);
 
     if(lines["CENTOS_ROCKS_CLUSTER"] == "YES"){ ui->checkBoxRocks->setChecked(true); }else{ui->checkBoxRocks->setChecked(false);}
     if(lines["MPI_USE"] == "YES"){ ui->checkBox->setChecked(true); }else{ui->checkBox->setChecked(false);}
@@ -629,25 +631,25 @@ void InstallationDialog::create_AppInstall_sh_file(){
     
     getPathsFromEditLines();
     
-    if(!QFile::exists(DoseCalcs_source_dir_path)){ // create install dir for DCMTK
+    if(!QFile::exists(DoseCalcsCore_source_dir_path)){ // create install dir for DCMTK
         PackageName = "DoseCalcs core source";
-        DoseCalcs_source_dir_path = GetChoosenDirFromDialog(1);
+        DoseCalcsCore_source_dir_path = GetChoosenDirFromDialog(1);
     }
 
-    /*QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
-    DoseCalcs_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
-    if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
-        QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
+    /*QDir* dir = new QDir(DoseCalcsCore_source_dir_path) ; dir->cdUp();
+    DoseCalcsCore_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
+    if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
+        QDir* dir = new QDir(DoseCalcsCore_source_dir_path) ; dir->cdUp();
         dir->mkdir(DoseCalcs_build_dir_name);
-        showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
+        showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
     }
     */
 
     QDir dir = QDir(QCoreApplication::applicationDirPath());
-    DoseCalcs_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
-    if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
+    DoseCalcsCore_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
+    if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
         dir.mkdir(DoseCalcs_build_dir_name);
-        showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
+        showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
     }
 
     QString PackagesToAdd = "";
@@ -691,13 +693,13 @@ void InstallationDialog::create_AppInstall_sh_file(){
 
 
     Cmake_Command = cmakeTruePath + " " + PackagesToAdd
-            + DoseCalcs_source_dir_path ;
+            + DoseCalcsCore_source_dir_path ;
     
     App_text_shFile =
             PathToAdd +
             "\ncd " +geant4_Lib_dir_path +
             "\n. ./geant4.sh\n" +
-            "cd "+ DoseCalcs_build_dir_path +
+            "cd "+ DoseCalcsCore_build_dir_path +
             "\nmake clean \nrm -r CMake* cmake_install.cmake Makefile simulate merge analysis \n"+
             Cmake_Command + "\n"+
             "make -j" + QString::number(NumberOfCPUCores) +"\n"+
@@ -1032,6 +1034,8 @@ void InstallationDialog::showResultsOutput(QString text , int level){
 void InstallationDialog::execShProcess(QString command){
     
 
+    filesManagerObj->WriteTextToFile(command, filesManagerObj->ReadTextFromFileInOneString(command)+"\n bash");
+
     //command += "\n bash \n";
 
     ui->tabWidget->removeTab(0);
@@ -1166,7 +1170,7 @@ void InstallationDialog::on_pushButton_7_clicked()
             "MPI_INSTALL_DIR        "+ MPI_Lib_dir_path +"\n"+
             "ROOT_INSTALL_DIR       "+ Root_Lib_dir_path +"\n"+
             "DCMTK_INSTALL_DIR      "+ DCMTK_Lib_dir_path +"\n"+
-            "DoseCalcs_SOURCE_DIR   "+ DoseCalcs_source_dir_path +"\n\n"+
+            "DoseCalcs_SOURCE_DIR   "+ DoseCalcsCore_source_dir_path +"\n\n"+
             
             "DEFAULT_DoseCalcs_INPUTS     "+ ui->lineEdit_11->text() +"\n\n"
 
@@ -1206,22 +1210,22 @@ void InstallationDialog::getPathsFromEditLines(){
     if(QFile::exists(ui->lineEdit_4->text())){DCMTK_Lib_dir_path = ui->lineEdit_4->text();}
     if(QFile::exists(ui->lineEdit_5->text())){
 
-        DoseCalcs_source_dir_path = ui->lineEdit_5->text();
+        DoseCalcsCore_source_dir_path = ui->lineEdit_5->text();
 
-        /*QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
-        DoseCalcs_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
-        if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
-            QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
+        /*QDir* dir = new QDir(DoseCalcsCore_source_dir_path) ; dir->cdUp();
+        DoseCalcsCore_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
+        if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
+            QDir* dir = new QDir(DoseCalcsCore_source_dir_path) ; dir->cdUp();
             dir->mkdir(DoseCalcs_build_dir_name);
-            showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
+            showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
         }
         */
 
         QDir dir = QDir(QCoreApplication::applicationDirPath());
-        DoseCalcs_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
-        if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
+        DoseCalcsCore_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
+        if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
             dir.mkdir(DoseCalcs_build_dir_name);
-            showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
+            showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
         }
 
     }
@@ -1287,22 +1291,22 @@ void InstallationDialog::on_pushButton_5_clicked()
     PackageName = "DoseCalcs Source ";
     QString a = GetChoosenDirFromDialog(1);
     if(a != ""){
-        DoseCalcs_source_dir_path = a;
-        ui->lineEdit_5->setText(DoseCalcs_source_dir_path);
+        DoseCalcsCore_source_dir_path = a;
+        ui->lineEdit_5->setText(DoseCalcsCore_source_dir_path);
     }
 
-    QDir* SourceDirectory = new QDir(DoseCalcs_source_dir_path);
+    QDir* SourceDirectory = new QDir(DoseCalcsCore_source_dir_path);
 
     if(SourceDirectory->exists()){
-        QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
-        DoseCalcs_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
-        if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
-            QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
+        QDir* dir = new QDir(DoseCalcsCore_source_dir_path) ; dir->cdUp();
+        DoseCalcsCore_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
+        if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
+            QDir* dir = new QDir(DoseCalcsCore_source_dir_path) ; dir->cdUp();
             dir->mkdir(DoseCalcs_build_dir_name);
-            showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created", 4);
+            showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created", 4);
         }
         else{
-            showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is already existed", 4);
+            showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is already existed", 4);
         }
     }
 }
@@ -1316,7 +1320,7 @@ void InstallationDialog::on_pushButton_6_clicked()
     chosen_Dir = QFileDialog::getOpenFileName(
                 this,
                 tr(PackageName.toStdString().c_str()),
-                GUIPackagesAndFilesDirPath+"/"+DoseCalcs_build_dir_path+"/Scripts",
+                GUIPackagesAndFilesDirPath+"/"+DoseCalcsCore_build_dir_path+"/Scripts",
                 "All files (*.*)"//;;Text files (*.txt)" // extentions to show
                 );
 
@@ -1450,9 +1454,12 @@ void InstallationDialog::on_pushButton_9_clicked()
 void InstallationDialog::on_ClearTerButton_clicked()
 {
     if( ui->tabWidget->currentIndex() == 0){
-        QString BashCommandsForExecuting = "#! /bin/bash \n bash \n" ;
-        filesManagerObj->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-        execShProcess(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        QString BashCommandsForExecuting = "#! /bin/bash \n "
+                                               "cd "+DoseCalcsCore_build_dir_path+"\n"
+                                               "bash \n ";
+
+        filesManagerObj->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        execShProcess(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     }else{
         ui->installationDialogTextOutput->clear();
     }

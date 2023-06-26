@@ -33,34 +33,27 @@
 
 //#include <stdexcept>
 
-#include "globals.hh"
-#include "G4SystemOfUnits.hh"
+//#include "globals.hh"
+//#include "G4SystemOfUnits.hh"
 
 #include "G4TVolumeConstruction.hh"
 #include "G4TUserPhysicsList.hh"
 #include "G4TNeutronPhysicsList.hh"
 
-#include "G4TRunAction.hh"
+//#include "G4TRunAction.hh"
 //#include "G4TDirectPrimaryGeneratorAction.hh"
 //#include "G4TReadPrimaryGeneratorAction.hh"
 
 #include "G4TActionInitialization.hh"
-//#include "FTFP_BERT.hh"
-//#include "FTFP_BERT_HP.hh"
 
 #include "G4PhysListFactory.hh"
-#include "G4EmStandardPhysics.hh"
-#include "G4HadronElasticPhysics.hh"
-#include "G4HadronInelasticQBBC.hh"
-#include "G4RadioactiveDecayPhysics.hh"
-#include "G4StepLimiterPhysics.hh"
+//#include "G4EmStandardPhysics.hh"
+//#include "G4HadronElasticPhysics.hh"
+//#include "G4HadronInelasticQBBC.hh"
+//#include "G4RadioactiveDecayPhysics.hh"
+//#include "G4StepLimiterPhysics.hh"
 
 #include "G4RunManagerFactory.hh"
-
-#include "G4GenericBiasingPhysics.hh"
-
-#include "QGSP_BERT.hh"
-//#include "G4GeometrySampler.hh"
 
 //#ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -70,9 +63,6 @@
 #include "G4UIExecutive.hh"
 #include "G4UIterminal.hh"
 //#endif
-
-#include "G4ProcessManager.hh"
-#include "G4ProcessVector.hh"
 
 #ifdef G4MPI_USE
 #include "mpi.h"

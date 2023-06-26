@@ -51,6 +51,3 @@ void terminal::executeNormalCommandWithoutKillingPre(QString command){
 
     QTextStream(stdout) << " pidOfPreviousNotKilled: " << pidOfPreviousNotKilled << "\n";
 }
-
-
-

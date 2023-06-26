@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1528</width>
-    <height>1026</height>
+    <height>728</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -40,7 +40,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1824</width>
+         <width>1819</width>
          <height>943</height>
         </rect>
        </property>
@@ -87,6 +87,16 @@
               <string>Geometry</string>
              </attribute>
              <layout class="QFormLayout" name="formLayout_2">
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBoxFixGeometryCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignor the geometry and materials macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Geometry and Materials</string>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="0" colspan="2">
                <widget class="QGroupBox" name="groupBoxGeometry">
                 <property name="title">
@@ -442,13 +452,13 @@
                 </layout>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="checkBoxFixGeometryCommands">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignor the geometry and materials macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <item row="3" column="0" colspan="2">
+               <widget class="QFrame" name="fraHelpGUIInput">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
                 </property>
-                <property name="text">
-                 <string>Geometry and Materials</string>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
                 </property>
                </widget>
               </item>
@@ -490,19 +500,25 @@
                 </layout>
                </widget>
               </item>
+              <item row="7" column="0">
+               <spacer name="verticalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
               <item row="5" column="0" colspan="2">
                <widget class="QGroupBox" name="groupBox_4">
                 <property name="title">
                  <string>Simulate geometries with one radiation source and physics configuration</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_12">
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="pushButtonAddGeometryMacros">
-                   <property name="text">
-                    <string>Select Geometries Macros Files</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="0">
                   <widget class="QCheckBox" name="checkBoxSimulateGeometriesWitOneSource">
                    <property name="text">
@@ -524,17 +540,14 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="pushButtonAddGeometryMacros">
+                   <property name="text">
+                    <string>Select Geometries Macros Files</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
-               </widget>
-              </item>
-              <item row="3" column="0" colspan="2">
-               <widget class="QFrame" name="fraHelpGUIInput">
-                <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
                </widget>
               </item>
              </layout>
@@ -544,6 +557,16 @@
               <string>Physics, Source, Run</string>
              </attribute>
              <layout class="QFormLayout" name="formLayout">
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBoxFixPhysicsCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the physics macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Physics Setting</string>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="0" colspan="2">
                <widget class="QGroupBox" name="groupBoxPhysics">
                 <property name="title">
@@ -763,6 +786,16 @@
                   </widget>
                  </item>
                 </layout>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="checkBoxFixSourceCommands">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the radiation source macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Radiation Source</string>
+                </property>
                </widget>
               </item>
               <item row="3" column="0" colspan="2">
@@ -1262,26 +1295,6 @@
                   </widget>
                  </item>
                 </layout>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QCheckBox" name="checkBoxFixSourceCommands">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the radiation source macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Radiation Source</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="checkBoxFixPhysicsCommands">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck to ignore the physics macros data from the read input file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Physics Setting</string>
-                </property>
                </widget>
               </item>
              </layout>
@@ -2028,10 +2041,24 @@
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="AnalysisbtnSaveInputs">
+                   <property name="text">
+                    <string>Save To Macro File</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="0" column="0">
                   <widget class="QPushButton" name="btnAnalysiInputFileFile">
                    <property name="text">
                     <string>Load Inputs</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QPushButton" name="AnalysisbtnGraphsDirPath">
+                   <property name="text">
+                    <string>Open output Dir</string>
                    </property>
                   </widget>
                  </item>
@@ -2042,24 +2069,17 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QPushButton" name="RootAnalyseBtnReset">
-                   <property name="text">
-                    <string>Reset</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="AnalysisbtnSaveInputs">
-                   <property name="text">
-                    <string>Save To Macro File</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="2" column="4">
                   <widget class="QPushButton" name="RootAnalysispushButtonOpenROOTGUI">
                    <property name="text">
                     <string>Open ROOT GUI</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="RootAnalyseBtnReset">
+                   <property name="text">
+                    <string>Reset</string>
                    </property>
                   </widget>
                  </item>
@@ -2070,12 +2090,18 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="2">
-                  <widget class="QPushButton" name="AnalysisbtnGraphsDirPath">
-                   <property name="text">
-                    <string>Open output Dir</string>
+                 <item row="3" column="0">
+                  <spacer name="verticalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
                    </property>
-                  </widget>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </widget>
@@ -2093,7 +2119,7 @@
               <item row="0" column="0">
                <widget class="QGroupBox" name="groupBox_5">
                 <property name="title">
-                 <string>Radionuclides Radiation Data</string>
+                 <string>Radionuclides data and Conversion Coefficients</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_15">
                  <property name="leftMargin">
@@ -2108,7 +2134,115 @@
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
-                 <item row="6" column="0" colspan="2">
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="pushButtonReadICRPData">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read ICRP SAFs files and organs Masses files that contains SAFs of particles and organs (sources and targets) masses. These data will be used to calculate dosimetry quantities of radionuclides in order to classify according to the user parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string>Read ICRP Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="19" column="0">
+                  <spacer name="verticalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="18" column="1">
+                  <widget class="QPushButton" name="pushButtonSaveTableInPDF">
+                   <property name="text">
+                    <string>Save Table (PDF)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_25">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_23">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QFrame" name="frame_27">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_26">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxQuantityNucl"/>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxEffDoseUnit"/>
+                       </item>
+                       <item>
+                        <widget class="QCheckBox" name="checkBoxEffDoseLimNucl">
+                         <property name="text">
+                          <string>Limits</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QDoubleSpinBox" name="doubleSpinBoxMinEffDose">
+                         <property name="maximum">
+                          <double>1000000000.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxEffDose">
+                         <property name="maximum">
+                          <double>1000000000.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="7" column="0" colspan="2">
                   <widget class="QFrame" name="frame_24">
                    <property name="frameShape">
                     <enum>QFrame::NoFrame</enum>
@@ -2130,43 +2264,160 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMinHalflives">
-                      <property name="maximum">
-                       <double>1000000000.000000000000000</double>
+                     <widget class="QFrame" name="frame_26">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
                       </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxHalflives">
-                      <property name="maximum">
-                       <double>1000000000.000000000000000</double>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
                       </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_25">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QCheckBox" name="checkBoxHalflivesNucl">
+                         <property name="text">
+                          <string>Half-live limits</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QDoubleSpinBox" name="doubleSpinBoxMinHalflives">
+                         <property name="maximum">
+                          <double>1000000000.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxHalflives">
+                         <property name="maximum">
+                          <double>1000000000.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxPeriodUnit"/>
+                       </item>
+                      </layout>
                      </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="comboBoxPeriodUnit"/>
                     </item>
                    </layout>
                   </widget>
                  </item>
-                 <item row="4" column="0" colspan="3">
-                  <widget class="QCheckBox" name="checkBoxHalflivesNucl">
+                 <item row="15" column="1">
+                  <widget class="QPushButton" name="pushButtonReverseData">
                    <property name="text">
-                    <string>Half-live limits</string>
+                    <string>Ascending</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <widget class="QPushButton" name="pushButtonReadICRPData">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read ICRP SAFs files and organs Masses files that contains SAFs of particles and organs (sources and targets) masses. These data will be used to calculate dosimetry quantities of radionuclides in order to classify according to the user parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <item row="14" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_5">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
                    </property>
-                   <property name="text">
-                    <string>Read ICRP Data</string>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_16">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="spacing">
+                     <number>6</number>
+                    </property>
+                    <item row="1" column="0" colspan="4">
+                     <widget class="QFrame" name="frame_29">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_29">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxTotalorSourceOrCombNucl"/>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxPhantom"/>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxTargets"/>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_12">
+                         <property name="text">
+                          <string>  &lt;------  </string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxSources"/>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="16" column="0" colspan="2">
+                  <widget class="QFrame" name="frame_31">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0" colspan="2">
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="pushButtonSaveMasses">
+                   <property name="text">
+                    <string>Save Masses</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
                   <widget class="QFrame" name="frame_20">
                    <property name="frameShape">
                     <enum>QFrame::NoFrame</enum>
@@ -2198,7 +2449,10 @@
                       <property name="frameShadow">
                        <enum>QFrame::Raised</enum>
                       </property>
-                      <layout class="QGridLayout" name="_2">
+                      <layout class="QHBoxLayout" name="horizontalLayout_30">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
                        <property name="leftMargin">
                         <number>0</number>
                        </property>
@@ -2211,41 +2465,38 @@
                        <property name="bottomMargin">
                         <number>0</number>
                        </property>
-                       <property name="spacing">
-                        <number>0</number>
-                       </property>
-                       <item row="2" column="1">
+                       <item>
+                        <widget class="QCheckBox" name="RadPhotonCheckBox">
+                         <property name="text">
+                          <string>g</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
                         <widget class="QCheckBox" name="RadelectronCheckBox">
                          <property name="text">
                           <string>e-</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="2" column="4">
-                        <widget class="QCheckBox" name="RadNeutronCheckBox">
-                         <property name="text">
-                          <string>n</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="2">
+                       <item>
                         <widget class="QCheckBox" name="RadPositronCheckBox">
                          <property name="text">
                           <string>e+</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="2" column="3">
+                       <item>
                         <widget class="QCheckBox" name="RadAlphaCheckBox">
                          <property name="text">
                           <string>a</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="2" column="0">
-                        <widget class="QCheckBox" name="RadPhotonCheckBox">
+                       <item>
+                        <widget class="QCheckBox" name="RadNeutronCheckBox">
                          <property name="text">
-                          <string>g</string>
+                          <string>n</string>
                          </property>
                         </widget>
                        </item>
@@ -2254,16 +2505,6 @@
                     </item>
                    </layout>
                   </widget>
-                 </item>
-                 <item row="14" column="0">
-                  <widget class="QPushButton" name="pushButtonGetResultsNucl">
-                   <property name="text">
-                    <string>List Radionuclides</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="1">
-                  <widget class="QComboBox" name="comboBoxEffDoseUnit"/>
                  </item>
                  <item row="0" column="1">
                   <widget class="QPushButton" name="pushButtonReadUSERData">
@@ -2275,17 +2516,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="0">
-                  <widget class="QComboBox" name="comboBoxQuantityNucl"/>
-                 </item>
-                 <item row="14" column="1">
-                  <widget class="QPushButton" name="pushButtonReverseData">
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="pushButtonChangeMasses">
                    <property name="text">
-                    <string>Ascending</string>
+                    <string>Alter Masses</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="15" column="0" colspan="2">
+                 <item row="17" column="0" colspan="2">
                   <widget class="QGroupBox" name="groupBox_6">
                    <property name="title">
                     <string>Radiopharmaceuticales Biokinetic Data</string>
@@ -2303,148 +2541,111 @@
                     <property name="bottomMargin">
                      <number>0</number>
                     </property>
-                    <item row="0" column="1">
-                     <widget class="QPushButton" name="pushButtonSaveBiokinetikModelData">
-                      <property name="text">
-                       <string>Save Model Data</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QComboBox" name="comboBoxActivityAdministered"/>
-                    </item>
                     <item row="0" column="0">
-                     <widget class="QPushButton" name="pushButtonAddBiokineticModel">
-                      <property name="text">
-                       <string>Add Model Data</string>
+                     <widget class="QFrame" name="frame_28">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
                       </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <widget class="QPushButton" name="pushButtonShowBiokineticData">
-                      <property name="text">
-                       <string>Show Model Data</string>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
                       </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2">
-                     <widget class="QPushButton" name="pushButtonGenerateQuantitiesWithBiokineticData">
-                      <property name="text">
-                       <string>Generate</string>
-                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_28">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxRadioPharmaceutiques"/>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButtonShowBiokineticData">
+                         <property name="text">
+                          <string>Show Model Data</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButtonAddBiokineticModel">
+                         <property name="text">
+                          <string>Add Model Data</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButtonSaveBiokinetikModelData">
+                         <property name="text">
+                          <string>Save Model Data</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </widget>
                     </item>
                     <item row="1" column="0">
-                     <widget class="QDoubleSpinBox" name="doubleSpinBoxAdministeredActivity">
-                      <property name="maximum">
-                       <double>1000000000.990000009536743</double>
+                     <widget class="QFrame" name="frame_14">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
                       </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_16">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QDoubleSpinBox" name="doubleSpinBoxAdministeredActivity">
+                         <property name="maximum">
+                          <double>1000000000.990000009536743</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxActivityAdministered"/>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxSourceOrTargetsForBiokinetics"/>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButtonGenerateQuantitiesWithBiokineticData">
+                         <property name="text">
+                          <string>Generate</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </widget>
                     </item>
                    </layout>
                   </widget>
                  </item>
-                 <item row="13" column="0" colspan="2">
-                  <widget class="QFrame" name="frame_5">
-                   <property name="frameShape">
-                    <enum>QFrame::NoFrame</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_16">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="spacing">
-                     <number>6</number>
-                    </property>
-                    <item row="1" column="2">
-                     <widget class="QComboBox" name="comboBoxSources"/>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QComboBox" name="comboBoxTotalorSourceOrCombNucl"/>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLabel" name="label_12">
-                      <property name="text">
-                       <string>&lt;---------</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <widget class="QComboBox" name="comboBoxRadionuclideModel"/>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QComboBox" name="comboBoxTargets"/>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QComboBox" name="comboBoxPhantom"/>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="8" column="0" colspan="2">
-                  <widget class="QFrame" name="frame_25">
-                   <property name="frameShape">
-                    <enum>QFrame::NoFrame</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_23">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <widget class="QCheckBox" name="checkBoxEffDoseLimNucl">
-                      <property name="text">
-                       <string>Limits</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMinEffDose">
-                      <property name="maximum">
-                       <double>1000000000.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxEffDose">
-                      <property name="maximum">
-                       <double>1000000000.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="16" column="1">
-                  <widget class="QPushButton" name="pushButtonSaveTableInPDF">
+                 <item row="15" column="0">
+                  <widget class="QPushButton" name="pushButtonGetResultsNucl">
                    <property name="text">
-                    <string>Save Table (PDF)</string>
+                    <string>List Radionuclides</string>
                    </property>
                   </widget>
                  </item>
@@ -2589,6 +2790,8 @@
     <addaction name="actionHow_To_Use"/>
     <addaction name="actionAbout"/>
     <addaction name="actionSend_Results"/>
+    <addaction name="actionUpdate"/>
+    <addaction name="actionRestart"/>
    </widget>
    <widget class="QMenu" name="menuBuild">
     <property name="title">
@@ -2927,6 +3130,24 @@
   <action name="actionActualize">
    <property name="text">
     <string>Actualize</string>
+   </property>
+  </action>
+  <action name="actionUpdate">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Update.png</normaloff>:/icons/res/Update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/icons/res/Restart.png</normaloff>:/icons/res/Restart.png</iconset>
+   </property>
+   <property name="text">
+    <string>Restart</string>
    </property>
   </action>
  </widget>

@@ -1,12 +1,14 @@
 #include "gui/mainwindow.h"
 #include <QApplication>
+#include <QCoreApplication>
 
 int NumberOfCPUCores;
 
 qint64 pidOfPreviousNotKilled;
 
-QString DoseCalcs_source_dir_path ;
-QString DoseCalcs_build_dir_path;
+QString DoseCalcsCore_source_dir_path ;
+QString DoseCalcsGui_source_dir_path ;
+QString DoseCalcsCore_build_dir_path;
 QString UserCurrentResultsDirPath;
 QString DoseCalcs_build_dir_name;
 
@@ -25,7 +27,7 @@ QString ReferenceFileName;
 QString GraphsOutDirName;
 QString DoseCalcsExecutingFileName;
 QString MacroFilePath;
-
+QString DoseCalcsDownloadURL;
 QString RocksProcessNumber ;
 
 QString GUIPackagesAndFilesDirName;
@@ -79,13 +81,12 @@ void getOSName(){
     fp = popen("lsb_release -ds", "r");
     fgets(buffer, 50, fp);
     pclose(fp);
-    printf("Using DoseCalcs on %s",buffer);
+    printf("Welcome to DoseCalcs on %s",buffer);
     OSNameVersion = buffer;
 
-    if(OSNameVersion.toLower().contains("ubuntu")){QTextStream(stdout) << "Welcome from Ubuntu: (" << buffer << ")"<< "\n";}
-    else if(OSNameVersion.toLower().contains("centos")){QTextStream(stdout) << "Welcome from CentOs: (" << buffer << ")"<< "\n";}
-    else if(OSNameVersion.toLower().contains("windows")){QTextStream(stdout) << "Welcome from Windows: (" << buffer << ")"<< "\n";}
-
+    //if(OSNameVersion.toLower().contains("ubuntu")){QTextStream(stdout) << "Welcome from Ubuntu: (" << buffer << ")"<< "\n";}
+    //else if(OSNameVersion.toLower().contains("centos")){QTextStream(stdout) << "Welcome from CentOs: (" << buffer << ")"<< "\n";}
+    //else if(OSNameVersion.toLower().contains("windows")){QTextStream(stdout) << "Welcome from Windows: (" << buffer << ")"<< "\n";}
 }
 
 std::string getFileNameFromPath(std::string const & path, std::string const & delims = "/\\") {
@@ -111,10 +112,10 @@ extern QString TestPackagesPathsBeforToRun(){
         PackagesInfo += "***** xterm (Found) - /usr/bin/xterm \n\n";
     }
 
-    if(!QFile::exists(DoseCalcs_build_dir_path+"/simulate")){
-        PackagesInfo += "***** DoseCalcs Executable (Not Found) - "+DoseCalcs_build_dir_path+"/simulate"+"\n\n";
+    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/simulate")){
+        PackagesInfo += "***** DoseCalcs Executable (Not Found) - "+DoseCalcsCore_build_dir_path+"/simulate"+"\n\n";
     }else{
-        PackagesInfo += "***** DoseCalcs Executable (Found) - "+DoseCalcs_build_dir_path+"/simulate"+"\n\n";
+        PackagesInfo += "***** DoseCalcs Executable (Found) - "+DoseCalcsCore_build_dir_path+"/simulate"+"\n\n";
     }
 
     if(!QFile::exists(geant4_Lib_dir_path+"/geant4.sh")){
@@ -218,11 +219,12 @@ int main(int argc, char *argv[])
         QDir::current().mkdir(GUIPackagesAndFilesDirName);
     }
 
-    DoseCalcs_source_dir_path = GUIPackagesAndFilesDirPath+"/DoseCalcsCore";
-    DoseCalcs_build_dir_path = "";
+    DoseCalcsCore_build_dir_path = "";
     DoseCalcs_build_dir_name = "core_build";
     UserCurrentResultsDirPath = "";
     ICRPDATAPath = GUIPackagesAndFilesDirPath+"/ICRPDATA";
+
+    DoseCalcsDownloadURL = "https://github.com/TarikEl/DoseCalcs-Gui/archive/main.tar.gz";
 
     DoseCalcsQuantities=(QStringList()<<"AE"<<"AF"<<"SAF"<<"S"<<"H"<<"E");
 
@@ -291,6 +293,9 @@ int main(int argc, char *argv[])
     QuantitiesConversionFromDefault["A"]["MBq"] = 1e+6;
     QuantitiesConversionFromDefault["A"]["kBq"]   = 1e+3;;
 
+    //QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    //env.insert("QT_QPA_PLATFORM", "xcb");
+    //QProcess p ;p.setProcessEnvironment(env);
 
     QApplication a(argc, argv);
     MainWindow w; // this is the main GUI object

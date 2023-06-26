@@ -31,7 +31,6 @@
 #include "G4TTETModelImport.hh"
 #include "G4RandomTools.hh"
 
-
 extern G4String PlanesToVisualize;
 
 extern G4String TETNodeDataFile, TETEleDataFile, TETMatDataFile;
@@ -41,7 +40,6 @@ extern G4double MaxTETPhantom;
 extern G4String* CopyNumberRegionNameMap;
 extern G4float* CopyNumberMassSize;
 extern std::map<G4String, G4Colour> RegionNameColour;
-
 
 extern bool MaterialNameAsRegionName;
 

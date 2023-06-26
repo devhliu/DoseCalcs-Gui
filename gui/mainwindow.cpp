@@ -23,8 +23,8 @@ extern qint64 pidOfPreviousNotKilled;
 
 extern QString OSNameVersion;
 
-extern QString DoseCalcs_source_dir_path;
-extern QString DoseCalcs_build_dir_path;
+extern QString DoseCalcsDownloadURL;
+extern QString DoseCalcsCore_build_dir_path;
 extern QString UserCurrentResultsDirPath;
 extern QString DoseCalcs_build_dir_name;
 
@@ -46,7 +46,8 @@ extern QString DCMTK_Lib_dir_path ;
 extern QString MPI_Lib_dir_path ;
 extern QString CMAKE_Lib_dir_path ;
 extern QString Root_Lib_dir_path ;
-extern QString DoseCalcs_source_dir_path;
+extern QString DoseCalcsCore_source_dir_path;
+extern QString DoseCalcsGui_source_dir_path;
 
 extern QString GUIConfigFileName;
 extern QString GUIPackagesAndFilesDirPath;
@@ -96,14 +97,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QStringList ICRPPhantoms=(QStringList()<<"ICRPAdultMale"<<"ICRPAdultFemale");
     ui->comboBoxPhantom->addItems(ICRPPhantoms);
 
-
     QStringList PreDefinedGeom=(QStringList()<<"ICRP110 Voxel-based Adult Male"<<"ICRP110 Voxel-based Adult Female"
                                 <<"ICRP143 Voxel-based Male 15-years-old"<<"ICRP143 Voxel-based Female 15-years-old"
                                 <<"ICRP143 Voxel-based Male 10-years-old"<<"ICRP143 Voxel-based Female 10-years-old"
                                 <<"ICRP143 Voxel-based Male 05-years-old"<<"ICRP143 Voxel-based Female 05-years-old"
                                 <<"ICRP143 Voxel-based Male 01-years-old"<<"ICRP143 Voxel-based Female 01-years-old"
                                 <<"ICRP143 Voxel-based Male Newborn"<<"ICRP143 Voxel-based Female Newborn"
-                                <<"ICRP145 tetrahedral-based Adult Male"<<"ICRP145 tetrahedral-based Adult Female"
+                                <<"ICRP145 Mesh-Type Adult Male"<<"ICRP145 Mesh-Type Adult Female"
                                 <<"Phantom Constructed using DICOM/CT Files"<<"Simple Voxelized Geometry Using DoseCalcs Commands"
                                 <<"Stylized MIRD Adult Female Phantom using CPP (../DoseCalcs/core/src/G4TCPPGeometryFormat.cc) Geometry Method"<<"Stylized MIRD Adult Female Phantom using GDML (.gdml) Geometry Method"
                                 <<"Stylized MIRD Adult Female Phantom using TEXT (.geom) Geometry Method"<<"Phantom Constructed using a Combination of GDML, CPP, TEXT, STL, and STANDARD methods"
@@ -136,8 +136,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->comboBoxPreDefinedGeom->addItems(PreDefinedGeom);
 
-    QStringList SourceOrTargetOrCombination=(QStringList()<<"Sources"<<"Targets"<<"Combinations"<<"Phantom");
+    QStringList SourceOrTargetOrCombination=(QStringList()<<"Region as a source and target"<<"In a specific target from all sources"<<"For a target<--source combination"<<"In all targets (phantom) from all sources");
     ui->comboBoxTotalorSourceOrCombNucl->addItems(SourceOrTargetOrCombination);
+
+    QStringList SourceOrTargetOrCombination1=(QStringList()<<"Region as a source and target"<<"In each target from a specific source"<<"In each target from all sources");
+    ui->comboBoxSourceOrTargetsForBiokinetics->addItems(SourceOrTargetOrCombination1);
 
     QStringList DDD=(QStringList()<<"File"<<"P-E-Y");
     ui->comboBoxRadionuclidedataType->addItems(DDD);
@@ -1005,9 +1008,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tabWidget->setCurrentIndex(1);
     FillComponentsFromInputsFile(MacroFilePath); // this is called here after making and filling combobox lists
 
-    BashCommandsForExecuting = "#! /bin/bash \n bash \n ";
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-    ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    BashCommandsForExecuting = "#! /bin/bash \n "
+                               "cd "+DoseCalcsCore_build_dir_path+"\n"
+                               "bash \n ";
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
     setCompleters();
 
@@ -1350,29 +1355,24 @@ void MainWindow::ReadConfigurationFile(QString ConfigFilePath){
         cmakeTruePath = "\n cmake " ;
     }
 
-    DoseCalcs_source_dir_path=lines["DoseCalcs_SOURCE_DIR"];
-    if(!QFile::exists(DoseCalcs_source_dir_path)){ // create install dir for DCMTK
-        DoseCalcs_source_dir_path = GUIPackagesAndFilesDirPath+"/DoseCalcsCore";
-        showResultsOutput("Default DoseCalcs source directory " + DoseCalcs_source_dir_path + " is used", 4);
+    DoseCalcsCore_source_dir_path=lines["DoseCalcs_SOURCE_DIR"];
+    if(!QFile::exists(DoseCalcsCore_source_dir_path)){ // create install dir for DCMTK
+        DoseCalcsGui_source_dir_path = QDir::currentPath()+"/../DoseCalcs-Gui-main";
+        DoseCalcsCore_source_dir_path = DoseCalcsGui_source_dir_path+"/core";
+        showResultsOutput("Default DoseCalcs source directory " + DoseCalcsCore_source_dir_path + " is used", 4);
+    }else{
+        QDir dir = QDir(DoseCalcsCore_source_dir_path); dir.cdUp();
+        DoseCalcsGui_source_dir_path = dir.path();
     }
-
-    /*QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
-    DoseCalcs_build_dir_path = dir->absolutePath()+"/"+DoseCalcs_build_dir_name;
-    if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
-        QDir* dir = new QDir(DoseCalcs_source_dir_path) ; dir->cdUp();
-        dir->mkdir(DoseCalcs_build_dir_name);
-        showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
-    }
-    */
 
     QDir dir = QDir(QCoreApplication::applicationDirPath());
-    DoseCalcs_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
-    if(!QFile::exists(DoseCalcs_build_dir_path)){ // create install dir for DCMTK
+    DoseCalcsCore_build_dir_path = dir.absolutePath()+"/"+DoseCalcs_build_dir_name;
+    if(!QFile::exists(DoseCalcsCore_build_dir_path)){ // create install dir for DCMTK
         dir.mkdir(DoseCalcs_build_dir_name);
-        showResultsOutput("DoseCalcs build directory " + DoseCalcs_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
+        showResultsOutput("DoseCalcs build directory " + DoseCalcsCore_build_dir_path + " is created, but you can't run until you build DoseCalcs code", 4);
     }
 
-    UserCurrentResultsDirPath = DoseCalcs_build_dir_path+"/"+ResultDirectoryName;
+    UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path+"/"+ResultDirectoryName;
 
     ui->openResultsDirButton->setToolTip("Click to choose result directory for simulation. The current directory is " + UserCurrentResultsDirPath);
     ui->pushButton->setToolTip("Open " + UserCurrentResultsDirPath +" directory");
@@ -1791,8 +1791,8 @@ void MainWindow::on_RunButton_clicked()
         return;
     }
 
-    if(!QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
-        showResultsOutput("Cannot find DoseCalcs executable "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " . Please build DoseCalcs before run", 3);
+    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName)){
+        showResultsOutput("Cannot find DoseCalcs executable "+DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " . Please build DoseCalcs before run", 3);
         on_BuildButton_clicked();
     }
 
@@ -1811,7 +1811,7 @@ void MainWindow::on_RunButton_clicked()
             on_pushButtonEditGeomFile_clicked(); // save data to MacroFileName
         }
         //fill the components by the text in the saved command file
-        FillComponentsFromInputsFile(DoseCalcs_build_dir_path+"/"+MacroFileName); // fill data from MacroFileName
+        FillComponentsFromInputsFile(DoseCalcsCore_build_dir_path+"/"+MacroFileName); // fill data from MacroFileName
 
         if(!TestSimulateExecutableInputsToRun()){
             return;
@@ -1822,36 +1822,36 @@ void MainWindow::on_RunButton_clicked()
     SaveDataFromInputComponents(); // get the same componenet data but the four under variable values are related to the SaveEnePharOrgLists() data that is called one time when the the run in pushed
     CreateUserCommands(); //fill the variables with all values to save it to user file and not inputFile executed by the geant4 application core
 
-    QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac";
+    QsubSeparatedMacroFilePath = DoseCalcsCore_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac";
     fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , generateInputUserTextForinputFile());
 
     if(ui->checkBoxRocks->isChecked()){
 
-        BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path
-                + "\n qsub "+DoseCalcs_build_dir_path+"/"+ExeFileName;
+        BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path
+                + "\n qsub "+DoseCalcsCore_build_dir_path+"/"+ExeFileName;
         BashCommandsForExecuting += "\n bash \n";
 
         showResultsOutput("Writing Run Commands : \n", 0);
         showResultsOutput(BashCommandsForExecuting , 0);
-        showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
         //if(EditFlag == 1){ // if you late it open, is not saved, can be for the last execution
         on_pushButtonGenerateExe_clicked();
         on_pushButtonEditGeomFile_clicked();
         //}
-        ui->outputTextConsole->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
+        ui->outputTextConsole->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_build_dir_path+"/"+ExeFileName));
         ui->tabWidget->setCurrentIndex(1);
 
-        if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName) && QFile::exists(DoseCalcs_build_dir_path+"/"+ExeFileName)){
+        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName) && QFile::exists(DoseCalcsCore_build_dir_path+"/"+ExeFileName)){
 
             if(!ShowImportantSimulationData()){return;}
             showResultsOutput("Computation Run" , 1);
-            ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
     }else{
 
-        if(QFile::exists(QsubSeparatedMacroFilePath) && QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
+        if(QFile::exists(QsubSeparatedMacroFilePath) && QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName)){
 
             if(MPI_USE=="YES"){
 
@@ -1870,9 +1870,9 @@ void MainWindow::on_RunButton_clicked()
                     andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
                 }
 
-                BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n"
+                BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n"
                         + nohup + " " + MPI_Lib_dir_path+"/mpirun " + Execution_setNumberOfRanksOrThreads + " "
-                        + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
+                        + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                         ;
             }else{
 
@@ -1896,8 +1896,8 @@ void MainWindow::on_RunButton_clicked()
                 BashCommandsForExecuting = "#! /bin/bash \n" +f
                         + "cd " +geant4_Lib_dir_path +"\n"+
                         + ". ./geant4.sh\n" +f +
-                        + "cd " + DoseCalcs_build_dir_path + "\n"
-                        + nohup + " "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
+                        + "cd " + DoseCalcsCore_build_dir_path + "\n"
+                        + nohup + " "+DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                         ;
             }
 
@@ -1905,18 +1905,18 @@ void MainWindow::on_RunButton_clicked()
 
             showResultsOutput("Writing Run Commands : \n", 0);
             showResultsOutput(BashCommandsForExecuting , 0);
-            showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+            showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
 
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+            fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-            if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+            if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
                 if(!ShowImportantSimulationData()){return;}
                 showResultsOutput("Computation Run" , 1);
-                ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+                ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
             else{
-                showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+                showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
             }
 
             isInexec = true;
@@ -1954,15 +1954,15 @@ void MainWindow::on_pushButtonMerge_clicked()
         return;
     }
 
-    //UserCurrentResultsDirPath = QFileDialog::getExistingDirectory(0, ("Choose Results Directory"), DoseCalcs_build_dir_path + "/" + ResultDirectoryName);
-    if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){UserCurrentResultsDirPath = DoseCalcs_build_dir_path + "/" + ResultDirectoryName;}
+    //UserCurrentResultsDirPath = QFileDialog::getExistingDirectory(0, ("Choose Results Directory"), DoseCalcsCore_build_dir_path + "/" + ResultDirectoryName);
+    if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path + "/" + ResultDirectoryName;}
 
     QString MacrosFileForAnalysis;
 
     if(QFile::exists(MacroFilePath)){
         MacrosFileForAnalysis = MacroFilePath;
     }else{
-        MacrosFileForAnalysis = DoseCalcs_build_dir_path+"/"+MacroFileName;
+        MacrosFileForAnalysis = DoseCalcsCore_build_dir_path+"/"+MacroFileName;
     }
 
     initializeVariable();
@@ -1972,40 +1972,40 @@ void MainWindow::on_pushButtonMerge_clicked()
 
     if(!QFile::exists(MacrosFileForAnalysis)){
         QMessageBox::information(this, tr(""), "Cannot find macros file for analysis in this directory." );
-        MacrosFileForAnalysis = QFileDialog::getOpenFileName( this, tr("Open a macros file for analysis"), DoseCalcs_build_dir_path, "All files (*.*)" );
+        MacrosFileForAnalysis = QFileDialog::getOpenFileName( this, tr("Open a macros file for analysis"), DoseCalcsCore_build_dir_path, "All files (*.*)" );
     }
 
     if(!QFile::exists(geant4_Lib_dir_path+"/geant4.sh")){
         geant4_Lib_dir_path = ShowMessageBoxAndGetPath("Directory containing geant4.sh Not Found, Click OK to Choose the Directory");
     }
 
-    //CoreProcess.execute("sh " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    //CoreProcess.execute("sh " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     BashCommandsForExecuting = "\ncd " +geant4_Lib_dir_path +"\n" + ". ./geant4.sh \n"+
-            "cd " + DoseCalcs_build_dir_path + "\n" +
-            DoseCalcs_build_dir_path+"/"+MergeExecutableName + " " + MacrosFileForAnalysis ;
+            "cd " + DoseCalcsCore_build_dir_path + "\n" +
+            DoseCalcsCore_build_dir_path+"/"+MergeExecutableName + " " + MacrosFileForAnalysis ;
     ;
     BashCommandsForExecuting += "\n bash \n";
 
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
     showResultsOutput("Writing Analysis Commands : \n", 0);
     showResultsOutput(BashCommandsForExecuting , 0);
-    showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
+    showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
 
-    if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-        //CoreProcess.execute("sh " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+        //CoreProcess.execute("sh " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
         //QProcess process;
-        //QStringList ff=(QStringList() << "-hold" << "-e" << "sh" << DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        //QStringList ff=(QStringList() << "-hold" << "-e" << "sh" << DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
         //process.startDetached("xterm", ff);
 
         showResultsOutput("Merging results files " , 1);
 
-        ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
     }
     else{
-        showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+        showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
     }
 
 }
@@ -2013,7 +2013,7 @@ void MainWindow::on_pushButtonOpenResultsFile_clicked()
 {
 
     if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){
-        UserCurrentResultsDirPath = DoseCalcs_build_dir_path + "/" + ResultDirectoryName;
+        UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path + "/" + ResultDirectoryName;
     }
 
     on_pushButtonEditGeomFile_clicked();
@@ -2066,17 +2066,17 @@ void MainWindow::on_pushButton_clicked()
 
         if(IDs->text()!=""){
 
-            if(QFile::exists(DoseCalcs_build_dir_path+"/"+ResultDirectoryName+"/"+IDs->text())){
+            if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+ResultDirectoryName+"/"+IDs->text())){
                 QMessageBox::information(this, tr(""), "The directory name ("+IDs->text()+") is already exists. Choose another name for results directory !" );
             }else{
 
                 showResultsOutput("Creating DoseCalcs Results Directory: "+ IDs->text() , 1);
 
                 QProcess process;
-                QStringList qsl = {DoseCalcs_build_dir_path+"/"+ResultDirectoryName+"/"+IDs->text()};
+                QStringList qsl = {DoseCalcsCore_build_dir_path+"/"+ResultDirectoryName+"/"+IDs->text()};
                 process.startDetached("mkdir", qsl);
 
-                UserCurrentResultsDirPath = DoseCalcs_build_dir_path+"/"+IDs->text();
+                UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path+"/"+IDs->text();
     ui->openResultsDirButton->setToolTip("Click to choose result directory for simulation. The current directory is " + UserCurrentResultsDirPath);
         ui->pushButton->setToolTip("Open " + UserCurrentResultsDirPath +" directory");
 
@@ -2115,13 +2115,13 @@ void MainWindow::on_checkBoxRocks_clicked(bool checked)
 void MainWindow::on_pushButtonQstat_clicked()
 {
 
-    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path
+    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path
             + "\n qstat -r | grep DoseCalcs";
     BashCommandsForExecuting += "\n bash \n";
 
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-    ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
 }
 void MainWindow::on_pushButtonChecQsubMPIsim_clicked()
@@ -2147,7 +2147,7 @@ void MainWindow::on_pushButtonLoadExe_clicked()
     ui->tabWidget->setTabText(0,ExeFileName);
     ui->GeometryFileTextEdit->clear();
     showResultsOutput("getting exe.sh data", 4);
-    ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
+    ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_build_dir_path+"/"+ExeFileName));
     ui->tabWidget->setCurrentIndex(0);
     EditFlag = 1;
 }
@@ -2183,7 +2183,7 @@ void MainWindow::on_pushButtonGenerateExe_clicked()
                                                                                                      "#$ -M imttarikk@gmail.com \n"
                                                                                                      "#$ -m e \n"
                                                                                                      ". "+geant4_Lib_dir_path+"/geant4.sh \n"+
-            MPI_Lib_dir_path + "/mpirun -np "+ numbOfRanks + " " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber +" \n";
+            MPI_Lib_dir_path + "/mpirun -np "+ numbOfRanks + " " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber +" \n";
 
     ui->tabWidget->setTabText(0,ExeFileName);
     ui->GeometryFileTextEdit->clear();
@@ -2223,7 +2223,7 @@ void MainWindow::openqsubMacros_slot(){
     OpenMacrosFilePath = QFileDialog::getOpenFileName(
                 this,
                 tr("Open a macros file"),
-                DoseCalcs_build_dir_path, //pathBuildApp,
+                DoseCalcsCore_build_dir_path, //pathBuildApp,
                 "All files (*.*);;Text files (*.txt)"
                 );
 
@@ -2233,7 +2233,7 @@ void MainWindow::getRockcsDoseCalcsJobs()
 {
 
     // all the list of job files
-    QDir dir(DoseCalcs_build_dir_path);
+    QDir dir(DoseCalcsCore_build_dir_path);
     QStringList listOfFile ;
     listOfFilesName.clear(); listOfFilesName.empty();
 
@@ -2252,20 +2252,20 @@ void MainWindow::getRockcsDoseCalcsJobs()
 
     terminal *term = new terminal;
     term->scroll(20, 20);
-    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n";
-    BashCommandsForExecuting += "qstat -r | grep DoseCalcs > " + DoseCalcs_build_dir_path+"/F" + "\n";
+    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n";
+    BashCommandsForExecuting += "qstat -r | grep DoseCalcs > " + DoseCalcsCore_build_dir_path+"/F" + "\n";
     BashCommandsForExecuting += "\n bash \n";
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-    term->executeLocalCommand(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    term->executeLocalCommand(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
     QStringList InputsVals;
-    QVector<QString> Commlines = fileManagerObject->ReadTextFromFile(DoseCalcs_build_dir_path+"/F");
+    QVector<QString> Commlines = fileManagerObject->ReadTextFromFile(DoseCalcsCore_build_dir_path+"/F");
 
-    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n";
-    BashCommandsForExecuting += "rm -r " + DoseCalcs_build_dir_path+"/F" + "\n";
+    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n";
+    BashCommandsForExecuting += "rm -r " + DoseCalcsCore_build_dir_path+"/F" + "\n";
     BashCommandsForExecuting += "\n bash \n";
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-    term->executeLocalCommand(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    term->executeLocalCommand(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
     listOfRun.empty();listOfRun.clear();
     listOfRunIDs.empty();listOfRunIDs.clear();
@@ -2358,7 +2358,7 @@ void MainWindow::getRockcsDoseCalcsJobs()
 
                 showResultsOutput("Deleting DoseCalcs Job "+ DoseCalcsJobIDsCombobox->currentText() , 1);
 
-                BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n";
+                BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n";
 
                 if(DoseCalcsJobIDsCombobox->currentText() == "all"){
 
@@ -2437,9 +2437,9 @@ void MainWindow::getRockcsDoseCalcsJobs()
                 }
 
                 BashCommandsForExecuting += "\n bash \n";
-                fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+                fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-                ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+                ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
         }
         else{
@@ -2453,13 +2453,13 @@ void MainWindow::CheckJobOutputsFromStopSlot(){
         return;
     }
 
-    QString fileToCheck = DoseCalcs_build_dir_path+"/"+DoseCalcsJobIDsCombobox->currentText()+".o" + listOfFilesName[DoseCalcsJobIDsCombobox->currentText()];
+    QString fileToCheck = DoseCalcsCore_build_dir_path+"/"+DoseCalcsJobIDsCombobox->currentText()+".o" + listOfFilesName[DoseCalcsJobIDsCombobox->currentText()];
 
     showResultsOutput("Checking the : " + fileToCheck , 0);
 
     QdelID = DoseCalcsJobIDsCombobox->currentText() ;
 
-    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path +"\n";
+    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path +"\n";
     //+ "\n qstat -j "+QdelID
 
     bool isin = false;
@@ -2483,15 +2483,15 @@ void MainWindow::CheckJobOutputsFromStopSlot(){
 
     showResultsOutput("Writing Check Commands : \n", 0);
     showResultsOutput(BashCommandsForExecuting , 0);
-    showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
     if(QFile::exists(fileToCheck)){
 
         showResultsOutput("Checking DoseCalcs output file" , 1);
 
         //ShowTerminal("tail -f " + fileToCheck);
-        ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     }
 
 }
@@ -2570,6 +2570,8 @@ QString MainWindow::ConstructDoseCalcsJobName(){
 }
 
 void MainWindow::ShowTerminal(QString Command){
+
+    fileManagerObject->WriteTextToFile(Command, fileManagerObject->ReadTextFromFileInOneString(Command)+"\n bash");
 
     terminal *term = new terminal;
     term->scroll(20, 20);
@@ -2846,7 +2848,7 @@ void MainWindow::InitialiseSourcePhysicsInputs(){
     ui->UseDataFilesFor->setCurrentIndex(0);
 
     // Run
-    //ui->LineEditDoseCalcs_build_dir_pathPath->setText("");
+    //ui->LineEditDoseCalcsCore_build_dir_pathPath->setText("");
     ui->lineEditNumberOfRanksOrThreads->setText("");
     ui->lineEditNumberOfEvent->setText("");
     ui->ScoreCombobowSimNumOnRanksLineEdit->setCurrentIndex(0);
@@ -3013,7 +3015,7 @@ void MainWindow::RefillSourcePhysicsInputs(){
     ui->lineEditNumberOfRanksOrThreads->setText(Execution_setNumberOfRanksOrThreads);
     ui->ScoreCombobowSimNumOnRanksLineEdit->setCurrentText(Score_setSimNumOnRanksLineEdit);
 
-    //ui->LineEditDoseCalcs_build_dir_pathPath->setText(DoseCalcs_build_dir_path);
+    //ui->LineEditDoseCalcsCore_build_dir_pathPath->setText(DoseCalcsCore_build_dir_path);
 
     updateApplicationTabs();
 }
@@ -3132,7 +3134,7 @@ void MainWindow::on_pushButtonEditMacros_clicked()
 
     if(ui->actionUseTextInput->isChecked()){
 
-        fileManagerObject->WriteTextToFile(DoseCalcs_build_dir_path+"/"+MacroFileName , generateInputUserTextForinputFile());
+        fileManagerObject->WriteTextToFile(DoseCalcsCore_build_dir_path+"/"+MacroFileName , generateInputUserTextForinputFile());
 
         on_pushButtonEditGeomFile_clicked();
 
@@ -3140,7 +3142,7 @@ void MainWindow::on_pushButtonEditMacros_clicked()
         ui->tabWidget->setTabText(0,MacroFileName);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+MacroFileName));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_build_dir_path+"/"+MacroFileName));
         ui->tabWidget->setCurrentIndex(0);
     }else{
         ui->outputTextConsole->setPlainText("");
@@ -3169,7 +3171,7 @@ void MainWindow::on_actionEditFile_triggered()
 
     if(ui->actionUseTextInput->isChecked()){
 
-        fileManagerObject->WriteTextToFile(DoseCalcs_build_dir_path+"/"+MacroFileName , generateInputUserTextForinputFile());
+        fileManagerObject->WriteTextToFile(DoseCalcsCore_build_dir_path+"/"+MacroFileName , generateInputUserTextForinputFile());
 
         on_pushButtonEditGeomFile_clicked();
 
@@ -3177,7 +3179,7 @@ void MainWindow::on_actionEditFile_triggered()
         ui->tabWidget->setTabText(0,MacroFileName);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+MacroFileName));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_build_dir_path+"/"+MacroFileName));
         ui->tabWidget->setCurrentIndex(0);
     }else{
         ui->outputTextConsole->setPlainText("");
@@ -3222,7 +3224,7 @@ void MainWindow::on_actionInstallations_triggered()
     installationDialogObj = new InstallationDialog(this);
     installationDialogObj->show();
 
-    UserCurrentResultsDirPath = DoseCalcs_build_dir_path;
+    UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path;
 
 }
 void MainWindow::on_actionVisualization_triggered()
@@ -3278,11 +3280,11 @@ void MainWindow::on_actionVisualization_triggered()
             SaveDataFromInputComponents();
             CreateUserCommands();
 
-            if(!QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
+            if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName)){
                 on_BuildButton_clicked();
             }
 
-            QString MacrosFilePath = DoseCalcs_build_dir_path+"/VisTestMacros.mac";
+            QString MacrosFilePath = DoseCalcsCore_build_dir_path+"/VisTestMacros.mac";
             QString commandsText="";
 
 
@@ -3358,8 +3360,8 @@ void MainWindow::on_actionVisualization_triggered()
                 BashCommandsForExecuting = "#! /bin/bash \n" +f
                         + "cd " +geant4_Lib_dir_path +"\n"+
                         + ". ./geant4.sh\n" +f +
-                        + "cd " + DoseCalcs_build_dir_path + "\n"
-                        + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " G " + MacrosFilePath
+                        + "cd " + DoseCalcsCore_build_dir_path + "\n"
+                        + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " G " + MacrosFilePath
                         ;
             }
             BashCommandsForExecuting += "\n bash \n";
@@ -3367,13 +3369,13 @@ void MainWindow::on_actionVisualization_triggered()
             showResultsOutput("Writing Visualisation Commands : \n", 0);
             showResultsOutput(BashCommandsForExecuting , 0);
             showResultsOutput("to --> " + MacrosFilePath , 0);
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+            fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-            if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+            if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
                 showResultsOutput("Visualization Run" , 1);
 
-                ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+                ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
 
         }
@@ -3393,9 +3395,11 @@ void MainWindow::on_actionClose_triggered()
 void MainWindow::on_actionClear_Output_triggered()
 {
     if( ui->tabWidget->currentIndex() == 2){
-        BashCommandsForExecuting = "#! /bin/bash \n bash \n" ;
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-        ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        BashCommandsForExecuting = "#! /bin/bash \n "
+                                   "cd "+DoseCalcsCore_build_dir_path+"\n"
+                                   "bash \n ";
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     }else{
         ui->outputTextConsole->clear();
     }
@@ -3423,7 +3427,7 @@ void MainWindow::on_actionOpen_triggered()
     if(QFile(WorkDirectory).exists()){
 
     }else{
-        WorkDirectory = DoseCalcs_build_dir_path;
+        WorkDirectory = DoseCalcsCore_build_dir_path;
     }
     OpenMacrosFilePath = QFileDialog::getOpenFileName(
                 this,
@@ -3457,7 +3461,7 @@ void MainWindow::on_actionSave_triggered()
     if(QFile(WorkDirectory).exists()){
 
     }else{
-        WorkDirectory = DoseCalcs_build_dir_path;
+        WorkDirectory = DoseCalcsCore_build_dir_path;
     }
     SaveMacrosFilePath = QFileDialog::getOpenFileName(
                 this,
@@ -3470,8 +3474,8 @@ void MainWindow::on_actionSave_triggered()
         SaveMacrosFilePath = OpenMacrosFilePath;
     }
     if(QFile(SaveMacrosFilePath).exists()){
-        SaveMacrosFilePath = DoseCalcs_build_dir_path+"/"+MacroFileName;
-        MacroFilePath = DoseCalcs_build_dir_path+"/"+MacroFileName;
+        SaveMacrosFilePath = DoseCalcsCore_build_dir_path+"/"+MacroFileName;
+        MacroFilePath = DoseCalcsCore_build_dir_path+"/"+MacroFileName;
     }
 
     if(SaveMacrosFilePath != NULL && SaveMacrosFilePath != "" ){
@@ -3496,7 +3500,7 @@ void MainWindow::on_actionRead_File_triggered()
     if(QFile(WorkDirectory).exists()){
 
     }else{
-        WorkDirectory = DoseCalcs_build_dir_path;
+        WorkDirectory = DoseCalcsCore_build_dir_path;
     }
 
     AnyOpenedFilePath = QFileDialog::getOpenFileName( this, tr("Choose a file to edit in File Editor"), WorkDirectory, "All files (*.*);;Text files (*.txt)" );
@@ -3559,7 +3563,7 @@ void MainWindow::on_actionAbout_triggered()
                    "*** DoseCalcs v1.0 is a Geant4-based code with a GUI interface, for internal dosimetry Monte Carlo simulations.\n"
                    "*** Developed by Tarik El Ghalbzouri, ERSN, faculty of sicences, university Abdelmalek Essaadi, Tetouan, Morocco.  \n"
                    "*** Application source code can be Downloaded from https://github.com/TarikEl/DoseCalcs \n"
-                   "*** Documentation can be found on https://dosecalcs.readthedocs.io/en/latest/ \n"
+                   "*** Documentation can be found on https://dosecalcs-gui.readthedocs.io/en/latest/ \n"
                    "*** Developer contact email: imttarikk@gmail.com\n"
                    "*************************************************************\n");
     if(msgBox.exec() == QDialog::Accepted){}
@@ -3571,12 +3575,47 @@ void MainWindow::on_actionHow_To_Use_triggered()
     msgBox.setWindowTitle("Documentation");
     msgBox.setWindowIcon(QIcon(QDir(QCoreApplication::applicationDirPath()).filePath(GUIPackagesAndFilesDirName+"/AppIcon.png")));
     msgBox.setText("*************************************************************\n"
-"*** Documentation can be found on https://dosecalcs.readthedocs.io/en/latest/ \n"
+"*** Documentation can be found on https://dosecalcs-gui.readthedocs.io/en/latest/ \n"
 "*************************************************************\n");
     msgBox.exec();
 */
-    QMessageBox::about(0, "How to use !", " For documentation, visite the link <a href='https://dosecalcs.readthedocs.io/en/latest/'>DoseCalcs</a>");
+    QMessageBox::about(0, "How to use !", " For documentation, visite the link <a href='https://dosecalcs-gui.readthedocs.io/en/latest/'>DoseCalcs</a>");
 
+}
+void MainWindow::on_actionUpdate_triggered()
+{
+
+    if(QMessageBox::Yes == QMessageBox::question(this, tr("Update"), "Automatic download and installation of the latest version of DoseCalcs on the terminal. Restart DoseCalcs-Gui after finishing")){
+
+        BashCommandsForExecuting = "cd "+QDir::currentPath()+"/..\n"+
+                "wget "+ DoseCalcsDownloadURL +"\n"+
+                "tar xvf main.tar.gz -C " + QDir::currentPath()+"/..\n"+
+                "cd "+ QDir::currentPath() + "\n"+
+                "qmake "+QDir::currentPath()+"/../DoseCalcs-Gui-main/DoseCalcs.pro \n"+
+                "make -j" + QString::number(NumberOfCPUCores) + "\n"
+                ;
+
+        BashCommandsForExecuting += "\n bash \n";
+
+        showResultsOutput("Writing Run Commands : \n", 0);
+        showResultsOutput(BashCommandsForExecuting , 0);
+        showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+
+        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+            showResultsOutput("Download, Uptate, and Restart commands" , 1);
+            ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        }
+    }
+}
+void MainWindow::on_actionRestart_triggered()
+{
+    // Start a new process to launch the updated application
+    QProcess::startDetached(QApplication::applicationFilePath());
+
+    // Close the current instance of the application
+    QApplication::quit();
 }
 void MainWindow::on_actionPackages_Statut_triggered()
 {
@@ -3616,12 +3655,12 @@ void MainWindow::on_actionSend_Results_triggered()
 
             showResultsOutput("Writing Run Commands : \n", 0);
             showResultsOutput(BashCommandsForExecuting , 0);
-            showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+            showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
 
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+            fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-            if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-                ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+                ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
         }else{
             return;
@@ -3668,15 +3707,15 @@ void MainWindow::on_actionSend_Results_triggered()
 
         showResultsOutput("Writing Run Commands : \n", 0);
         showResultsOutput(BashCommandsForExecuting , 0);
-        showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+        showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
 
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-        if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-            ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+            ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
         else{
-            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
         }
     }
 
@@ -4528,12 +4567,11 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
         }
     }
 
-
     // check geometry data
     if(ui->radioButtonVoxIDs->isChecked()){
         if(QFile::exists(ui->lineEditVoxIDsFilePath->text()) ||
-                QFile::exists(DoseCalcs_build_dir_path+"/"+ui->lineEditVoxIDsFilePath->text()) ||
-                QFile::exists(DoseCalcs_source_dir_path+"/"+ui->lineEditVoxIDsFilePath->text())){
+                QFile::exists(DoseCalcsCore_build_dir_path+"/"+ui->lineEditVoxIDsFilePath->text()) ||
+                QFile::exists(DoseCalcsCore_source_dir_path+"/"+ui->lineEditVoxIDsFilePath->text())){
         }else{
             ui->Tab->setCurrentIndex(0);
             QMessageBox::information(this, tr(""), "Canno't find the voxels IDs data file. Add the file path to the LineEdit widget");
@@ -4550,7 +4588,7 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
             on_pushButtonChooseVoxIDsFile_clicked();
             return false;
         }else{
-            if((QFile::exists(InputsVals[0]) || QFile::exists(DoseCalcs_build_dir_path+"/"+InputsVals[0])|| QFile::exists(DoseCalcs_source_dir_path+"/"+InputsVals[0])) && (QFile::exists(InputsVals[1]) || QFile::exists(DoseCalcs_build_dir_path+"/"+InputsVals[1]) || QFile::exists(DoseCalcs_source_dir_path+"/"+InputsVals[1]))){
+            if((QFile::exists(InputsVals[0]) || QFile::exists(DoseCalcsCore_build_dir_path+"/"+InputsVals[0])|| QFile::exists(DoseCalcsCore_source_dir_path+"/"+InputsVals[0])) && (QFile::exists(InputsVals[1]) || QFile::exists(DoseCalcsCore_build_dir_path+"/"+InputsVals[1]) || QFile::exists(DoseCalcsCore_source_dir_path+"/"+InputsVals[1]))){
             }else{ui->Tab->setCurrentIndex(0);
                 QMessageBox::information(this, tr(""), "Add the two file paths to the LineEdit widget, the first fro tetrahedrons nodes data and the seconde for tetrahedrons elements data");
                 on_pushButtonChooseVoxIDsFile_clicked();
@@ -4909,8 +4947,8 @@ QString MainWindow::ShowMessageBoxAndGetPath(QString message ){
 
     if(d->exec() == QDialog::Accepted)
     {
-        DirPath = QFileDialog::getExistingDirectory(0, (message), DoseCalcs_build_dir_path);
-        //DirPath = QFileDialog::getOpenFileName( this, message, DoseCalcs_build_dir_path, tr("All files (*.sh*)") );
+        DirPath = QFileDialog::getExistingDirectory(0, (message), DoseCalcsCore_build_dir_path);
+        //DirPath = QFileDialog::getOpenFileName( this, message, DoseCalcsCore_build_dir_path, tr("All files (*.sh*)") );
 
         if(DirPath.isEmpty() || DirPath.isNull()){
 
@@ -4988,7 +5026,7 @@ void MainWindow::on_checkBoxWorldConst_clicked(bool checked)
         ui->pushButtonChoosWorldFile->setVisible(true);
         //ui->PhantomWorldHalfSizeslineEdit->setText("");
         ui->PhantomWorldHalfSizeslineEdit->setPlaceholderText("World.gdml/World.geom/World.c++/World.cpp");
-        ui->PhantomWorldHalfSizeslineEdit->setText("World.c++");
+        ui->PhantomWorldHalfSizeslineEdit->setText(DoseCalcsCore_source_dir_path+"/src/G4TCPPGeometryFormat.cc");
         ui->pushButtonEditGeometryFile->setVisible(true);
 
     }
@@ -5000,20 +5038,17 @@ void MainWindow::on_pushButtonEditGeometryFile_clicked()
     QString flnm = QString::fromLocal8Bit(getFileNameFromPath(ui->PhantomWorldHalfSizeslineEdit->text().toStdString()).c_str())+"."+QString::fromLocal8Bit(getFileExt(ui->PhantomWorldHalfSizeslineEdit->text().toStdString()).c_str());
     QString ext = QString::fromLocal8Bit(getFileExt(ui->PhantomWorldHalfSizeslineEdit->text().toStdString()).c_str());
 
-    if(ext == "gdml" || ext == "geom"){
+    if(ext == "gdml" || ext == "geom" || ext == "text" || ext == "c++" || ext == "cpp"  || ext == "cc"){
+
+        if(!QFile::exists(ui->PhantomWorldHalfSizeslineEdit->text())){
+            on_pushButtonChoosWorldFile_clicked();
+        }
+
         EditFlag = 5;
         ui->tabWidget->setTabText(0,flnm);
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
         ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(ui->PhantomWorldHalfSizeslineEdit->text()));
-        ui->tabWidget->setCurrentIndex(0);
-    }
-    else if(ext == "c++" || ext == "cpp"  || ext == "cc"){
-        EditFlag = 5;
-        ui->tabWidget->setTabText(0,"G4TCPPGeometryFormat.cc");
-        ui->GeometryFileTextEdit->clear();
-        showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
         ui->tabWidget->setCurrentIndex(0);
     }
 }
@@ -5032,6 +5067,16 @@ void MainWindow::on_WorldDataShowButtonpushButton_clicked()
     ui->outputTextConsole->appendPlainText("\n============ World Volume Command ============\n");
     ui->outputTextConsole->appendPlainText(WorldData);
     ui->tabWidget->setCurrentIndex(1);
+}
+void MainWindow::on_pushButtonChoosWorldFile_clicked()
+{
+    QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose VoxIDs file (region or material IDs file) \".dat\""), DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
+
+    if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
+
+    }else{
+        ui->PhantomWorldHalfSizeslineEdit->setText(chosen_DirPath);
+    }
 }
 
 // edit and save from and to files buttons
@@ -5163,18 +5208,6 @@ void MainWindow::on_MaterialsDataShowButton_clicked()
     ui->tabWidget->setCurrentIndex(1);
 }
 
-void MainWindow::on_pushButtonChoosWorldFile_clicked()
-{
-    QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose VoxIDs file (region or material IDs file) \".dat\""), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
-
-    if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
-
-    }else{
-        ui->PhantomWorldHalfSizeslineEdit->setText(chosen_DirPath);
-    }
-    return;
-}
-
 void MainWindow::RemoveDynamiqueGeomAndMatFrame(){
 
     if ( ui->fraHelpGUIInput->layout() != NULL )
@@ -5263,7 +5296,7 @@ void MainWindow::showConstructVoxelizedCommandsFrame(){
         if(QFile::exists(Geometry_CreateVolume_GeometryPath)){
             PhyVolName->setText(Geometry_CreateVolume_GeometryPath);
         }else{
-            PhyVolName->setText(DoseCalcs_build_dir_path+"/Scripts/VoxIDs.dat");
+            PhyVolName->setText(DoseCalcsCore_build_dir_path+"/Scripts/VoxIDs.dat");
         }
         BtnEditVolFile = new QPushButton(); BtnEditVolFile->setText("set IDs File"); connect(BtnEditVolFile, SIGNAL(clicked()), this, SLOT(BtnEditVolFile_slot()));
         framLay->addWidget(BtnAddVolPath, jj,ii,1,1);
@@ -5486,7 +5519,7 @@ void MainWindow::showConstructSTLCommandsFrame(){
     framLay = new QGridLayout;
 
     BtnAddSolPath = new QPushButton(); BtnAddSolPath->setText("Add Solid"); connect(BtnAddSolPath, SIGNAL(clicked()), this, SLOT(BtnAddSolPath_slot()));
-    PhyVolName = new QLineEdit(); PhyVolName->setText(DoseCalcs_build_dir_path+"/Scripts/solid.stl");
+    PhyVolName = new QLineEdit(); PhyVolName->setText(DoseCalcsCore_build_dir_path+"/Scripts/solid.stl");
     LogVolMatName = new QComboBox(); for (int kk =0 ;kk < MaterialsNames.size() ; kk++) {LogVolMatName->addItem(MaterialsNames[kk]);}
     ComboxMotherVol = new QComboBox(); for (int kk = 0 ;kk < VolsNames.size() ; kk++) {ComboxMotherVol->addItem(VolsNames[kk]);}
     PhyVolPos = new QLineEdit(); PhyVolPos->setText("0 0 0");
@@ -5523,11 +5556,11 @@ void MainWindow::showConstructVolumeGDMLTEXTCPPCommandsFrame(){
     PhyVolName = new QLineEdit();
 
     if(ui->radioButtonTEXT->isChecked()){
-        PhyVolName->setText(DoseCalcs_build_dir_path+"/Scripts/LogVol.geom");
+        PhyVolName->setText(DoseCalcsCore_build_dir_path+"/Scripts/LogVol.geom");
     }else if(ui->radioButtonCpp->isChecked()){
-        PhyVolName->setText(DoseCalcs_build_dir_path+"/Scripts/LogVol.c++");
+        PhyVolName->setText(DoseCalcsCore_build_dir_path+"/Scripts/LogVol.c++");
     }else{
-        PhyVolName->setText(DoseCalcs_build_dir_path+"/Scripts/LogVol.gdml");
+        PhyVolName->setText(DoseCalcsCore_build_dir_path+"/Scripts/LogVol.gdml");
     }
 
 
@@ -5760,7 +5793,7 @@ void MainWindow::btnAddDcmTypeDir_slot(){
     ui->GeometryFileTextEdit->appendPlainText(DcmTypeDirCommands);
 }
 void MainWindow::btnChooseDcmDir_slot(){
-    QString chosen_DirPath = QFileDialog::getExistingDirectory(0, ("Choose modality files"), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName) ;
+    QString chosen_DirPath = QFileDialog::getExistingDirectory(0, ("Choose modality files"), DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName) ;
     if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
 
     }else{
@@ -5780,7 +5813,7 @@ void MainWindow::btnAddVisualizationLimits_slot(){
 }
 void MainWindow::BtnAddSolPath_slot(){
 
-    QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose Solid .stl file"), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
+    QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose Solid .stl file"), DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
 
     if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
 
@@ -5790,7 +5823,7 @@ void MainWindow::BtnAddSolPath_slot(){
 }
 void MainWindow::BtnAddVolPath_slot(){
 
-    QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose Volume file"), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
+    QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose Volume file"), DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
 
     if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
 
@@ -5818,7 +5851,7 @@ void MainWindow::BtnEditVolFile_slot(){
         ui->tabWidget->setTabText(0,"G4TCPPGeometryFormat.cc");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
-        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
+        ui->GeometryFileTextEdit->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_source_dir_path+"/src/G4TCPPGeometryFormat.cc"));
         ui->tabWidget->setCurrentIndex(0);
     }
 }
@@ -6005,7 +6038,7 @@ void MainWindow::on_btnPositionsFile_clicked()
     PositionsDataFilePath = QFileDialog::getOpenFileName(
                 this,
                 tr("Open file"),
-                DoseCalcs_build_dir_path, //pathBuildApp,
+                DoseCalcsCore_build_dir_path, //pathBuildApp,
                 "All files (*.*);;Text files (*.txt)"
                 );
 
@@ -6026,7 +6059,7 @@ void MainWindow::on_btnEnergiessFile_clicked()
     EnergiesDataFilePath = QFileDialog::getOpenFileName(
                 this,
                 tr("Open file"),
-                DoseCalcs_build_dir_path, //pathBuildApp,
+                DoseCalcsCore_build_dir_path, //pathBuildApp,
                 "All files (*.*);;Text files (*.txt)"
                 );
 
@@ -6047,7 +6080,7 @@ void MainWindow::on_btnMomDirsFile_clicked()
     MomDirsDataFilePath = QFileDialog::getOpenFileName(
                 this,
                 tr("Open file"),
-                DoseCalcs_build_dir_path, //pathBuildApp,
+                DoseCalcsCore_build_dir_path, //pathBuildApp,
                 "All files (*.*);;Text files (*.txt)"
                 );
 
@@ -6066,12 +6099,12 @@ void MainWindow::on_btnMomDirsFile_clicked()
 void MainWindow::on_btnAnalysiInputFileFile_clicked()
 {
 
-    showResultsOutput("---------- Reading " + DoseCalcs_build_dir_path+"/"+MacroFileName , 4);
+    showResultsOutput("---------- Reading " + DoseCalcsCore_build_dir_path+"/"+MacroFileName , 4);
 
-    QString maccros = DoseCalcs_build_dir_path+"/"+MacroFileName;
+    QString maccros = DoseCalcsCore_build_dir_path+"/"+MacroFileName;
 
     if(!QFile::exists(maccros)){
-        maccros = QFileDialog::getOpenFileName( this, tr("Choose the simulation macros file for analysis"), DoseCalcs_build_dir_path, tr("Simulation data files (*)") );
+        maccros = QFileDialog::getOpenFileName( this, tr("Choose the simulation macros file for analysis"), DoseCalcsCore_build_dir_path, tr("Simulation data files (*)") );
     }
 
     QStringList InputsVals;
@@ -6160,7 +6193,7 @@ void MainWindow::on_btnAnalysiInputFileFile_clicked()
 
     updateApplicationTabs();
     /*
-        QVector< QPair<QString,QString>> Commlines1 = fileManagerObject->ReadTextFromFileInQStringList(DoseCalcs_build_dir_path+"/"+MacroFileName);
+        QVector< QPair<QString,QString>> Commlines1 = fileManagerObject->ReadTextFromFileInQStringList(DoseCalcsCore_build_dir_path+"/"+MacroFileName);
 
         for ( int ds = 0 ; ds < Commlines1.size(); ds++  ){
 
@@ -6256,9 +6289,9 @@ void MainWindow::on_AnalysisbtnGraphsDirPath_clicked()
 void MainWindow::on_AnalysisbtnSaveInputs_clicked()
 {
 
-    if(QFile::exists(DoseCalcs_build_dir_path+"/"+MacroFileName)){
+    if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+MacroFileName)){
 
-        QVector< QPair<QString,QString>> Commlines1 = fileManagerObject->ReadTextFromFileInQStringList(DoseCalcs_build_dir_path+"/"+MacroFileName);
+        QVector< QPair<QString,QString>> Commlines1 = fileManagerObject->ReadTextFromFileInQStringList(DoseCalcsCore_build_dir_path+"/"+MacroFileName);
 
         for ( int ds = 0 ; ds < Commlines1.size(); ds++  ){
 
@@ -6325,9 +6358,9 @@ void MainWindow::on_AnalysisbtnSaveInputs_clicked()
 void MainWindow::on_AnalysisbtnGenerate_clicked()
 {
 
-    if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){UserCurrentResultsDirPath = DoseCalcs_build_dir_path + "/" + ResultDirectoryName;}
+    if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path + "/" + ResultDirectoryName;}
 
-    if(!QFile::exists(DoseCalcs_build_dir_path+"/"+MacroFileName) || !QFile::exists(UserCurrentResultsDirPath+"/"+ResultFileName)){
+    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+MacroFileName) || !QFile::exists(UserCurrentResultsDirPath+"/"+ResultFileName)){
         QMessageBox::information(this, tr(""), "Cannot find macros file and/or ResultsData files in this directory. Choose a result directory that contains ResultsData file to perform root analysis tasks." );
         UserCurrentResultsDirPath = QFileDialog::getExistingDirectory(0, ("Choose results directory"), UserCurrentResultsDirPath);
         if(UserCurrentResultsDirPath.isEmpty()){
@@ -6340,7 +6373,7 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
         dir->mkdir(UserCurrentResultsDirPath+"/"+GraphsOutDirName);
     }
 
-    if(QFile::exists(DoseCalcs_build_dir_path+"/"+GraphExecutableName)){
+    if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName)){
 
         if(!QFile::exists(Root_Lib_dir_path+"/thisroot.sh")){
             Root_Lib_dir_path = ShowMessageBoxAndGetPath("Directory Containing thisroot.sh Not Found, Click OK to Choose the Directory");
@@ -6348,29 +6381,29 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
 
         //CoreProcess.execute("sh " + UserCurrentResultsDirPath+"/"+DoseCalcsExecutingFileName);
         BashCommandsForExecuting = "#! /bin/bash \n . " +Root_Lib_dir_path +"/thisroot.sh \n"+
-                "cd " + DoseCalcs_build_dir_path + "\n" +
-                DoseCalcs_build_dir_path+"/"+GraphExecutableName + " " + UserCurrentResultsDirPath
+                "cd " + DoseCalcsCore_build_dir_path + "\n" +
+                DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " " + UserCurrentResultsDirPath
                 ;
         BashCommandsForExecuting += "\n bash \n";
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
         showResultsOutput("Writing Analysis Commands : \n", 0);
         showResultsOutput(BashCommandsForExecuting , 0);
-        showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
+        showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
 
-        if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
             showResultsOutput("Generating ROOT graphs and histograms, and Latex table from DoseCalcs results" , 1);
 
-            ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
         }
         else{
-            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
         }
 
     }else{
-        showResultsOutput("Cannot find the analysis executable \""+ DoseCalcs_build_dir_path+"/"+GraphExecutableName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+        showResultsOutput("Cannot find the analysis executable \""+ DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
     }
 }
 void MainWindow::on_RootAnalysispushButtonOpenROOTGUI_clicked()
@@ -6380,7 +6413,7 @@ void MainWindow::on_RootAnalysispushButtonOpenROOTGUI_clicked()
         Root_Lib_dir_path = ShowMessageBoxAndGetPath("Directory containing thisroot.sh Not Found, Click OK to Choose the Directory");
     }
 
-    //CoreProcess.execute("sh " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+    //CoreProcess.execute("sh " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     if(QFile::exists(Root_Lib_dir_path) && QFile::exists(Root_Lib_dir_path+"/thisroot.sh") ){
         BashCommandsForExecuting = "\ncd " +Root_Lib_dir_path +"\n" + ". ./thisroot.sh \n"
                 +"cd "+UserCurrentResultsDirPath+" \n"
@@ -6392,17 +6425,17 @@ void MainWindow::on_RootAnalysispushButtonOpenROOTGUI_clicked()
     }
 
     BashCommandsForExecuting += "\n bash \n";
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-    if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+    if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
         showResultsOutput("Opening ROOT graphical user interface" , 1);
 
-        ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+        ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
     }
     else{
-        showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+        showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
     }
 }
 
@@ -6539,17 +6572,17 @@ void MainWindow::OpenROOTCanvas()
     if(QFile::exists(Root_Lib_dir_path) && QFile::exists(Root_Lib_dir_path+"/thisroot.sh") ){
 
         BashCommandsForExecuting = "#! /bin/bash \ncd " +Root_Lib_dir_path +"\n" + ". ./thisroot.sh \n"
-                +"cd "+DoseCalcs_build_dir_path+" \n"
+                +"cd "+DoseCalcsCore_build_dir_path+" \n"
                 +"root -l -q Canvas.C"
                 ;
         BashCommandsForExecuting += "\n bash \n";
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-        if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
             showResultsOutput("Opening ROOT graphical Canvas" , 1);
 
-            ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
     }else{
         QMessageBox::information(this, tr(""), "Install ROOT Analysis System before run the ROOT-View");
@@ -6749,7 +6782,7 @@ void MainWindow::CreateROOTFile()
             "//gApplication.Run();\n"
             "}";
 
-    fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/Canvas.C" , text);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/Canvas.C" , text);
     if(open){
         OpenROOTCanvas();
     }
@@ -6757,33 +6790,32 @@ void MainWindow::CreateROOTFile()
 
 
 // RadioButton value changed
-void MainWindow::on_radioButtonGDML_clicked(bool checked)
+void MainWindow::on_pushButtonChooseVoxIDsFile_clicked()
 {
-    if(checked == true){
+    if(ui->radioButtonVoxIDs->isChecked()){
+        QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose VoxIDs file (region or material IDs file) \".dat\""), DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
 
-        ui->frame_19->setVisible(false);
-        //ui->frame_World->setEnabled(false);
-        //ui->frame_materials->setEnabled(false);
-        //ui->GeometryFilePathLineEdit->setVisible(true);
-        //ui->btnOpenGeometryFilePath->setEnabled(true);
+        if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){}else{
+            ui->lineEditVoxIDsFilePath->setText(chosen_DirPath);
+        }
+    }else if(ui->radioButtonTET->isChecked()){
 
-        RemoveDynamiqueGeomAndMatFrame();
+        QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose Tetrahedrons nodes, then elements file"), DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
+
+        if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
+
+        }else{
+            if(QFile::exists(ui->lineEditVoxIDsFilePath->text())){
+                ui->lineEditVoxIDsFilePath->setText(ui->lineEditVoxIDsFilePath->text() + " " + chosen_DirPath);
+            }else{
+                ui->lineEditVoxIDsFilePath->setText(chosen_DirPath);
+            }
+        }
     }
 }
-void MainWindow::on_radioButtonTEXT_clicked(bool checked)
+void MainWindow::on_radioButtonTET_clicked()
 {
-    if(checked == true){
-
-        ui->frame_19->setVisible(false);
-
-        //ui->frame_World->setEnabled(false);
-        //ui->frame_materials->setEnabled(false);
-        //ui->GeometryFilePathLineEdit->setVisible(true);
-        //ui->btnOpenGeometryFilePath->setEnabled(true);
-
-        RemoveDynamiqueGeomAndMatFrame();
-
-    }
+    ui->comboBoxTypeOfSources->setCurrentText("TET");
 }
 void MainWindow::on_radioButtonVoxel_clicked(bool checked)
 {
@@ -6791,6 +6823,7 @@ void MainWindow::on_radioButtonVoxel_clicked(bool checked)
 
         ui->frame_19->setVisible(false);
 
+        ui->comboBoxTypeOfSources->setCurrentText("TET");
         //ui->PhantomWorldMaterialLineEdit->setEnabled(true);
         //ui->PhantomWorldHalfSizeslineEdit->setEnabled(true);
 
@@ -6812,6 +6845,7 @@ void MainWindow::on_radioButtonDICOM_clicked(bool checked)
 
         ui->frame_19->setVisible(false);
 
+        ui->comboBoxTypeOfSources->setCurrentText("Voxels");
         //ui->frame_World->setEnabled(true);
         //ui->frame_materials->setEnabled(true);
         //ui->GeometryFilePathLineEdit->setVisible(false);
@@ -6828,6 +6862,7 @@ void MainWindow::on_radioButtonVoxIDs_clicked(bool checked)
 
         ui->frame_19->setVisible(true);
 
+        ui->comboBoxTypeOfSources->setCurrentText("Voxels");
         //ui->frame_World->setEnabled(true);
         //ui->frame_materials->setEnabled(true);
         //ui->btnOpenGeometryFilePath->setEnabled(true);
@@ -6844,6 +6879,7 @@ void MainWindow::on_radioButtonConstruct_clicked(bool checked)
 
         ui->frame_19->setVisible(false);
 
+        ui->comboBoxTypeOfSources->setCurrentText("Volume");
         //ui->frame_World->setEnabled(true);
         //ui->frame_materials->setEnabled(true);
         //ui->GeometryFilePathLineEdit->setVisible(false);
@@ -6855,12 +6891,43 @@ void MainWindow::on_radioButtonConstruct_clicked(bool checked)
     }
 
 }
+void MainWindow::on_radioButtonGDML_clicked(bool checked)
+{
+    if(checked == true){
+
+        ui->comboBoxTypeOfSources->setCurrentText("Volume");
+        ui->frame_19->setVisible(false);
+        //ui->frame_World->setEnabled(false);
+        //ui->frame_materials->setEnabled(false);
+        //ui->GeometryFilePathLineEdit->setVisible(true);
+        //ui->btnOpenGeometryFilePath->setEnabled(true);
+
+        RemoveDynamiqueGeomAndMatFrame();
+    }
+}
+void MainWindow::on_radioButtonTEXT_clicked(bool checked)
+{
+    if(checked == true){
+
+        ui->frame_19->setVisible(false);
+
+        ui->comboBoxTypeOfSources->setCurrentText("Volume");
+        //ui->frame_World->setEnabled(false);
+        //ui->frame_materials->setEnabled(false);
+        //ui->GeometryFilePathLineEdit->setVisible(true);
+        //ui->btnOpenGeometryFilePath->setEnabled(true);
+
+        RemoveDynamiqueGeomAndMatFrame();
+
+    }
+}
 void MainWindow::on_radioButtonCpp_clicked(bool checked)
 {
     if(checked == true){
 
         ui->frame_19->setVisible(false);
 
+        ui->comboBoxTypeOfSources->setCurrentText("Volume");
         //ui->frame_World->setEnabled(true);
         //ui->frame_materials->setEnabled(true);
         //ui->GeometryFilePathLineEdit->setVisible(false);
@@ -6877,6 +6944,7 @@ void MainWindow::on_radioButtonSTL_clicked(bool checked)
 
         ui->frame_19->setVisible(false);
 
+        ui->comboBoxTypeOfSources->setCurrentText("Volume");
         //ui->frame_World->setEnabled(true);
         //ui->frame_materials->setEnabled(true);
         //ui->GeometryFilePathLineEdit->setVisible(false);
@@ -6885,29 +6953,6 @@ void MainWindow::on_radioButtonSTL_clicked(bool checked)
         RemoveDynamiqueGeomAndMatFrame();
         //showConstructSolidAndVolumeCommandsFrame();
 
-    }
-}
-void MainWindow::on_pushButtonChooseVoxIDsFile_clicked()
-{
-    if(ui->radioButtonVoxIDs->isChecked()){
-        QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose VoxIDs file (region or material IDs file) \".dat\""), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
-
-        if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){}else{
-            ui->lineEditVoxIDsFilePath->setText(chosen_DirPath);
-        }
-    }else if(ui->radioButtonTET->isChecked()){
-
-        QString chosen_DirPath = QFileDialog::getOpenFileName( this, tr("Choose Tetrahedrons nodes, then elements file"), DoseCalcs_build_dir_path+"/"+ScriptDirectoryName, tr("All files (*.*)") );
-
-        if(chosen_DirPath.isEmpty() || chosen_DirPath.isNull()){
-
-        }else{
-            if(QFile::exists(ui->lineEditVoxIDsFilePath->text())){
-                ui->lineEditVoxIDsFilePath->setText(ui->lineEditVoxIDsFilePath->text() + " " + chosen_DirPath);
-            }else{
-                ui->lineEditVoxIDsFilePath->setText(chosen_DirPath);
-            }
-        }
     }
 }
 
@@ -7080,11 +7125,11 @@ void MainWindow::on_pushButtonEditGeomFile_clicked()
             QString ext = QString::fromLocal8Bit(getFileExt(PhyVolName->text().toStdString()).c_str());
             QString fn = QString::fromLocal8Bit(getFileNameFromPath(PhyVolName->text().toStdString()).c_str());
 
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+ScriptDirectoryName+"/"+fn+"."+ext , ui->GeometryFileTextEdit->toPlainText());
+            fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+ScriptDirectoryName+"/"+fn+"."+ext , ui->GeometryFileTextEdit->toPlainText());
         }
     }
     else if (EditFlag == 1){ // ExeFileName file text saving
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+ExeFileName , ui->GeometryFileTextEdit->toPlainText());
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+ExeFileName , ui->GeometryFileTextEdit->toPlainText());
     }
     else if (EditFlag == 2){ // Geometry data saving
 
@@ -7132,12 +7177,12 @@ void MainWindow::on_pushButtonEditGeomFile_clicked()
         RemoveDynamiqueGeomAndMatFrame();
     }
     else if (EditFlag == 4){ // macros file for analysis file text saving
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+MacroFileName , ui->GeometryFileTextEdit->toPlainText());
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+MacroFileName , ui->GeometryFileTextEdit->toPlainText());
     }
     else if (EditFlag == 8){ // MacroFileName file text saving
-        fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+MacroFileName , ui->GeometryFileTextEdit->toPlainText());
+        fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+MacroFileName , ui->GeometryFileTextEdit->toPlainText());
         if(ui->checkBoxUseMacroCommandFile->isChecked()){
-            FillComponentsFromInputsFile(DoseCalcs_build_dir_path+"/"+MacroFileName);
+            FillComponentsFromInputsFile(DoseCalcsCore_build_dir_path+"/"+MacroFileName);
         }
     }
     else if (EditFlag == 9){ // ResultFileName file text saving
@@ -7153,31 +7198,39 @@ void MainWindow::on_pushButtonEditGeomFile_clicked()
         QString ext = QString::fromLocal8Bit(getFileExt(ui->PhantomWorldHalfSizeslineEdit->text().toStdString()).c_str());
 
         if(ext == "gdml" || ext == "geom"){
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/Scripts/"+ui->PhantomWorldHalfSizeslineEdit->text() , ui->GeometryFileTextEdit->toPlainText());
+            fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/Scripts/"+ui->PhantomWorldHalfSizeslineEdit->text() , ui->GeometryFileTextEdit->toPlainText());
         }
         else if(ext == "c++" || ext == "cpp" || ext == "cc"){
 
-            fileManagerObject->WriteTextToFile( DoseCalcs_source_dir_path+"/src/G4TCPPGeometryFormat.cc" , ui->GeometryFileTextEdit->toPlainText());
+            QString oldd = fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_source_dir_path+"/src/G4TCPPGeometryFormat.cc");
+            QString neww = ui->GeometryFileTextEdit->toPlainText();
 
-            if(!QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
-                showResultsOutput("Cannot find DoseCalcs executable "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " . Please build DoseCalcs to run it", 3);
+            if(oldd != neww){
+
+                fileManagerObject->WriteTextToFile( DoseCalcsCore_source_dir_path+"/src/G4TCPPGeometryFormat.cc" , ui->GeometryFileTextEdit->toPlainText());
+
                 on_BuildButton_clicked();
+            /*
+                if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName)){
+                    showResultsOutput("Cannot find DoseCalcs executable "+DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " . Please build DoseCalcs to run it", 3);
+                    on_BuildButton_clicked();
+                }
+
+                QString f = "";
+
+                BashCommandsForExecuting = "#! /bin/bash \n" +f
+                        + "cd " + DoseCalcsCore_build_dir_path + "\n"
+                        + cmakeTruePath + " --build . --target " + DoseCalcsCore_source_dir_path+"/src/G4TCPPGeometryFormat.cc.o"
+                        ;
+                BashCommandsForExecuting += "\n bash \n";
+
+                showResultsOutput("Writing building G4TCPPGeometryFormat class commands: \n", 0);
+                showResultsOutput(BashCommandsForExecuting , 0);
+                fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+
+                ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            */
             }
-
-            QString f = "";
-
-            BashCommandsForExecuting = "#! /bin/bash \n" +f
-                    + "cd " + DoseCalcs_build_dir_path + "\n"
-                    + cmakeTruePath + " --build . --target " + DoseCalcs_build_dir_path+"/CMakeFiles/simulate.dir/src/G4TCPPGeometryFormat.cc.o"
-                    ;
-            BashCommandsForExecuting += "\n bash \n";
-
-            showResultsOutput("Writing building G4TCPPGeometryFormat class commands: \n", 0);
-            showResultsOutput(BashCommandsForExecuting , 0);
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
-
-
-            ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
     }
     else if (EditFlag == 11){ // SaveMacrosFilePath file text saving
@@ -7444,8 +7497,8 @@ QString MainWindow::CreateMaterialAndGeometryDataFromMacrosFile(QString FilePath
 void MainWindow::RunForMultiGeomeries()
 {
 
-    if(!QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
-        showResultsOutput("Cannot find DoseCalcs executable "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " . Please build DoseCalcs before run", 3);
+    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName)){
+        showResultsOutput("Cannot find DoseCalcs executable "+DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " . Please build DoseCalcs before run", 3);
         on_BuildButton_clicked();
     }
 
@@ -7507,7 +7560,7 @@ void MainWindow::RunForMultiGeomeries()
                 RunAndScoreCommands[5] + " " + ValuesOfInputs[Score_setSimNumOnRanksLineEdit]+ "\n"+
                 RunAndScoreCommands[10] + " " + UserCurrentResultsDirPath + "\n\n";
 
-        QsubSeparatedMacroFilePath = DoseCalcs_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
+        QsubSeparatedMacroFilePath = DoseCalcsCore_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
 
         fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , MacrosText);
         FillComponentsFromInputsFile(QsubSeparatedMacroFilePath);
@@ -7516,32 +7569,32 @@ void MainWindow::RunForMultiGeomeries()
 
             // this file name is used just in exe.sh file in rocks cluster simulations
 
-            BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path
-                    + "\n qsub "+DoseCalcs_build_dir_path+"/"+ExeFileName;
+            BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path
+                    + "\n qsub "+DoseCalcsCore_build_dir_path+"/"+ExeFileName;
             BashCommandsForExecuting += "\n bash \n";
 
             showResultsOutput("Writing Run Commands : \n", 0);
             showResultsOutput(BashCommandsForExecuting , 0);
-            showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
-            fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+            showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+            fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
             //if(EditFlag == 1){ // if you late it open, is not saved, can be for the last execution
             on_pushButtonGenerateExe_clicked();
             on_pushButtonEditGeomFile_clicked();
             //}
-            ui->outputTextConsole->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcs_build_dir_path+"/"+ExeFileName));
+            ui->outputTextConsole->setPlainText(fileManagerObject->ReadTextFromFileInOneString(DoseCalcsCore_build_dir_path+"/"+ExeFileName));
             ui->tabWidget->setCurrentIndex(0);
 
-            if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName) && QFile::exists(DoseCalcs_build_dir_path+"/"+ExeFileName)){
+            if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName) && QFile::exists(DoseCalcsCore_build_dir_path+"/"+ExeFileName)){
 
                 if(!ShowImportantSimulationData()){return;}
                 showResultsOutput("Computation Run" , 1);
 
-                //ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+                //ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
         }else{
 
-            if(QFile::exists(QsubSeparatedMacroFilePath) && QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName)){
+            if(QFile::exists(QsubSeparatedMacroFilePath) && QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName)){
 
                 if(MPI_USE=="YES"){
 
@@ -7560,9 +7613,9 @@ void MainWindow::RunForMultiGeomeries()
                         andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
                     }
 
-                    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcs_build_dir_path + "\n"
+                    BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n"
                             + nohup + " "+MPI_Lib_dir_path+"/mpirun " + Execution_setNumberOfRanksOrThreads + " "
-                            + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
+                            + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                             ;
                 }else{
 
@@ -7586,25 +7639,25 @@ void MainWindow::RunForMultiGeomeries()
                     BashCommandsForExecuting = "#! /bin/bash \n" +f
                             + "cd " +geant4_Lib_dir_path +"\n"+
                             + ". ./geant4.sh\n" +f +
-                            + "cd " + DoseCalcs_build_dir_path + "\n"
-                            + nohup +" "+DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
+                            + "cd " + DoseCalcsCore_build_dir_path + "\n"
+                            + nohup +" "+DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " B " + QsubSeparatedMacroFilePath + " " + Execution_setEventNumber + " " +andd
                             ;
                 }
                 BashCommandsForExecuting += "\n bash \n";
 
                 showResultsOutput("Writing Run Commands : \n", 0);
                 showResultsOutput(BashCommandsForExecuting , 0);
-                showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
-                fileManagerObject->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+                showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+                fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-                if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+                if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
                     if(!ShowImportantSimulationData()){return;}
                     showResultsOutput("Computation Run" , 1);
-                    ShowTerminal(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+                    ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
                 }
                 else{
-                    showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+                    showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
                 }
 
                 isInexec = true;
@@ -7853,7 +7906,7 @@ void MainWindow::removeHugFiles_slot(){
 
         bool pvr = false;
         QString files = "";
-        QDir dir(DoseCalcs_build_dir_path);
+        QDir dir(DoseCalcsCore_build_dir_path);
         foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "core*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
             {
                 pvr = true;
@@ -7875,9 +7928,447 @@ void MainWindow::removeHugFiles_slot(){
 
 
 // for ICRP radionuclides and biokinetic Dose Estimation Tab
+void MainWindow::on_pushButtonReadUSERData_clicked()
+{
+    setBiokineticsDefaulsInputs();
+}
 void MainWindow::on_pushButtonReadICRPData_clicked()
 {
     QFuture<void> future = QtConcurrent::run(this, &MainWindow::ReadICRPilesAndGetData);
+}
+void MainWindow::ReadICRPilesAndGetData(){
+
+    fileManagerObject->Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
+    RegionParameterValueMap = fileManagerObject->getRegionParameterValueMap();
+    ICRPSAFs = fileManagerObject->getICRPSAFs();
+    ICRPRadioNuclideData = fileManagerObject->getICRPRadioNuclideData();
+    ICRPRadioNuclideDataDiscSpec = fileManagerObject->getICRPRadioNuclideDataDiscSpec();
+    ICRPRadioNuclideHalfLives = fileManagerObject->getICRPRadioNuclideHalfLives();
+    SourceParticleEnergyValues = fileManagerObject->getSourceParticleEnergyValues();
+    RadionuclidesParticles = fileManagerObject->getRadionuclidesParticles();
+    RadioTracerSourceOrganResidenceTime = fileManagerObject->getRadioTracerSourceOrganResidenceTime();
+    RadiotracerradionucleidMap = fileManagerObject->getRadiotracerradionucleidMap();
+
+    /*
+    // test inputs
+    for ( auto it = ICRPSAFs["SAF"].begin(); it != ICRPSAFs["SAF"].end(); ++it  ){
+
+        QString Geometry_NAME = it.key();
+        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            QString Particle_NAME = it2.key();
+            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                double Energy_Val = it3.key();
+                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
+
+                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
+                    QString Source_NAME  = DD.key();
+                    //                    QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
+
+                    for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
+                        QString  Target_NAME  = CC.key();
+                        double SAFValue  = CC.value();
+                        //                        QTextStream(stdout) << "------Target_NAME " << Target_NAME <<"\n";
+                        //                        QTextStream(stdout) << "-------SAFValue " << SAFValue <<"\n";
+                        if(Source_NAME == "Liver" && Target_NAME == "Brain"){
+                            //QTextStream(stdout) << " Geometry_NAME " << Geometry_NAME << " Particle_NAME " << Particle_NAME << " Energy_Val " << Energy_Val << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " SAFValue " << SAFValue <<"\n";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    for ( auto it = SourceParticleEnergyValues.begin(); it != SourceParticleEnergyValues.end(); ++it  ){
+
+        QString Source_NAME = it->first;
+//        QTextStream(stdout) << "--Source_NAME " << Source_NAME <<"\n";
+
+        for ( auto it2 = it->second.begin(); it2 != it->second.end(); ++it2  ){
+            QString Particle_NAME = it2->first;
+//            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for(int gg = 0 ; gg < it2->second.size() ; gg++){
+                //QTextStream(stdout) << "Source_NAME " << Source_NAME  << " Particle_NAME " << Particle_NAME << " Energy " << it2->second[gg]  <<"\n";
+            }
+
+        }
+    }
+    for ( auto it = ICRPRadioNuclideDataDiscSpec.begin(); it != ICRPRadioNuclideDataDiscSpec.end(); ++it  ){
+
+        QString RadioTracer_NAME = it.key();
+        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            QString Particle_NAME = it2.key();
+            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                QString Source_NAME  = it3.key();
+                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
+
+                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
+                    double Energy  = DD.key();
+                    //                  QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
+
+                    double SAFValue  = DD.value();
+                    //QTextStream(stdout) << " RadioTracer_NAME " << RadioTracer_NAME << " Period(s) " << ICRPRadioNuclideHalfLives[RadioTracer_NAME] << " Particle_NAME " << Particle_NAME << " Energy " << Energy << " Value " << SAFValue <<"\n";
+                }
+            }
+        }
+    }
+
+    */
+
+    QString TextMessage = QString::number(ICRPRadioNuclideHalfLives.size()) + " radionuclides\n"
+            +QString::number(ICRPSAFs["SAF"]["ICRPAdultMale"]["gamma"].size())+" particles\n"
+            +QString::number(RegionParameterValueMap.size()) + " regions"
+            ;
+
+    //ui->labelReadICRMessageOutput->setText(TextMessage);
+    //ui->labelReadICRMessageOutput->setVisible(false);
+
+    QStringList Organs;
+    for ( auto it = SourceParticleEnergyValues.begin(); it != SourceParticleEnergyValues.end(); ++it  ){Organs.push_back(it->first);}
+    ui->comboBoxSources->clear();
+    ui->comboBoxSources->addItems(Organs);
+    for ( auto it = RegionParameterValueMap.begin(); it != RegionParameterValueMap.end(); ++it  ){Organs.push_back(it.key());}
+    ui->comboBoxTargets->clear();
+    ui->comboBoxTargets->addItems(Organs);
+
+    /*
+    for ( auto it = ICRPRadioNuclideHalfLives.begin(); it != ICRPRadioNuclideHalfLives.end(); ++it  ){
+        bool isin = false;
+        for (int dd = 0 ; dd < ui->comboBoxRadioPharmaceutiques->count(); dd++) {
+            if(it.key() == ui->comboBoxRadioPharmaceutiques->itemText(dd)){
+                isin = true;break;
+            }
+        }
+        if(isin == false){
+            ui->comboBoxRadioPharmaceutiques->addItem(it.key());
+        }
+    }
+    */
+
+    for ( auto it = RadiotracerradionucleidMap.begin(); it != RadiotracerradionucleidMap.end(); ++it  ){
+            ui->comboBoxRadioPharmaceutiques->addItem(it->first);
+    }
+
+
+    TissueFactorMap["World"]=1;
+    TissueFactorMap["Gonads"]=0.08;
+    TissueFactorMap["Thyroid"]=0.04;
+    TissueFactorMap["UrinaryBladder"]=0.04;
+    TissueFactorMap["Oesophagus"]=0.04;
+    TissueFactorMap["Liver"]=0.04;
+    TissueFactorMap["Brain"]=0.01;
+    TissueFactorMap["SalivaryGlands"]=0.01;
+    TissueFactorMap["Skin"]=0.01;
+    TissueFactorMap["ArmBone"]= 0.01;
+    TissueFactorMap["LegBone"]= 0.01;
+    TissueFactorMap["VOXEL"]= 0.12;
+    TissueFactorMap["Others"]= 0.12;
+
+    CalculateQuantitiesBasedOnICRPData();
+
+}
+void MainWindow::CalculateQuantitiesBasedOnICRPData()
+{
+    // quantity, geometry, radionuclide, source, target, value
+
+
+    QString RadioTracer_NAME;
+    QString Quantity_NAME;
+    QString Geometry_NAME;
+    QString Particle_NAME;
+    QString Source_NAME;
+    QString Target_NAME;
+    double Energy_Val;
+
+    /*
+    // Based on ICRP SAF, we calculate other AE, AF, S values, H, E for each geometry particle source target energy
+    for ( auto it = ICRPSAFs["SAF"].begin(); it != ICRPSAFs["SAF"].end(); ++it  ){
+
+        Geometry_NAME = it.key();
+
+        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            Particle_NAME = it2.key();
+            //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                Energy_Val = it3.key();
+                //QTextStream(stdout) << "Energy_Val " << Energy_Val <<"\n";
+
+                if(ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
+                    //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                    GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
+                }
+
+                // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
+                for ( auto DD = ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
+                    Source_NAME  = DD.key();
+                    //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
+
+                    for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
+                        Target_NAME  = CC.key();
+
+                        ICRPSAFs["AE"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy_Val)*RadionuclidesQuantitiesUnitsFactors["AE"];
+                        ICRPSAFs["AF"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME])*RadionuclidesQuantitiesUnitsFactors["AF"];
+                        ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(Energy_Val)*RadionuclidesQuantitiesUnitsFactors["S"];
+                        ICRPSAFs["H"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = TissueFactorMap[Target_NAME]*CC.value()*(Energy_Val)*RadionuclidesQuantitiesUnitsFactors["H"];
+                        ICRPSAFs["E"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(Energy_Val)*RadionuclidesQuantitiesUnitsFactors["E"];
+
+                    }
+                }
+            }
+        }
+    }
+*/
+
+    // For the radionuclides we calculate other AE, AF, S values, H, E for each geometry, radionuclide, source target energy
+    for (int dd = 0 ; dd < ui->comboBoxPhantom->count(); dd++) {
+
+        Geometry_NAME = ui->comboBoxPhantom->itemText(dd);
+
+        for ( auto it = ICRPRadioNuclideData.begin(); it != ICRPRadioNuclideData.end(); ++it  ){
+
+            RadioTracer_NAME = it.key();
+
+            //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
+
+            for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+                Particle_NAME = it2.key();
+                //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
+
+                for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                    Energy_Val = it3.key();
+
+                    double RadiationPerCent = ICRPRadioNuclideData[RadioTracer_NAME][Particle_NAME][Energy_Val];
+                    //QTextStream(stdout) << "Energy_Val " << Energy_Val << " RadiationPerCent " << RadiationPerCent <<"\n";
+
+                    if(ICRPSAFs["AE"][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
+                        //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                        GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
+                    }
+
+                    // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
+                    for ( auto DD = ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
+                        Source_NAME  = DD.key();
+                        //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
+
+                        for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
+                            Target_NAME  = CC.key();
+
+                            double vb= ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
+                            if(__isinf(vb) || __isnan(vb) || vb == 0.){continue;}
+
+                            //double CumulatedActivityInSource = RadioTracerSourceOrganResidenceTime[]
+                            //        *RadioTracerSourceTi_Fs_ai_AsPerA0[RadioTracer_NAME][Source_NAME];
+                            double CumulatedActivityInSource = 1*1;
+
+                            // values and variance calculation for chosen quantities
+                            for (int rr = 0 ; rr < DoseCalcsQuantities.size() ; rr++) {
+
+                                double ccc = ICRPSAFs[DoseCalcsQuantities[rr]][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
+
+                                if( !__isnan(ccc) && !__isinf(ccc) && ccc != 0 && ccc != NULL){
+                                    QuatititesRadioNuclidesParticlesCalculatedData[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME] +=
+                                            RadiationPerCent
+                                            *ccc;
+
+                                    QuatititesRadioNuclidesParticlesCalculatedDataInOrgan[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Target_NAME] +=
+                                            RadiationPerCent
+                                            *CumulatedActivityInSource
+                                            *ccc;
+
+
+                                    if(Source_NAME == "Liver" && Target_NAME == "Brain"){
+                                        //QTextStream(stdout) << DoseCalcsQuantities[rr] << " " << RadioTracer_NAME<< " " << Geometry_NAME  << " " << Particle_NAME  << " " << Target_NAME  << "<--" << Source_NAME << " = " << ccc << " Tot: " << QuatititesRadioNuclidesParticlesCalculatedData[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME]
+                                          //                     << " for Organ = " << QuatititesRadioNuclidesParticlesCalculatedDataInOrgan[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Target_NAME] << "\n";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+}
+void MainWindow::GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(QString ParticleName, double Energy){
+
+    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  )
+    {
+        for ( auto Bbeg = Abeg->second.begin(); Bbeg != Abeg->second.end(); ++Bbeg  ){
+            std::sort(Bbeg->second.begin(), Bbeg->second.end());
+        }
+    }
+
+    double Energy1 = 0;
+    double Energy2 = 0;
+
+    //for(int gg = 0 ; gg < (int)OrgansNameVector.size() ; gg++){
+    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  ){
+
+        for(int ss = 0 ; ss < Abeg->second[ParticleName].size() ; ss++){
+
+            int ff = ss+1;
+
+            int da = Abeg->second[ParticleName].size()-1; if(ff == da){break;}
+
+            double E1 = Abeg->second[ParticleName][ss];
+            double E2 = Abeg->second[ParticleName][ff];
+            //QTextStream(stdout) << ss << " " << E1 << " " << ff << " " << E2 << "\n" ;
+
+            if(E1 < Energy && Energy < E2){
+                Energy1 = E1;
+                Energy2 = E2;
+
+                //QTextStream(stdout) << " ParticleName " << ParticleName << " Energy1 " << Energy1 << " Energy " << Energy << " Energy2 " << Energy2 << "\n" ;
+                break;
+            }
+        }
+
+        for (int dd = 0 ; dd < ui->comboBoxPhantom->count(); dd++) {
+
+            QString Geometry_NAME = ui->comboBoxPhantom->itemText(dd);
+
+            for ( auto VVbeg = RegionParameterValueMap[Geometry_NAME]["Mass"].begin(); VVbeg != RegionParameterValueMap[Geometry_NAME]["Mass"].end(); ++VVbeg  ){
+
+                QString OrganName = VVbeg.key();
+
+                //for(int vc = 0 ; vc < (int)DoseCalcsQuantities.size() ; vc++){
+                //    double Val1 = ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName];
+                //    double Val2 = ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName];
+                //    double Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                //    ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+                //}
+
+                double Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName];
+                double Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName];
+                double Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+
+                //if(Abeg->first == "Liver" && OrganName == "Brain"){
+                //QTextStream(stdout) << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " val1 " << Val1 << " val2 " << Val2 << " val " << Val << " " << Abeg->first << " " << OrganName  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(OrganName) << "\n";
+                //}
+
+                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]*Energy1);
+                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]*Energy2);
+                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                ICRPSAFs["AE"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+
+                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]);
+                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]);
+                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                ICRPSAFs["AF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+
+                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1);
+                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2);
+                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                ICRPSAFs["S"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+
+                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
+                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
+                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                ICRPSAFs["H"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+
+                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(OrganName);
+                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(OrganName);
+                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                ICRPSAFs["E"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
+
+                if(Abeg->first == "Liver" && OrganName == "Brain"){
+
+                    /*
+            //QTextStream(stdout) << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " " << Abeg->first << " " << OrganName  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(OrganName) <<
+                                   " SAF " << ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
+                                   " AF " << ICRPSAFs["AF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
+                                   " AE " << ICRPSAFs["AE"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
+                                   " S " << ICRPSAFs["S"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
+                                   " H " << ICRPSAFs["H"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
+                                   " E " << ICRPSAFs["E"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
+                                   "\n" ;
+*/            }
+            }
+        }
+    }
+}
+double MainWindow::GenerateRadiationFactor(QString ParticleName, double Energy){ // enerrgy in MeV
+
+    double factor = RadiationFactorMap[ParticleName][Energy];
+
+    if(factor == 0.){
+        factor = 1;
+    }
+
+    if(ParticleName == "gamma"){
+        factor = 1; // all energies
+    }
+    else if (ParticleName == "e-" || ParticleName == "e+"){
+        factor = 1; // all energies
+    }
+    else if (ParticleName == "alpha"){
+        factor = 20; // all energies for alpha and heavy nuclei
+    }
+    else if (ParticleName == "proton"){
+        if(Energy <= 2.){
+            factor = 1;
+        }else{
+            factor = 5;
+        }
+    }
+    else if (ParticleName == "neutron"){
+        if(Energy < 0.01){
+            factor = 5;
+        }
+        else if( 0.01 <= Energy && Energy <= 0.1){
+            factor = 10;
+        }
+        else if( 0.1 < Energy && Energy <= 2){
+            factor = 20;
+        }
+        else if( 2 < Energy && Energy <= 10){
+            factor = 20;
+        }
+        else if( 20 < Energy){
+            factor = 5;
+        }
+    }
+    return factor;
+}
+double MainWindow::GenerateTissueFactor(QString OrganName){
+
+    double factor = 0.12;
+    if(TissueFactorMap["Others"] == 0.){
+        TissueFactorMap["Others"] = 0.12;
+        factor = TissueFactorMap["Others"];
+    }
+
+    bool isIn = false;
+    for ( auto it = TissueFactorMap.begin(); it != TissueFactorMap.end(); ++it  ){
+
+        if(it->first == OrganName){
+            isIn = true;
+            factor = TissueFactorMap[OrganName];
+            break;
+        }
+    }
+
+    if(isIn == false){
+        TissueFactorMap[OrganName] = TissueFactorMap["Others"];
+        factor = TissueFactorMap[OrganName];
+    }
+
+    return factor;
 }
 void MainWindow::on_pushButtonGetResultsNucl_clicked()
 {
@@ -7893,7 +8384,6 @@ void MainWindow::on_pushButtonGetResultsNucl_clicked()
     QString Target_NAME;
     double Energy_Val;
     double Value;
-
 
     double TMinValue;
     double TMaxValue;
@@ -7924,7 +8414,6 @@ void MainWindow::on_pushButtonGetResultsNucl_clicked()
     }
 
     QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>>>> EditedQuatititesRadioNuclidesParticlesCalculatedData = QuatititesRadioNuclidesParticlesCalculatedData; // Quantity, Geometry, Radionuclide, organ, value
-
 
     for ( auto it2 = EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].begin(); it2 != EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].end(); ++it2  ){
 
@@ -8035,20 +8524,20 @@ void MainWindow::on_pushButtonGetResultsNucl_clicked()
         RadioTracer_NAME = it0.key();
         //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
 
-        if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 0){ // Sources
+        if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 0){ // region source as a target
             Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"][ui->comboBoxSources->currentText()][ui->comboBoxSources->currentText()];
         }
-        else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1){ // Targets
+        else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1){ // in one target from all sources
             Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"]["all"][ui->comboBoxTargets->currentText()];
         }
         else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 2){ // Combinations
             Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"][ui->comboBoxSources->currentText()][ui->comboBoxTargets->currentText()];
         }
-        if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 3){ // Phantom
+        else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 2){ // in all targets from all sources
             Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"]["all"]["all"];
         }
 
-        QTextStream(stdout) << ui->comboBoxQuantityNucl->currentText() << " " << ui->comboBoxPhantom->currentText() <<  " RadioTracer_NAME " << RadioTracer_NAME << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " Value in default: " << Value  << " In " << ui->comboBoxEffDoseUnit->currentText() << ": "<< Value/QuantitiesConversionFromDefault[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxEffDoseUnit->currentText()] <<"\n";
+        //QTextStream(stdout) << ui->comboBoxQuantityNucl->currentText() << " " << ui->comboBoxPhantom->currentText() <<  " RadioTracer_NAME " << RadioTracer_NAME << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " Value in default: " << Value  << " In " << ui->comboBoxEffDoseUnit->currentText() << ": "<< Value/QuantitiesConversionFromDefault[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxEffDoseUnit->currentText()] <<"\n";
 
         bool save0 = false;
         bool save1 = false;
@@ -8080,16 +8569,22 @@ void MainWindow::on_pushButtonGetResultsNucl_clicked()
 
     std::sort(ValuesOrderedData["Ascending"].begin(), ValuesOrderedData["Ascending"].end());
 
-
     // show the results
-    QTextStream(stdout) << "\n\n********** Values of "<< ui->comboBoxQuantityNucl->currentText() << " in " << ui->comboBoxPhantom->currentText()<< ":\n\n";
+    //QTextStream(stdout) << "\n\n********** Values of "<< ui->comboBoxQuantityNucl->currentText() << " in " << ui->comboBoxPhantom->currentText()<< ":\n\n";
 
+    bool isin = false;
     for(int gg = 0 ; gg < (int)ValuesOrderedData["Ascending"].size() ; gg++){
-        QTextStream(stdout) << ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]] << " T(s):" << ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]]] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
+        //QTextStream(stdout) << ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]] << " T(s):" << ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]]] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
+        if(ValuesOrderedData["Ascending"][gg] != 0.){ isin = true;}
+    }
+
+    if(isin == false){
+        QMessageBox::information(this, tr(""), "No data were registered for this configuration, change emitters, particles, "+ui->comboBoxTotalorSourceOrCombNucl->currentText()+", "+ui->comboBoxPhantom->currentText()+", target "+ui->comboBoxTargets->currentText()+", source "+ui->comboBoxSources->currentText());
+        return;
     }
 
     for(int gg = (int)ValuesOrderedData["Ascending"].size()-1 ; gg > -1 ; gg--){
-        QTextStream(stdout) << ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]] << " T(s):" << ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]]] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
+        //QTextStream(stdout) << ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]] << " T(s):" << ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]]] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
         ValuesOrderedData["Descending"].push_back(ValuesOrderedData["Ascending"][gg]);
     }
 
@@ -8098,125 +8593,6 @@ void MainWindow::on_pushButtonGetResultsNucl_clicked()
 void MainWindow::on_pushButtonReverseData_clicked()
 {
     GenerateDataInTableView();
-}
-void MainWindow::ReadICRPilesAndGetData(){
-
-    fileManagerObject->Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
-    RegionParameterValueMap = fileManagerObject->getRegionParameterValueMap();
-    ICRPSAFs = fileManagerObject->getICRPSAFs();
-    ICRPRadioNuclideData = fileManagerObject->getICRPRadioNuclideData();
-    ICRPRadioNuclideDataDiscSpec = fileManagerObject->getICRPRadioNuclideDataDiscSpec();
-    ICRPRadioNuclideHalfLives = fileManagerObject->getICRPRadioNuclideHalfLives();
-    SourceParticleEnergyValues = fileManagerObject->getSourceParticleEnergyValues();
-    RadionuclidesParticles = fileManagerObject->getRadionuclidesParticles();
-
-/*
-    // test inputs
-    for ( auto it = ICRPSAFs["SAF"].begin(); it != ICRPSAFs["SAF"].end(); ++it  ){
-
-        QString Geometry_NAME = it.key();
-        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
-
-        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
-            QString Particle_NAME = it2.key();
-            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
-
-            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-                double Energy_Val = it3.key();
-                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
-
-                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
-                    QString Source_NAME  = DD.key();
-                    //                    QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
-
-                    for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
-                        QString  Target_NAME  = CC.key();
-                        double SAFValue  = CC.value();
-                        //                        QTextStream(stdout) << "------Target_NAME " << Target_NAME <<"\n";
-                        //                        QTextStream(stdout) << "-------SAFValue " << SAFValue <<"\n";
-                        if(Source_NAME == "Liver" && Target_NAME == "Brain"){
-                            //QTextStream(stdout) << " Geometry_NAME " << Geometry_NAME << " Particle_NAME " << Particle_NAME << " Energy_Val " << Energy_Val << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " SAFValue " << SAFValue <<"\n";
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    for ( auto it = SourceParticleEnergyValues.begin(); it != SourceParticleEnergyValues.end(); ++it  ){
-
-        QString Source_NAME = it->first;
-//        QTextStream(stdout) << "--Source_NAME " << Source_NAME <<"\n";
-
-        for ( auto it2 = it->second.begin(); it2 != it->second.end(); ++it2  ){
-            QString Particle_NAME = it2->first;
-//            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
-
-            for(int gg = 0 ; gg < it2->second.size() ; gg++){
-                //QTextStream(stdout) << "Source_NAME " << Source_NAME  << " Particle_NAME " << Particle_NAME << " Energy " << it2->second[gg]  <<"\n";
-            }
-
-        }
-    }
-    for ( auto it = ICRPRadioNuclideDataDiscSpec.begin(); it != ICRPRadioNuclideDataDiscSpec.end(); ++it  ){
-
-        QString RadioTracer_NAME = it.key();
-        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
-
-        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
-            QString Particle_NAME = it2.key();
-            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
-
-            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-                QString Source_NAME  = it3.key();
-                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
-
-                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
-                    double Energy  = DD.key();
-                    //                  QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
-
-                    double SAFValue  = DD.value();
-                    //QTextStream(stdout) << " RadioTracer_NAME " << RadioTracer_NAME << " Period(s) " << ICRPRadioNuclideHalfLives[RadioTracer_NAME] << " Particle_NAME " << Particle_NAME << " Energy " << Energy << " Value " << SAFValue <<"\n";
-                }
-            }
-        }
-    }
-
-    */
-
-    QString TextMessage = QString::number(ICRPRadioNuclideHalfLives.size()) + " radionuclides\n"
-            +QString::number(ICRPSAFs["SAF"]["ICRPAdultMale"]["gamma"].size())+" particles\n"
-            +QString::number(RegionParameterValueMap.size()) + " regions"
-            ;
-
-    //ui->labelReadICRMessageOutput->setText(TextMessage);
-    //ui->labelReadICRMessageOutput->setVisible(false);
-
-    QStringList Organs;
-    for ( auto it = SourceParticleEnergyValues.begin(); it != SourceParticleEnergyValues.end(); ++it  ){Organs.push_back(it->first);}
-    ui->comboBoxSources->clear();
-    ui->comboBoxSources->addItems(Organs);
-    for ( auto it = RegionParameterValueMap.begin(); it != RegionParameterValueMap.end(); ++it  ){Organs.push_back(it.key());}
-    ui->comboBoxTargets->clear();
-    ui->comboBoxTargets->addItems(Organs);
-
-    TissueFactorMap["World"]=1;
-    TissueFactorMap["Gonads"]=0.08;
-    TissueFactorMap["Thyroid"]=0.04;
-    TissueFactorMap["UrinaryBladder"]=0.04;
-    TissueFactorMap["Oesophagus"]=0.04;
-    TissueFactorMap["Liver"]=0.04;
-    TissueFactorMap["Brain"]=0.01;
-    TissueFactorMap["SalivaryGlands"]=0.01;
-    TissueFactorMap["Skin"]=0.01;
-    TissueFactorMap["ArmBone"]= 0.01;
-    TissueFactorMap["LegBone"]= 0.01;
-    TissueFactorMap["VOXEL"]= 0.12;
-    TissueFactorMap["Others"]= 0.12;
-
-    CalculateQuantitiesBasedOnICRPData();
-
 }
 void MainWindow::GenerateDataInTableView(){ // energy in MeV
 
@@ -8247,11 +8623,15 @@ void MainWindow::GenerateDataInTableView(){ // energy in MeV
     ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidgetForOneGraph->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    //QTextStream(stdout) << "Table to show rows " << Data.size() << "\n";
+
     for(int row = 0 ; row < Data.size(); row++){
         // Insert row
 
         double valuee = ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]];
         QString Tval = QString::number(valuee)+"s";
+
+        //QTextStream(stdout) << row << "  "<< Data[row] << " " << ValueRadioNuclideOrderedData[Data[row]] << "\n";
 
         /*
         if(600 < ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]] <= 3600){
@@ -8281,292 +8661,6 @@ void MainWindow::GenerateDataInTableView(){ // energy in MeV
     ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidgetForOneGraph->horizontalHeader()->viewport()->installEventFilter(this);
 
-}
-void MainWindow::CalculateQuantitiesBasedOnICRPData()
-{
-    // quantity, geometry, radionuclide, source, target, value
-
-    //RadioTracerSourceOrganResidenceTime[""] = 1.;
-
-    QMap<QString,QMap<QString,double>> RadioTracerSourceTi_Fs_ai_AsPerA0;
-
-    QString RadioTracer_NAME;
-    QString Quantity_NAME ;
-    QString Geometry_NAME = ui->comboBoxPhantom->currentText();
-    QString Particle_NAME;
-    QString Source_NAME;
-    QString Target_NAME;
-    double Energy_Val;
-
-    /*
-    // Based on ICRP SAF, we calculate other AE, AF, S values, H, E for each geometry particle source target energy
-    for ( auto it = ICRPSAFs["SAF"].begin(); it != ICRPSAFs["SAF"].end(); ++it  ){
-
-        Geometry_NAME = it.key();
-
-        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-
-        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
-            Particle_NAME = it2.key();
-            //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
-
-            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-                Energy_Val = it3.key();
-                //QTextStream(stdout) << "Energy_Val " << Energy_Val <<"\n";
-
-                if(ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
-                    //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
-                    GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
-                }
-
-                // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
-                for ( auto DD = ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
-                    Source_NAME  = DD.key();
-                    //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
-
-                    for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
-                        Target_NAME  = CC.key();
-
-                        ICRPSAFs["AE"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy_Val)*RadionuclidesQuantitiesUnitsFactors["AE"];
-                        ICRPSAFs["AF"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME])*RadionuclidesQuantitiesUnitsFactors["AF"];
-                        ICRPSAFs["S"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(Energy_Val)*RadionuclidesQuantitiesUnitsFactors["S"];
-                        ICRPSAFs["H"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = TissueFactorMap[Target_NAME]*CC.value()*(Energy_Val)*RadionuclidesQuantitiesUnitsFactors["H"];
-                        ICRPSAFs["E"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = CC.value()*(Energy_Val)*RadionuclidesQuantitiesUnitsFactors["E"];
-
-                    }
-                }
-            }
-        }
-    }
-*/
-
-    // For the radionuclides we calculate other AE, AF, S values, H, E for each geometry, radionuclide, source target energy
-    for ( auto it = ICRPRadioNuclideData.begin(); it != ICRPRadioNuclideData.end(); ++it  ){
-
-        RadioTracer_NAME = it.key();
-
-        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-
-        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
-            Particle_NAME = it2.key();
-            //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
-
-            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-                Energy_Val = it3.key();
-                //QTextStream(stdout) << "Energy_Val " << Energy_Val <<"\n";
-
-                if(ICRPSAFs["AE"][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
-                    //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
-                    GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
-                }
-
-                // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
-                for ( auto DD = ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
-                    Source_NAME  = DD.key();
-                    //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
-
-                    for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
-                        Target_NAME  = CC.key();
-
-                        double vb= ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
-                        if(__isinf(vb) || __isnan(vb) || vb == 0.){continue;}
-
-                        double RadiationPerCent = ICRPRadioNuclideData[RadioTracer_NAME][Particle_NAME][Energy_Val];
-
-                        //double CumulatedActivityInSource = RadioTracerSourceOrganResidenceTime[]
-                        //        *RadioTracerSourceTi_Fs_ai_AsPerA0[RadioTracer_NAME][Source_NAME];
-                        double CumulatedActivityInSource = 1*1;
-
-                        // values and variance calculation for chosen quantities
-                        for (int rr = 0 ; rr < DoseCalcsQuantities.size() ; rr++) {
-
-                            double ccc = ICRPSAFs[DoseCalcsQuantities[rr]][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
-                            if( !__isnan(ccc) && !__isinf(ccc) && ccc != 0 && ccc != NULL){
-                                QuatititesRadioNuclidesParticlesCalculatedData[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME] +=
-                                        RadiationPerCent
-                                        *ccc;
-
-                                QuatititesRadioNuclidesParticlesCalculatedDataInOrgan[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Target_NAME] +=
-                                        RadiationPerCent
-                                        *CumulatedActivityInSource
-                                        *ccc;
-
-                                if(Source_NAME == "Liver" && Target_NAME == "Brain"){
-                                    QTextStream(stdout) << DoseCalcsQuantities[rr] << " " << Particle_NAME << " SourceTarget " << ccc << " Tot: " << QuatititesRadioNuclidesParticlesCalculatedData[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME]
-                                                           << " Organ " << QuatititesRadioNuclidesParticlesCalculatedDataInOrgan[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Target_NAME] << "\n";
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-}
-void MainWindow::GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(QString ParticleName, double Energy){
-
-    QString Geometry_NAME = ui->comboBoxPhantom->currentText();
-
-    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  )
-    {
-        for ( auto Bbeg = Abeg->second.begin(); Bbeg != Abeg->second.end(); ++Bbeg  ){
-            std::sort(Bbeg->second.begin(), Bbeg->second.end());
-        }
-    }
-
-    double Energy1 = 0;
-    double Energy2 = 0;
-
-    //for(int gg = 0 ; gg < (int)OrgansNameVector.size() ; gg++){
-    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  ){
-
-        for(int ss = 0 ; ss < Abeg->second[ParticleName].size() ; ss++){
-
-            int ff = ss+1;
-
-            int da = Abeg->second[ParticleName].size()-1; if(ff == da){break;}
-
-            double E1 = Abeg->second[ParticleName][ss];
-            double E2 = Abeg->second[ParticleName][ff];
-            //QTextStream(stdout) << ss << " " << E1 << " " << ff << " " << E2 << "\n" ;
-
-            if(E1 < Energy && Energy < E2){
-                Energy1 = E1;
-                Energy2 = E2;
-
-                //QTextStream(stdout) << " ParticleName " << ParticleName << " Energy1 " << Energy1 << " Energy " << Energy << " Energy2 " << Energy2 << "\n" ;
-                break;
-            }
-        }
-
-        for ( auto VVbeg = RegionParameterValueMap[Geometry_NAME]["Mass"].begin(); VVbeg != RegionParameterValueMap[Geometry_NAME]["Mass"].end(); ++VVbeg  ){
-
-            QString OrganName = VVbeg.key();
-
-            //for(int vc = 0 ; vc < (int)DoseCalcsQuantities.size() ; vc++){
-            //    double Val1 = ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName];
-            //    double Val2 = ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName];
-            //    double Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            //    ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-            //}
-
-            double Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName];
-            double Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName];
-            double Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
- //           if(Abeg->first == "Liver" && OrganName == "Brain"){
-   //             QTextStream(stdout) << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " val1 " << Val1 << " val2 " << Val2 << " val " << Val << " " << Abeg->first << " " << OrganName  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(OrganName) << "\n";
-     //       }
-
-            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]*Energy1);
-            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]*Energy2);
-            Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            ICRPSAFs["AE"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]);
-            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]);
-            Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            ICRPSAFs["AF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1);
-            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2);
-            Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            ICRPSAFs["S"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
-            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
-            Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            ICRPSAFs["H"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(OrganName);
-            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(OrganName);
-            Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-            ICRPSAFs["E"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-            if(Abeg->first == "Liver" && OrganName == "Brain"){
-
-/*
-            QTextStream(stdout) << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " " << Abeg->first << " " << OrganName  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(OrganName) <<
-                                   " SAF " << ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " AF " << ICRPSAFs["AF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " AE " << ICRPSAFs["AE"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " S " << ICRPSAFs["S"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " H " << ICRPSAFs["H"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " E " << ICRPSAFs["E"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   "\n" ;
-*/            }
-        }
-    }
-}
-double MainWindow::GenerateRadiationFactor(QString ParticleName, double Energy){ // enerrgy in MeV
-
-    double factor = RadiationFactorMap[ParticleName][Energy];
-
-    if(factor == 0.){
-        factor = 1;
-    }
-
-    if(ParticleName == "gamma"){
-        factor = 1; // all energies
-    }
-    else if (ParticleName == "e-" || ParticleName == "e+"){
-        factor = 1; // all energies
-    }
-    else if (ParticleName == "alpha"){
-        factor = 20; // all energies for alpha and heavy nuclei
-    }
-    else if (ParticleName == "proton"){
-        if(Energy <= 2.){
-            factor = 1;
-        }else{
-            factor = 5;
-        }
-    }
-    else if (ParticleName == "neutron"){
-        if(Energy < 0.01){
-            factor = 5;
-        }
-        else if( 0.01 <= Energy && Energy <= 0.1){
-            factor = 10;
-        }
-        else if( 0.1 < Energy && Energy <= 2){
-            factor = 20;
-        }
-        else if( 2 < Energy && Energy <= 10){
-            factor = 20;
-        }
-        else if( 20 < Energy){
-            factor = 5;
-        }
-    }
-    return factor;
-}
-double MainWindow::GenerateTissueFactor(QString OrganName){
-
-    double factor = 0.12;
-    if(TissueFactorMap["Others"] == 0.){
-        TissueFactorMap["Others"] = 0.12;
-        factor = TissueFactorMap["Others"];
-    }
-
-    bool isIn = false;
-    for ( auto it = TissueFactorMap.begin(); it != TissueFactorMap.end(); ++it  ){
-
-        if(it->first == OrganName){
-            isIn = true;
-            factor = TissueFactorMap[OrganName];
-            break;
-        }
-    }
-
-    if(isIn == false){
-        TissueFactorMap[OrganName] = TissueFactorMap["Others"];
-        factor = TissueFactorMap[OrganName];
-    }
-
-    return factor;
 }
 void MainWindow::on_comboBoxQuantityNucl_currentTextChanged(const QString &arg1)
 {
@@ -8646,18 +8740,77 @@ void MainWindow::on_pushButtonSaveTableInPDF_clicked()
 #endif
 
 }
-void MainWindow::on_pushButtonReadUSERData_clicked()
+
+void MainWindow::on_pushButtonChangeMasses_clicked()
 {
+    ui->tableWidgetForOneGraph->clear();
+    ui->tableWidgetForOneGraph->setRowCount(0);
+    ui->tableWidgetForOneGraph->setColumnCount(0);
+
+    QStringList headers;
+
+    headers.append(tr("Region Name"));
+    headers.append(tr("Mass (kg)"));
+
+    ui->tableWidgetForOneGraph->setColumnCount(2);
+    ui->tableWidgetForOneGraph->setShowGrid(true);
+    ui->tableWidgetForOneGraph->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableWidgetForOneGraph->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableWidgetForOneGraph->setHorizontalHeaderLabels(headers);
+    ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidgetForOneGraph->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    //QTextStream(stdout) << "Table to show rows " << Data.size() << "\n";
+
+    int row = 0;
+    for ( auto it = RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"].begin(); it != RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"].end(); ++it  ){
+
+        ui->tableWidgetForOneGraph->insertRow(row);
+        ui->tableWidgetForOneGraph->setItem(row,0, new QTableWidgetItem(it.key()));
+        ui->tableWidgetForOneGraph->setItem(row,1, new QTableWidgetItem(QString::number(it.value())));
+        row++;
+    }
+
+    ui->tableWidgetForOneGraph->resizeColumnsToContents();
+
+    ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidgetForOneGraph->horizontalHeader()->viewport()->installEventFilter(this);
 
 }
+void MainWindow::on_pushButtonSaveMasses_clicked()
+{
+    int rowNum = ui->tableWidgetForOneGraph->rowCount();
+    for(int ii = 0; ii < rowNum; ii++){
+
+        RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"][ui->tableWidgetForOneGraph->item( ii, 0 )->text()] = ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble();
+     /*QTextStream(stdout) << ii <<" For Phantom with " << ui->comboBoxPhantom->currentText()
+                            <<" organ " << ui->tableWidgetForOneGraph->item( ii, 0 )->text()
+                           <<" mass " << ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble()
+                          << "\n";
+    */
+    }
+
+    ui->tableWidgetForOneGraph->clear();
+    ui->tableWidgetForOneGraph->setRowCount(0);
+    ui->tableWidgetForOneGraph->setColumnCount(0);
+}
+
 void MainWindow::on_pushButtonAddBiokineticModel_clicked()
 {
     QString Xtitle = "Source Region"; QString Ytitle = "Residence Time (h)";
 
-    QDialog * d = new QDialog(); d->setWindowTitle("Biokinetic Table inputs");
+    QDialog * d = new QDialog(); d->setWindowTitle("Biokinetic Table inputs for " + ui->comboBoxRadioPharmaceutiques->currentText());
     QVBoxLayout * vbox = new QVBoxLayout();
 
     //QStringList RegionVars=;
+    QLineEdit * RadiPharmaceutic = new QLineEdit(); RadiPharmaceutic->setText(ui->comboBoxRadioPharmaceutiques->currentText()); vbox->addWidget(RadiPharmaceutic);
+
+    QComboBox * Radionucleids = new QComboBox();
+    for ( auto it = ICRPRadioNuclideHalfLives.begin(); it != ICRPRadioNuclideHalfLives.end(); ++it  ){
+        Radionucleids->addItem(it.key());
+    }
+    vbox->addWidget(Radionucleids);
+
     QLineEdit * lineEditXTitle = new QLineEdit(); lineEditXTitle->setText(Xtitle); vbox->addWidget(lineEditXTitle);
     QLineEdit * lineEditYTitle = new QLineEdit(); lineEditYTitle->setText(Ytitle); vbox->addWidget(lineEditYTitle);
     QLineEdit * lineEditRowsNumber = new QLineEdit(); lineEditRowsNumber->setText("10"); vbox->addWidget(lineEditRowsNumber);
@@ -8681,6 +8834,7 @@ void MainWindow::on_pushButtonAddBiokineticModel_clicked()
 
         Xtitle = lineEditXTitle->text();
         Ytitle = lineEditYTitle->text();
+        RadiotracerradionucleidMap[RadiPharmaceutic->text()] = Radionucleids->currentText();
 
         ui->tableWidgetForOneGraph->clear();
         ui->tableWidgetForOneGraph->setRowCount(0);
@@ -8700,6 +8854,18 @@ void MainWindow::on_pushButtonAddBiokineticModel_clicked()
 
         ui->tableWidgetForOneGraph->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+        bool isin = false;
+        for (int dd = 0 ; dd < ui->comboBoxRadioPharmaceutiques->count(); dd++) {
+            if(RadiPharmaceutic->text() == ui->comboBoxRadioPharmaceutiques->itemText(dd)){
+                isin = true;break;
+            }
+        }
+        if(isin == false){
+            ui->comboBoxRadioPharmaceutiques->addItem(RadiPharmaceutic->text());
+        }
+
+        ui->comboBoxRadioPharmaceutiques->setCurrentText(RadiPharmaceutic->text());
+
         for(int row = 0 ; row < RowNum; row++){
             // Insert row
 
@@ -8713,36 +8879,262 @@ void MainWindow::on_pushButtonAddBiokineticModel_clicked()
         //ui->tableWidgetForOneGraph->horizontalHeader()->viewport()->installEventFilter(this);
     }
 
-
 }
 void MainWindow::on_pushButtonSaveBiokinetikModelData_clicked()
 {
     int rowNum = ui->tableWidgetForOneGraph->rowCount();
 
-    QMap<QString, double> XYmap;
-    QVector<QString> Xvec ;
-
+    QString line = "" ;
+    line += ui->comboBoxRadioPharmaceutiques->currentText() + " " + RadiotracerradionucleidMap[ui->comboBoxRadioPharmaceutiques->currentText()] + " ";
     for(int ii = 0; ii < rowNum; ii++){
-        Xvec.push_back(ui->tableWidgetForOneGraph->item( ii, 0 )->text());
+
+        RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadiotracerradionucleidMap[ui->comboBoxRadioPharmaceutiques->currentText()]][ui->tableWidgetForOneGraph->item( ii, 0 )->text()] = ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble();
+
+        line += ui->tableWidgetForOneGraph->item( ii, 0 )->text() + " " + ui->tableWidgetForOneGraph->item( ii, 1 )->text() + " ";
+        /*QTextStream(stdout) << ii <<" radiotracer with " << ui->comboBoxRadioPharmaceutiques->currentText()
+                            <<" source " << ui->tableWidgetForOneGraph->item( ii, 0 )->text()
+                           <<" value " << ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble()
+                           << "\n";
+        */
     }
 
-    for(int ii = 0; ii < Xvec.size(); ii++){
-        XYmap[Xvec[ii]] = ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble();
-        QTextStream(stdout) << ii <<" Xvec[ii] " << Xvec[ii] <<" XYmap[Xvec[ii]] " << XYmap[Xvec[ii]] << "\n";
-        //QTextStream(stdout) << SourceOrgan << " " << TargetOrgan << " E "<< Xvec[ii] << " Total E emmitted " << Xvec[ii]*100000000 << " Target Mass "
-        //                    << RegionParameterValueMap[GeometrySymbol]["Mass"][TargetOrgan] << " SAF " << XYmap[Xvec[ii]] << " AE " << XYmap[Xvec[ii]]*Xvec[ii]*100000000*RegionParameterValueMap[GeometrySymbol]["Mass"][TargetOrgan]
-        //        << "\n";
-    }
+    fileManagerObject->WriteTextToFile(ICRPDATAPath+"/RadioPharmaceuticalsICRP.dat",fileManagerObject->ReadTextFromFileInOneString(ICRPDATAPath+"/RadioPharmaceuticalsICRP.dat")+"\n"+line);
+
+    ui->tableWidgetForOneGraph->clear();
+    ui->tableWidgetForOneGraph->setRowCount(0);
+    ui->tableWidgetForOneGraph->setColumnCount(0);
+
 }
 void MainWindow::on_pushButtonShowBiokineticData_clicked()
 {
+    ui->tableWidgetForOneGraph->clear();
+    ui->tableWidgetForOneGraph->setRowCount(0);
+    ui->tableWidgetForOneGraph->setColumnCount(0);
+
+    QStringList headers;
+
+    QString Xtitle = "Source Region"; QString Ytitle = "Residence Time (h)";
+
+    headers.append(Xtitle);
+    headers.append(Ytitle);
+
+    ui->tableWidgetForOneGraph->setColumnCount(2);
+    ui->tableWidgetForOneGraph->setShowGrid(true);
+    ui->tableWidgetForOneGraph->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableWidgetForOneGraph->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableWidgetForOneGraph->setHorizontalHeaderLabels(headers);
+    ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidgetForOneGraph->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    //QTextStream(stdout) << "Table to show rows " << Data.size() << "\n";
+
+    int row = 0;
+    for ( auto it = RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadiotracerradionucleidMap[ui->comboBoxRadioPharmaceutiques->currentText()]].begin(); it != RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadiotracerradionucleidMap[ui->comboBoxRadioPharmaceutiques->currentText()]].end(); ++it  ){
+
+            ui->tableWidgetForOneGraph->insertRow(row);
+            ui->tableWidgetForOneGraph->setItem(row,0, new QTableWidgetItem(it.key()));
+            ui->tableWidgetForOneGraph->setItem(row,1, new QTableWidgetItem(QString::number(it.value())));
+            row++;
+    }
+
+    ui->tableWidgetForOneGraph->resizeColumnsToContents();
+
+    ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidgetForOneGraph->horizontalHeader()->viewport()->installEventFilter(this);
 
 }
 void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
 {
+    if(ui->doubleSpinBoxAdministeredActivity->value() == 0.){
+        QMessageBox::information(this, tr(""), "Please add the administered activity and choose the corresponding unit");
+        return;
+    }
+
+    QString Quantity_NAME = ui->comboBoxQuantityNucl->currentText();
+    double convfac = QuantitiesConversionFromDefault[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxEffDoseUnit->currentText()];
+    QString RadioTracer_NAME = RadiotracerradionucleidMap[ui->comboBoxRadioPharmaceutiques->currentText()];
+    QString Geometry_NAME = ui->comboBoxPhantom->currentText();
+    QString Particle_NAME;
+    QString Source_NAME;
+    QString Target_NAME;
+    double Energy_Val;
+
+    QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>>>> DATAMap; // Quantity, Geometry, Radionuclide, organ, value
+
+    QVector<QString> Targets; Targets.push_back("All Targets");
+    QVector<QString> Particles; Particles.push_back("All Particles");
+
+    // For the radionuclides we calculate other AE, AF, S values, H, E for each geometry, radionuclide, source target energy
+
+    for ( auto it2 = ICRPRadioNuclideData[RadioTracer_NAME].begin(); it2 != ICRPRadioNuclideData[RadioTracer_NAME].end(); ++it2  ){
+
+        Particle_NAME = it2.key();
+        QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
+
+        bool isin = false;
+        for(int b=0; b < Particles.size();b++){ if(Particles[b] == Particle_NAME){isin = true; break;}}
+        if(isin == false){Particles.push_back(Particle_NAME);}
+
+        for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+            Energy_Val = it3.key();
+            double RadiationPerCent = ICRPRadioNuclideData[RadioTracer_NAME][Particle_NAME][Energy_Val];
+
+            QTextStream(stdout) << "Energy_Val " << Energy_Val << " RadiationPerCent " << RadiationPerCent <<"\n";
+
+            if(ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
+                //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
+            }
+
+            // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
+
+            for ( auto DD = RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].begin(); DD != RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].end(); ++DD  ){
+
+            //for ( auto DD = ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
+                Source_NAME  = DD.key();
+                //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
+
+                double CumulatedActivityInSource = ui->doubleSpinBoxAdministeredActivity->value()*QuantitiesConversionFromDefault["A"][ui->comboBoxActivityAdministered->currentText()]*RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME]/QuantitiesConversionFromDefault["T"]["h"];
+                QTextStream(stdout) << " A " << ui->doubleSpinBoxAdministeredActivity->value()/QuantitiesConversionFromDefault["A"][ui->comboBoxActivityAdministered->currentText()]
+                        << " Tho of source " << Source_NAME << " " << RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME]/QuantitiesConversionFromDefault["T"]["h"]
+                        << " CumulatedActivityInSource " << CumulatedActivityInSource <<"\n";
+
+                if( !__isnan(CumulatedActivityInSource) && !__isinf(CumulatedActivityInSource) && CumulatedActivityInSource != 0 && CumulatedActivityInSource != NULL){}
+                else{continue;}
+
+                for ( auto CC = ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME].begin(); CC != ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME].end(); ++CC  ){
+                    Target_NAME  = CC.key();
+
+                    bool isin = false;
+                    for(int b=0; b < Targets.size();b++){ if(Targets[b] == Target_NAME){isin = true; break;}}
+                    if(isin == false){Targets.push_back(Target_NAME);}
+
+                    double vb= ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
+                    if(__isinf(vb) || __isnan(vb) || vb == 0.){continue;}
+
+                    double ccc = ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
+
+                    if( !__isnan(ccc) && !__isinf(ccc) && ccc != 0 && ccc != NULL){
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME]["All Particles"][Source_NAME][Target_NAME] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME]["All Sources"][Target_NAME] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME]["All Targets"] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME]["All Particles"][Source_NAME]["All Targets"] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME]["All Particles"]["All Sources"][Target_NAME] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME]["All Sources"]["All Targets"] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME]["All Particles"]["All Sources"]["All Targets"] +=
+                                RadiationPerCent
+                                *ccc;
+
+                        if(Source_NAME == "Liver" && Target_NAME == "Brain"){
+                           QTextStream(stdout) << Quantity_NAME << " " << RadioTracer_NAME<< " " << Geometry_NAME  << " " << Particle_NAME  << " " << Target_NAME  << "<--" << Source_NAME << " = " << DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME]
+                                                   << " for Target Organ = " << DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME]["All Sources"][Target_NAME] << "\n";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    ui->tableWidgetForOneGraph->clear();
+    ui->tableWidgetForOneGraph->setRowCount(0);
+    ui->tableWidgetForOneGraph->setColumnCount(0);
+    QStringList headers;
+
+
+    if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 0 ){ // In all sources
+        Targets.clear();
+        for ( auto DD = RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].begin(); DD != RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].end(); ++DD  ){
+            Source_NAME = DD.key();
+            Targets.push_back(Source_NAME);
+            //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
+        }
+        headers.append("Source-Target Region");
+    }else{
+        headers.append("Target Region");
+    }
+
+
+    for(int b=0; b < Particles.size();b++){
+        headers.append(Particles[b] +" "+ui->comboBoxQuantityNucl->currentText()+"("+ui->comboBoxEffDoseUnit->currentText()+")");
+    }
+
+    ui->tableWidgetForOneGraph->setColumnCount(Particles.size()+1);
+    ui->tableWidgetForOneGraph->setShowGrid(true);
+    ui->tableWidgetForOneGraph->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableWidgetForOneGraph->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableWidgetForOneGraph->setHorizontalHeaderLabels(headers);
+    ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
+    //ui->tableWidgetForOneGraph->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableWidgetForOneGraph->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidgetForOneGraph->resizeColumnsToContents();
+
+    //QTextStream(stdout) << "Table to show rows " << Data.size() << "\n";
+
+    int row = 0;
+    for(int a=0; a < Targets.size();a++){
+
+        ui->tableWidgetForOneGraph->insertRow(row);
+        ui->tableWidgetForOneGraph->setItem(row,0, new QTableWidgetItem(Targets[a]));
+
+        if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 0 ){ // In all sources with each source as a target
+            for(int b=0; b < Particles.size();b++){
+                QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][Targets[a]][Targets[a]]/convfac) <<"\n";
+                ui->tableWidgetForOneGraph->setItem(row,b+1, new QTableWidgetItem(QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][Targets[a]][Targets[a]]/convfac)));
+            }
+        }
+        if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 1){ // From a specific Source or To all targets
+            for(int b=0; b < Particles.size();b++){
+                QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac) <<"\n";
+                ui->tableWidgetForOneGraph->setItem(row,b+1, new QTableWidgetItem(QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac)));
+            }
+        }
+        else if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 2){ // From all Sources to Target (all targets also included in list of targets)
+            for(int b=0; b < Particles.size();b++){
+                QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac) <<"\n";
+                ui->tableWidgetForOneGraph->setItem(row,b+1, new QTableWidgetItem(QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]]["All Sources"][Targets[a]]/convfac)));
+            }
+        }
+
+        row++;
+    }
+
+    ui->tableWidgetForOneGraph->resizeColumnsToContents();
+    ui->tableWidgetForOneGraph->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidgetForOneGraph->horizontalHeader()->viewport()->installEventFilter(this);
 
 }
-
-
+void MainWindow::setBiokineticsDefaulsInputs(){
+    ui->comboBoxQuantityNucl->setCurrentText("S");
+    ui->comboBoxTotalorSourceOrCombNucl->setCurrentIndex(2);
+    ui->comboBoxSourceOrTargetsForBiokinetics->setCurrentIndex(1);
+    ui->comboBoxSources->setCurrentText("Liver");
+    ui->comboBoxTargets->setCurrentText("Brain");
+    ui->comboBoxRadioPharmaceutiques->setCurrentIndex(0);
+    ui->doubleSpinBoxAdministeredActivity->setValue(1);
+}
 
 

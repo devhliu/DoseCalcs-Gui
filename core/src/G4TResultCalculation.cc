@@ -1529,7 +1529,7 @@ bool G4TResultCalculation::ReadThreadRegionResultFile(G4String fm){
             std::istringstream LineString(line);
             LineString >> ParameterName;
             //if(V)G4cout << "\nParameterName " << ParameterName << G4endl ;
-            if(ParameterName.empty() || ParameterName == "RegionsData"){ IsRegionsAreRead = true ; continue; }
+            if(ParameterName.empty() || ParameterName == "RegionName"){ IsRegionsAreRead = true ; continue; }
             
             if(ParameterName =="TotalEventNumber"){
                 LineString >> ival; TotalEventNumber += ival ;

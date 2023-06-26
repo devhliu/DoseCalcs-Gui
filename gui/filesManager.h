@@ -66,6 +66,9 @@ public:
     QMap<QString,QVector<QString>> getRadionuclidesParticles(){return RadionuclidesParticles ;}
     std::map<QString,std::map<QString, std::vector<double>>> getSourceParticleEnergyValues(){return SourceParticleEnergyValues ;}
 
+    QMap<QString,QMap<QString,QMap<QString,double>>> getRadioTracerSourceOrganResidenceTime(){return RadioTracerSourceOrganResidenceTime ;}
+    std::map<QString,QString> getRadiotracerradionucleidMap(){return RadiotracerradionucleidMap ;}
+
 private:
     double MinValForLog;
     QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<double,double>>>>> ResultParticleSourceEnergyTime;
@@ -74,11 +77,13 @@ private:
 
     QMap<QString,QMap<QString,QMap<QString,QMap<double,QMap<QString,QMap<QString,double>>>>>> ICRPSAFs ;
     QMap<QString,QMap<QString,QMap<double,double>>> ICRPRadioNuclideData ; // RadioNuclide Particle MonoOrSpectrum MonoEnergyOrSpectumEnergy YieldForMonoEnergyOrSpectumEnergy
-    QMap<QString,QMap<double,QMap<double,double>>> ICRPRadioNuclideFSNData ; // RadioNuclide Particle MonoOrSpectrum MonoEnergyOrSpectumEnergy YieldForMonoEnergyOrSpectumEnergy
+    //QMap<QString,QMap<double,QMap<double,double>>> ICRPRadioNuclideFSNData ; // RadioNuclide Particle MonoOrSpectrum MonoEnergyOrSpectumEnergy YieldForMonoEnergyOrSpectumEnergy
     QMap<QString,QMap<QString,QMap<QString,QMap<double,double>>>> ICRPRadioNuclideDataDiscSpec ; // RadioNuclide Particle MonoOrSpectrum MonoEnergyOrSpectumEnergy Min Max or (Mono Mono) YieldForMonoEnergyOrSpectumEnergy
     QMap<QString,double> ICRPRadioNuclideHalfLives ;
     QMap<QString,QVector<QString>> RadionuclidesParticles ;
     std::map<QString,std::map<QString, std::vector<double>>> SourceParticleEnergyValues ;
+    QMap<QString,QMap<QString,QMap<QString,double>>> RadioTracerSourceOrganResidenceTime;
+    std::map<QString,QString> RadiotracerradionucleidMap;
 
 };
 

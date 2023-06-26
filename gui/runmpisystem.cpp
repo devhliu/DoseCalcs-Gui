@@ -7,7 +7,7 @@ extern QString MPI_Lib_dir_path ;
 extern QString CMAKE_Lib_dir_path ;
 extern QString Root_Lib_dir_path ;
 extern QString DoseCalcs_source_dir_path ;
-extern QString DoseCalcs_build_dir_path;
+extern QString DoseCalcsCore_build_dir_path;
 extern QString UserCurrentResultsDirPath;
 extern QString ResultDirectoryName;
 
@@ -78,7 +78,7 @@ void runmpisystem::on_pushButtonSaveToExe_clicked()
                   "#$ -M imttarikk@gmail.com \n"
                   "#$ -m e \n"
                   ". "+geant4_Lib_dir_path+"/bin/geant4.sh \n"+
-                  MPI_Lib_dir_path + "/bin/mpirun -np "+ Execution_setEventNumber + " " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutableName + " B " + MacroFileName + " " + Execution_setEventNumber +" \n";
+                  MPI_Lib_dir_path + "/bin/mpirun -np "+ Execution_setEventNumber + " " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutableName + " B " + MacroFileName + " " + Execution_setEventNumber +" \n";
 
-    filesManagerObj->WriteTextToFile( DoseCalcs_build_dir_path+"/"+ExeFileName , ExeDataText);
+    filesManagerObj->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+ExeFileName , ExeDataText);
 }

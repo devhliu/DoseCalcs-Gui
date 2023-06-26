@@ -405,6 +405,7 @@ private:
     QString CreateMaterialAndGeometryDataFromMacrosFile(QString);
     void RunForMultiGeomeries();
 
+    void setBiokineticsDefaulsInputs();
     void CalculateQuantitiesBasedOnICRPData();
     void GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(QString, double);
     double  GenerateRadiationFactor(QString, double);
@@ -424,11 +425,12 @@ private:
     QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>> QuatititesRadioNuclidesCalculatedDataInOrgan; // Quantity, Geometry, Radionuclide, organ, value
     QMap<QString,QVector<double>> ValuesOrderedData; // Radionuclide, QuantityValue
     QMap<double,QString> ValueRadioNuclideOrderedData; // QuantityValue, Radionuclide
-    QMap<QString,double> RadioTracerSourceOrganResidenceTime;
     std::map<QString,std::map<QString, std::vector<double>>> SourceParticleEnergyValues ;
     std::map<QString,double> TissueFactorMap ;
     std::map<QString,std::map<double,double>> RadiationFactorMap ;
     QMap<QString,QVector<QString>> RadionuclidesParticles ;
+    QMap<QString,QMap<QString,QMap<QString,double>>> RadioTracerSourceOrganResidenceTime;
+    std::map<QString,QString> RadiotracerradionucleidMap;
 
 private slots:
 
@@ -608,6 +610,16 @@ private slots:
     void on_actionSend_Results_triggered();
 
     void on_checkBoxUsePreDefinedGeom_stateChanged(int arg1);
+
+    void on_pushButtonChangeMasses_clicked();
+
+    void on_pushButtonSaveMasses_clicked();
+
+    void on_actionUpdate_triggered();
+
+    void on_actionRestart_triggered();
+
+    void on_radioButtonTET_clicked();
 
 private:
 

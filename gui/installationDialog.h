@@ -209,7 +209,6 @@ private:
     Ui::InstallationDialog *ui;
     filesManager* filesManagerObj;
     HttpDownload* HttpDownloadObj;
-
 };
 
 #endif // INSTALLATIONMIALOG_H

@@ -8,8 +8,8 @@
 #include "gui/terminal.h"
 
 
-extern QString DoseCalcs_source_dir_path;
-extern QString DoseCalcs_build_dir_path;
+extern QString DoseCalcsCore_source_dir_path;
+extern QString DoseCalcsCore_build_dir_path;
 extern QString Root_Lib_dir_path;
 extern QString DoseCalcsExecutingFileName;
 extern QString UserCurrentResultsDirPath;
@@ -46,8 +46,8 @@ PlotDialog::PlotDialog(QWidget *parent) : QDialog(parent), ui(new Ui::PlotDialog
     
     QTextStream(stdout) << "---------------- PlotDialog ------------------" << "\n";
     
-    showResultsOutput("DoseCalcs_source_dir_path is " + DoseCalcs_source_dir_path , 4);
-    showResultsOutput("DoseCalcs_build_dir_path is " + DoseCalcs_build_dir_path , 4);
+    showResultsOutput("DoseCalcsCore_source_dir_path is " + DoseCalcsCore_source_dir_path , 4);
+    showResultsOutput("DoseCalcsCore_build_dir_path is " + DoseCalcsCore_build_dir_path , 4);
     
     srand(QDateTime::currentDateTime().toTime_t());
     ui->setupUi(this);
@@ -3124,7 +3124,7 @@ void PlotDialog::on_PlotButtonReadCrossSectionFile_clicked()
 
 void PlotDialog::on_PlotButtonEditSimData_clicked()
 {
-    QString command = DoseCalcs_build_dir_path+"/"+MacroFileName;
+    QString command = DoseCalcsCore_build_dir_path+"/"+MacroFileName;
     QProcess process;
     QStringList qsl = {command};
     process.startDetached("gedit", qsl);
@@ -3139,7 +3139,7 @@ void PlotDialog::on_PlotButtonEditResultsData_clicked()
 
 void PlotDialog::on_PlotButtonChoseSimulationInpFileDialog_clicked()
 {    
-    AnalysisInputFilePath = QFileDialog::getOpenFileName( this, tr("Choose the simulation macros file (input file)"), DoseCalcs_build_dir_path, tr("Simulation data files (*)") );
+    AnalysisInputFilePath = QFileDialog::getOpenFileName( this, tr("Choose the simulation macros file (input file)"), DoseCalcsCore_build_dir_path, tr("Simulation data files (*)") );
     MacroFilePath = AnalysisInputFilePath;
     ui->PlotLineEditSimulationInpFile->setText(AnalysisInputFilePath);
     on_PlotButtonReadSimulationInpFile_clicked();
@@ -5960,29 +5960,29 @@ void PlotDialog::on_pushButtonOpenInRoot_clicked()
     outfile << LatexText.str();
     outfile.close();
 
-    if(QFile::exists(FileName) || QFile::exists(DoseCalcs_build_dir_path+"/"+GraphExecutableName) ){
+    if(QFile::exists(FileName) || QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName) ){
 
         QString BashCommandsForExecuting =
                 "#! /bin/bash \n . " +Root_Lib_dir_path +"/thisroot.sh \n"+
-                "cd " + DoseCalcs_build_dir_path + "\n" +
-                DoseCalcs_build_dir_path+"/"+GraphExecutableName + " a b " + UserCurrentResultsDirPath+"/"+GraphsOutDirName+"\n"
+                "cd " + DoseCalcsCore_build_dir_path + "\n" +
+                DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " a b " + UserCurrentResultsDirPath+"/"+GraphsOutDirName+"\n"
                                                                                                                             "cd " + UserCurrentResultsDirPath+"/"+GraphsOutDirName + "\n" +
                 "root -e \"TBrowser x\" ";
         //"root -e \"TBrowser b(\"Graph.root\");\" ";
         //"root -e \"TBrowser x\" ";
 
-        fileManagerObjectPlot->WriteTextToFile( DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+        fileManagerObjectPlot->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
         showResultsOutput("Writing Analysis Commands : \n", 0);
         showResultsOutput(BashCommandsForExecuting , 0);
-        showResultsOutput("to --> " + DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
+        showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
 
-        if(QFile::exists(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName)){
+        if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
             terminal *term = new terminal;
-            term->executeLocalCommand(DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName);
+            term->executeLocalCommand(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
         else{
-            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcs_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+            showResultsOutput("Cannot find file containing execution commands "+ DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
         }
 
     }else{
@@ -5991,7 +5991,7 @@ void PlotDialog::on_pushButtonOpenInRoot_clicked()
         QMessageBox::information(this, tr(""), "Canno't find ROOT file and/or analysis executable, check the files paths.");
 
 
-        showResultsOutput("Cannot find the analysis executable \""+ DoseCalcs_build_dir_path+"/"+GraphExecutableName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+        showResultsOutput("Cannot find the analysis executable \""+ DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
     }
 
 

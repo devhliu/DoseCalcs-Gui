@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QObject>
-#include <QRandomGenerator>
+//#include <QRandomGenerator>
 #include <sstream>
 #include <fstream>
 
@@ -523,9 +523,9 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
     ICRPRadioNuclideHalfLives.clear();
     SourceParticleEnergyValues.clear();
     ICRPRadioNuclideDataDiscSpec.clear();
-    ICRPRadioNuclideFSNData.clear();
+    //ICRPRadioNuclideFSNData.clear();
 
-    for (int zzz = 0 ; zzz < 15; zzz++) { // ICRP files  "< 14"
+    for (int zzz = 0 ; zzz < 17; zzz++) { // ICRP files  "< 14"
 
         QVector< double > particleEnergies;
 
@@ -597,6 +597,9 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
             FilePathString = "ICRP-07.NSF";
         }
         else if(zzz==15){
+            FilePathString = "RadioPharmaceuticalsICRP.dat";
+        }
+        else if(zzz==16){
             FilePathString = "ICRP-07.NDX";
         }
 
@@ -689,8 +692,10 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
 
                         if (line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).size() < 3){continue;}
 
-                        if(zzz==10){nonelines = 3;numchara = 13;} //for zzz==10, target
+                        if(zzz==10){if(lineInc > 84 ){break;}}
+                        if(zzz==9){if(lineInc > 47 ){break;}}
 
+                        if(zzz==10){nonelines = 3;numchara = 13;} //for zzz==10, target
 
                         if(lineInc > nonelines) {//begin of Masses values
 
@@ -705,15 +710,17 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                 continue;
                             }else{
 
-                                if(zzz==9){
+                                if(zzz==9){ // source regions file
                                     //QTextStream(stdout) << " s1 " << s1 << " InputsVals[0] "<< InputsVals[0] << " InputsVals[2] "<< InputsVals[2] << "\n";
                                     RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] = InputsVals[0].toDouble();
                                     RegionParameterValueMap["ICRPAdultFemale"]["Mass"][s1] = InputsVals[2].toDouble();
-                                }else if(zzz==10){
+                                }else if(zzz==10){ // target regions file
                                     //QTextStream(stdout) << " s1 " << s1 << " InputsVals[0] "<< InputsVals[0] << " InputsVals[1] "<< InputsVals[1] << "\n";
 
-                                    RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] = InputsVals[0].toDouble();
-                                    RegionParameterValueMap["ICRPAdultFemale"]["Mass"][s1] = InputsVals[1].toDouble();
+                                    if(RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] == 0.){
+                                        RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] = InputsVals[0].toDouble();
+                                        RegionParameterValueMap["ICRPAdultFemale"]["Mass"][s1] = InputsVals[1].toDouble();
+                                    }
                                 }
                             }
                         }
@@ -727,10 +734,31 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             RadioNuclideName = fields[0];
 
                             if(
+                                    //positron emitters for PET
                                     RadioNuclideName != "F-18" &&
                                     RadioNuclideName != "O-15" &&
                                     RadioNuclideName != "C-11" &&
-                                    RadioNuclideName != "N-13" ){
+                                    RadioNuclideName != "N-13" /* &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                    */
+                                    ){
                                 continue;
                             }
 
@@ -742,16 +770,40 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             else if(fields[1].contains("d")){HLConversion = 60*60*24;HLunit = "d";}
                             else if(fields[1].contains("y")){HLConversion = 60*60*24*365;HLunit = "y";}
 
-                            //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " fields[1] " << fields[1]  << " HLunit " << HLunit << " HLConversion " << HLConversion << " ICRPRadioNuclideHalfLives[RadioNuclideName] "<< ICRPRadioNuclideHalfLives[RadioNuclideName] << "\n";
+                            QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " fields[1] " << fields[1]  << " HLunit " << HLunit << " HLConversion " << HLConversion << " ICRPRadioNuclideHalfLives[RadioNuclideName] "<< ICRPRadioNuclideHalfLives[RadioNuclideName] << "\n";
 
                             ICRPRadioNuclideHalfLives[RadioNuclideName] = HLConversion*fields[1].remove(HLunit).toDouble() ;
 
                         }else if(fields.size() == 4) { //radiation data ene yield par...
 
-                            //if(RadioNuclideName != "F-18" &&RadioNuclideName != "O-15" &&
-                              //      RadioNuclideName != "C-11" && RadioNuclideName != "N-13" ){
-                                //continue;
-                            //}
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" /* &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                    */
+                                    ){
+                                continue;
+                            }
 
                             QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
 
@@ -784,12 +836,12 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                 ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[2].toDouble()] = fields[1].toDouble();
                             }
 
-                            if(ParticleName=="e+"){ParticleName == "e-";};
+                            if(ParticleName=="e+"){ParticleName = "e-";};
                             ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[2].toDouble()] = fields[1].toDouble();
 
                         }
                     }
-                    else if(zzz==12){ // for beta and electron Radiation files
+                    /*else if(zzz==12){ // for beta and electron Radiation files
 
                         QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
 
@@ -822,6 +874,33 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
 
                                     //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " RadioNuclideDataInc " << RadioNuclideDataInc << " Random Energy " << Energy << " Prob " << Prob << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
 
+                                    if(
+                                            //positron emitters for PET
+                                            RadioNuclideName != "F-18" &&
+                                            RadioNuclideName != "O-15" &&
+                                            RadioNuclideName != "C-11" &&
+                                            RadioNuclideName != "N-13" &&
+                                            //Targeted therapy with alpha emitters
+                                            RadioNuclideName != "At-211" &&
+                                            RadioNuclideName != "Bi-213" &&
+                                            RadioNuclideName != "Ac-225" &&
+                                            RadioNuclideName != "Ra-223" &&
+                                            RadioNuclideName != "Th-227" &&
+                                            //Spontaneous neutron emitters
+                                            RadioNuclideName != "U-238" &&
+                                            RadioNuclideName != "Pu-240" &&
+                                            RadioNuclideName != "Fm-258" &&
+                                            RadioNuclideName != "Es-254" &&
+                                            RadioNuclideName != "Cm-244" &&
+                                            RadioNuclideName != "Cf-252" &&
+                                            // For cancer imaging
+                                            RadioNuclideName != "I-131" &&
+                                            RadioNuclideName != "Ga-68" &&
+                                            RadioNuclideName != "Tc-99m"
+                                            ){
+                                        continue;
+                                    }
+
                                     ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["e-"]["Spectrum"][Energy] = Prob;
                                     ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["e+"]["Spectrum"][Energy] = Prob;
                                     LastEnergy = fields[0].toDouble();
@@ -830,7 +909,7 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             RadioNuclideDataInc++;
                         }
                     }
-                    /*else if(zzz==13){ // for Auger elect...
+                    *//*else if(zzz==13){ // for Auger elect...
 
                         QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
 
@@ -851,6 +930,33 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
 
                         }else{
 
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                    ){
+                                continue;
+                            }
+
                             //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " RadioNuclideDataInc " << RadioNuclideDataInc << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
                             //ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[0].toDouble()] = fields[1].toDouble();
                             ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[0].toDouble()] = fields[1].toDouble();
@@ -858,7 +964,7 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             RadioNuclideDataInc ++;
                         }
                     }
-                    */else if(zzz==14){ // for Neutron spectrum fission file
+                    *//*else if(zzz==14){ // for Neutron spectrum fission file
 
                         QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
                             //QTextStream(stdout) << "size "<< fields.size() << " -line: " << line << "\n";
@@ -880,7 +986,34 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                 //QTextStream(stdout) << fields[1].toDouble() << " 0 ";
                             }
 
-                            ICRPRadioNuclideFSNData[RadioNuclideName][fields[0].toDouble()][fields[1].toDouble()] = fields[2].toDouble();
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                    ){
+                                continue;
+                            }
+
+                            //ICRPRadioNuclideFSNData[RadioNuclideName][fields[0].toDouble()][fields[1].toDouble()] = fields[2].toDouble();
                             ICRPRadioNuclideData[RadioNuclideName]["neutron"][fields[0].toDouble()] = fields[2].toDouble();
                             ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["neutron"]["Spectrum"][fields[0].toDouble()] = fields[2].toDouble();
 
@@ -889,8 +1022,28 @@ void filesManager::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             if(NumOfDataLines == DataLineInc){
                                 ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["neutron"]["Spectrum"][fields[1].toDouble()] = 0;
                             }
-
                         }
+                    }*/
+                    else if(zzz==15){ // for Radiation files
+
+                        std::string c1; std::string c2; std::string c3; double val;
+                        std::string line1 = line.toStdString();
+                        std::istringstream LineString(line1);
+
+                        if(LineString.str().empty()){
+                            continue;
+                        }
+
+                        LineString  >> c1 ;
+                        LineString  >> c2 ;
+
+                        RadiotracerradionucleidMap[c1.c_str()] = c2.c_str();
+
+                        while(LineString >> c3 ){
+                           LineString >> val;
+                           RadioTracerSourceOrganResidenceTime[c1.c_str()][c2.c_str()][c3.c_str()] = val;
+                        }
+
                     }
                 }
                 lineInc++;

@@ -49,7 +49,7 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
 
         QStringLiteral("\\bnumb\\b"), QStringLiteral("\\bfrac\\b"),
 
-        QStringLiteral("\\bVoxels\\b"), QStringLiteral("\\bVolume\\b"),
+        QStringLiteral("\\bVoxels\\b"), QStringLiteral("\\bVolume\\b"),QStringLiteral("\\bTET\\b"),
         QStringLiteral("\\bPoint\\b"), QStringLiteral("\\bBeam\\b"),
         QStringLiteral("\\bSurface\\b"), QStringLiteral("\\bPlane\\b"), QStringLiteral("\\bSolid\\b"),
         QStringLiteral("\\bAllRegions\\b"),QStringLiteral("\\ballregions\\b"),QStringLiteral("\\bnull\\b"),

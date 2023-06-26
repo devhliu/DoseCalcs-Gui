@@ -10,6 +10,8 @@ QT += widgets network printsupport # core # gui # concurrent
 #greaterThan(QT_MAJOf R_VERSION, 4): QT += widgets printsupport
 #greaterThan(QT_MAJOR_VERSION, 5): QT += xml
 
+QMAKE_POST_LINK += $$quote({ export QT_QPA_PLATFORM=xcb; })
+
 TARGET = DoseCalcs
 TEMPLATE = app
 
@@ -20,6 +22,8 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN'"
 
 # to disable warning messages
 CONFIG += warn_off
+#for xterm embeded in X11 window
+#CONFIG += xcb wayland
 
 #DESTDIR=gui #Target file directory
 OBJECTS_DIR = gui #Intermediate object files directory
@@ -32,6 +36,7 @@ MOC_DIR = gui
 
 SOURCES += gui/main.cpp\
     gui/customtextedit.cpp \
+    gui/dicomreaderseg.cpp \
     gui/geometriesvisualization.cpp \
     gui/geometrymodellingeditor.cpp \
     gui/mainwindow.cpp\
@@ -54,6 +59,7 @@ HEADERS  += gui/mainwindow.h \
     #GdmlFormatVolumesCreation.h \
     #organschooserdialog.h \
     gui/customtextedit.h \
+    gui/dicomreaderseg.h \
     gui/filesManager.h \
     #visualizationManager.h \
     gui/errorManager.h \
@@ -71,6 +77,7 @@ HEADERS  += gui/mainwindow.h \
 
 FORMS    += gui/mainwindow.ui \
     #GdmlFormatVolumesCreation.ui \
+    gui/dicomreaderseg.ui \
     gui/geometriesvisualization.ui \
     gui/geometrymodellingeditor.ui \
     gui/organschooserdialog.ui \

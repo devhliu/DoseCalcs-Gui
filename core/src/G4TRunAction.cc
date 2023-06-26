@@ -573,6 +573,8 @@ void G4TRunAction::BeginOfRunAction(const G4Run* aRun) {
 
     useTime(0); // "0" for setting the begining time befor a loop, "1" it get the end time and calculate consumed time by a loop and show the difference, the loop should not have a setting or getting time inside it
 
+    G4RunManager::GetRunManager()->SetPrintProgress(TotalEventNumber*0.1);
+
     //std::cout << "\n\n\n\n\n\n 11111111111111 \n\n\n\n\n\n "<< std::endl;
 }
 
@@ -775,19 +777,24 @@ void G4TRunAction::CreateThreadRegionResultFile(){
 
     G4int SZ = 30;
 
-    file << "RegionsData" << "\n" ;
+    //file << "RegionName" << "\n" ;
+    file << std::setw(SZ) << std::left << "RegionName" << " "
+    << std::setw(15) << std::left << "AE(MeV)" << " "
+    << std::setw(15) << std::left << "AE^2(MeV^2)" << " "
+    << std::setw(15) << std::left << "Steps Number" << " "
+    << std::setw(20) << std::left << "Mass(kg)"<< " "
+    << std::setw(20) << std::left << "Volume(cm3)"<< " "
+    << std::setw(20) << std::left << "Density(g/cm3)" << "\n";
+
     for(G4int jk = 0 ; jk < (G4int)OrgansNameVector.size() ; jk++){ // each line for an organ name
         file << std::setw(SZ) << std::left << OrgansNameVector[jk] << " "
              << std::setw(15) << std::left << ED_Total[DataID][OrgansNameVector[jk]] << " "
              << std::setw(15) << std::left << ED2_Total[DataID][OrgansNameVector[jk]] << " "
-             << std::setw(15) << std::left << NOfValues[DataID][OrgansNameVector[jk]]
+             << std::setw(15) << std::left << NOfValues[DataID][OrgansNameVector[jk]] << " "
 
-                // /////////////////////////////////////////////////////////////////////////////////
-             << " "
              << std::setw(20) << std::left << TConstruction2->GetOrganNameMassMap()[OrgansNameVector[jk]]<< " "
              << std::setw(20) << std::left << TConstruction2->GetOrganNameVolumeMap()[OrgansNameVector[jk]]<< " "
              << std::setw(20) << std::left << TConstruction2->GetOrganNameDensityMap()[OrgansNameVector[jk]]
-                // /////////////////////////////////////////////////////////////////////////////////
 
              << "\n";
         //G4cout  << OrgansNameVector[jk] << "  " << ED_Total[DataID][OrgansNameVector[jk]] << "  " << G4endl;

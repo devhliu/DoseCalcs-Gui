@@ -1,7 +1,7 @@
 #include "geometriesvisualization.h"
 #include "ui_geometriesvisualization.h"
 
-extern QString DoseCalcs_build_dir_path;
+extern QString DoseCalcsCore_build_dir_path;
 extern QString MacroFilePath;
 extern QVector <QString> GeometryCommands ;
 extern QVector <QString> VOXELCommands ;
@@ -251,13 +251,13 @@ void geometriesvisualization::on_Save_clicked()
     {
         FileExtToSave = ui->comboBoxSaveExt->currentText();
         if(FileExtToSave == "bmp"){
-            ui->customPlot->saveBmp(DoseCalcs_build_dir_path +"/"+ newLabel);
+            ui->customPlot->saveBmp(DoseCalcsCore_build_dir_path +"/"+ newLabel);
         }else if(FileExtToSave == "jpg"){
-            ui->customPlot->saveJpg(DoseCalcs_build_dir_path +"/"+ newLabel);
+            ui->customPlot->saveJpg(DoseCalcsCore_build_dir_path +"/"+ newLabel);
         }else if(FileExtToSave == "bdf"){
-            ui->customPlot->savePdf(DoseCalcs_build_dir_path +"/"+ newLabel);
+            ui->customPlot->savePdf(DoseCalcsCore_build_dir_path +"/"+ newLabel);
         }else if(FileExtToSave == "png"){
-            ui->customPlot->savePng(DoseCalcs_build_dir_path +"/"+ newLabel);
+            ui->customPlot->savePng(DoseCalcsCore_build_dir_path +"/"+ newLabel);
         }
     }
 
@@ -268,7 +268,7 @@ void geometriesvisualization::on_AddVoxelsDataFile_clicked()
     VoxelsDataFilePath = QFileDialog::getOpenFileName(
                 this,
                 tr("Choose voxels data file"),
-                DoseCalcs_build_dir_path, //pathBuildApp,
+                DoseCalcsCore_build_dir_path, //pathBuildApp,
                 "All files (*.*);;Text files (*.txt)"
                 );
     ui->VoxelsDataFile->setText(VoxelsDataFilePath);
@@ -509,8 +509,8 @@ void geometriesvisualization::on_radioButtonPET_clicked(bool checked)
 
 void geometriesvisualization::on_pushButtonOpenResDir_clicked()
 {
-    if(QFile::exists(DoseCalcs_build_dir_path)){
-        QString command = DoseCalcs_build_dir_path;
+    if(QFile::exists(DoseCalcsCore_build_dir_path)){
+        QString command = DoseCalcsCore_build_dir_path;
         QProcess process;
         QStringList qsl = {command};
         process.startDetached("nautilus", qsl);
