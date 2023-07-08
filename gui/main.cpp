@@ -113,9 +113,9 @@ extern QString TestPackagesPathsBeforToRun(){
     }
 
     if(!QFile::exists(DoseCalcsCore_build_dir_path+"/simulate")){
-        PackagesInfo += "***** DoseCalcs Executable (Not Found) - "+DoseCalcsCore_build_dir_path+"/simulate"+"\n\n";
+        PackagesInfo += "***** DoseCalcs Simullation Executable (Not Found) - "+DoseCalcsCore_build_dir_path+"/simulate"+"\n\n";
     }else{
-        PackagesInfo += "***** DoseCalcs Executable (Found) - "+DoseCalcsCore_build_dir_path+"/simulate"+"\n\n";
+        PackagesInfo += "***** DoseCalcs Simullation Executable (Found) - "+DoseCalcsCore_build_dir_path+"/simulate"+"\n\n";
     }
 
     if(!QFile::exists(geant4_Lib_dir_path+"/geant4.sh")){
@@ -128,6 +128,18 @@ extern QString TestPackagesPathsBeforToRun(){
         PackagesInfo += "**** cmake (Not Found) - "+CMAKE_Lib_dir_path+"/cmake\n\n";
     }else{
         PackagesInfo += "**** cmake (Found) - "+CMAKE_Lib_dir_path+"/cmake \n\n";
+    }
+
+    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+MergeExecutableName)){
+        PackagesInfo += "**** DoseCalcs Merging Executable (Not Found) - "+DoseCalcsCore_build_dir_path+"/"+MergeExecutableName+"\n\n";
+    }else{
+        PackagesInfo += "**** DoseCalcs Merging Executable (Found) - "+DoseCalcsCore_build_dir_path+"/"+MergeExecutableName+"\n\n";
+    }
+
+    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName)){
+        PackagesInfo += "*** DoseCalcs Analysis Executable (Not Found) - "+DoseCalcsCore_build_dir_path+"/"+GraphExecutableName+"\n\n";
+    }else{
+        PackagesInfo += "*** DoseCalcs Analysis Executable (Found) - "+DoseCalcsCore_build_dir_path+"/"+GraphExecutableName+"\n\n";
     }
 
     if(!QFile::exists(Root_Lib_dir_path+"/thisroot.sh")){
@@ -235,7 +247,7 @@ int main(int argc, char *argv[])
     QuantitiesUnitsLists["S"] = (QStringList()<<"MeV/kg"<<"nGy"<<"miGy"<<"mGy"<<"Gy"<<"kGy"<<"MGy");
     QuantitiesUnitsLists["H"] = (QStringList()<<"MeV/kg"<<"nGy"<<"miGy"<<"mGy"<<"Gy"<<"kGy"<<"MGy"<<"mSv"<<"Sv");
     QuantitiesUnitsLists["E"] = (QStringList()<<"MeV/kg"<<"nGy"<<"miGy"<<"mGy"<<"Gy"<<"kGy"<<"MGy"<<"mSv"<<"Sv");
-    QuantitiesUnitsLists["T"] = (QStringList()<<"s"<<"min"<<"h"<<"y");
+    QuantitiesUnitsLists["T"] = (QStringList()<<"s"<<"min"<<"h"<<"d"<<"y");
     QuantitiesUnitsLists["A"] = (QStringList()<<"MBq"<<"Bq"<<"kBq");
 
     double MeV_to_J = 1.60218e-13;
@@ -243,7 +255,7 @@ int main(int argc, char *argv[])
     double Bq_to_MBq = 1e-6 ;
 
     QuantitiesConversionFromDefault["SAF"]["kg-1"] = 1.;
-    QuantitiesConversionFromDefault["SAF"]["g-1"] = 1e-3;
+    QuantitiesConversionFromDefault["SAF"]["g-1"] = 1e+3;
 
     QuantitiesConversionFromDefault["AF"][""] = 1.;
 
@@ -299,7 +311,8 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     MainWindow w; // this is the main GUI object
-    w.show();
+    //w.show();
+    w.showMaximized();
 
     a.setWindowIcon(QIcon(QDir(QCoreApplication::applicationDirPath()).filePath(GUIPackagesAndFilesDirName+"/AppIcon.png")));
     return a.exec();

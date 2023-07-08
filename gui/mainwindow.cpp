@@ -1,5 +1,5 @@
 ﻿#include "gui/mainwindow.h"
-#include "ui_mainwindow.h"
+#include "gui/ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QDir>
 #include <sstream>
+#include <fstream>
 
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
@@ -136,11 +137,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->comboBoxPreDefinedGeom->addItems(PreDefinedGeom);
 
-    QStringList SourceOrTargetOrCombination=(QStringList()<<"Region as a source and target"<<"In a specific target from all sources"<<"For a target<--source combination"<<"In all targets (phantom) from all sources");
+    QStringList SourceOrTargetOrCombination=(QStringList()<<"Region as a source and target"<<"In a specific target from all sources"<<"For a target<--source combination"<<"In all targets (phantom) from all sources" <<"In a specific targets from a specific sources");
     ui->comboBoxTotalorSourceOrCombNucl->addItems(SourceOrTargetOrCombination);
 
-    QStringList SourceOrTargetOrCombination1=(QStringList()<<"Region as a source and target"<<"In each target from a specific source"<<"In each target from all sources");
+    QStringList SourceOrTargetOrCombination1=(QStringList()<<"Region as a source and target"<<"In each target from a specific source"<<"In each target from all sources" <<"In each target from a number of sources");
     ui->comboBoxSourceOrTargetsForBiokinetics->addItems(SourceOrTargetOrCombination1);
+
+    ui->progressBarReadingCalcData->setWindowIconText("Reading");
+    ui->progressBarReadingCalcData->setValue(0);
 
     QStringList DDD=(QStringList()<<"File"<<"P-E-Y");
     ui->comboBoxRadionuclidedataType->addItems(DDD);
@@ -201,7 +205,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QStringList GraphsTypelist=(QStringList()<<"Self"<<"Cross"<<"Self_Cross");
     ui->AnalysisComboBoxGraphsType->addItems(GraphsTypelist);
 
-    QStringList GraphsExtlist=(QStringList()<<".png"<<".jpg"<<".pdf"<<".ps"<<".tex");
+    QStringList GraphsExtlist=(QStringList()<<".root"<<".png"<<".jpg"<<".pdf"<<".ps"<<".tex");
     ui->AnalysisComboBoxGraphsExt->addItems(GraphsExtlist);
 
     //QStringList VarToScorellist=(QStringList()<<"AE"<<"AD"<<"AF"<<"SAF"<<"S"<<"ED"<<"EDE");
@@ -1008,15 +1012,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tabWidget->setCurrentIndex(1);
     FillComponentsFromInputsFile(MacroFilePath); // this is called here after making and filling combobox lists
 
+
+
+    setCompleters();
+
+    ui->Tab->setCurrentIndex(1);
     BashCommandsForExecuting = "#! /bin/bash \n "
                                "cd "+DoseCalcsCore_build_dir_path+"\n"
                                "bash \n ";
     fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
     ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
-
-    setCompleters();
-
-    //fileManagerObject->Read_ICRP110MasssSAFs107RadiationFiles("/home/tarik/Bureau/0EditedFiles/Geant4_Projects/DoseCalcs/PackagesAndFiles/ICRPDATA/");
 
 }
 MainWindow::~MainWindow()
@@ -1145,7 +1150,7 @@ void MainWindow::initializeVariable(){
     //Score_setAccuracyCalculationLevel = "";
     Score_setSimNumOnRanksLineEdit = "";
     Score_setRadioNucleidDataLineEdit = "";
-    Score_setRadiationFactors = "";
+    //Score_setRadiationFactors = "";
     Score_setTissueFactors = "";
 
     Score_setQuantitiesUnits = "";
@@ -1429,7 +1434,7 @@ void MainWindow::setCompleters(){
 
     completer = new QCompleter(DefinedParticlesNames, this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
-    ui->radiationEnergyFactor->setCompleter(completer);
+    //ui->radiationEnergyFactor->setCompleter(completer);
 
     completer = new QCompleter(EnergyUnits, this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -1698,7 +1703,7 @@ void MainWindow::FillCoomponentByDefaultData(){
     ui->comboBoxEUnits->setCurrentText("mSv");
 
     ui->TissueFactorLineEdit->setText("Other 0.12 Gonads 0.08 Bladder 0.04 Esophagus 0.04 Liver 0.04 Thyroid 0.04 BoneSurface 0.1 Brain 0.1 Skin 0.1 SalivaryGlands 0.1 Kidneys 0.1");
-    ui->radiationEnergyFactor->setText("gamma 0.511 1 e+ 0.6335 1 alpha 2 20");
+    //ui->radiationEnergyFactor->setText("gamma 0.511 1 e+ 0.6335 1 alpha 2 20");
 
     ui->lineEditRadioNucleid->setText("F-18");
     ui->comboBoxRadionuclidedataType->setCurrentIndex(1);
@@ -1971,8 +1976,8 @@ void MainWindow::on_pushButtonMerge_clicked()
     fileManagerObject->WriteTextToFile( MacrosFileForAnalysis , generateInputUserTextForinputFile());
 
     if(!QFile::exists(MacrosFileForAnalysis)){
-        QMessageBox::information(this, tr(""), "Cannot find macros file for analysis in this directory." );
-        MacrosFileForAnalysis = QFileDialog::getOpenFileName( this, tr("Open a macros file for analysis"), DoseCalcsCore_build_dir_path, "All files (*.*)" );
+        QMessageBox::information(this, tr(""), "Cannot find macros file for data files merging in this directory." );
+        MacrosFileForAnalysis = QFileDialog::getOpenFileName( this, tr("Open a macros file for data files merging"), DoseCalcsCore_build_dir_path, "All files (*.*)" );
     }
 
     if(!QFile::exists(geant4_Lib_dir_path+"/geant4.sh")){
@@ -1988,16 +1993,11 @@ void MainWindow::on_pushButtonMerge_clicked()
 
     fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
-    showResultsOutput("Writing Analysis Commands : \n", 0);
+    showResultsOutput("Writing merging Commands : \n", 0);
     showResultsOutput(BashCommandsForExecuting , 0);
     showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 0);
 
     if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
-        //CoreProcess.execute("sh " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
-
-        //QProcess process;
-        //QStringList ff=(QStringList() << "-hold" << "-e" << "sh" << DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
-        //process.startDetached("xterm", ff);
 
         showResultsOutput("Merging results files " , 1);
 
@@ -2732,10 +2732,11 @@ void MainWindow::SaveROOTAnalysisInputs(){
     Score_setVolumesToScore = ui->AnalysisLineEdit_ScorOrg->text();
     Score_setVariableToScore = ui->AnalysisLineEditVarToScore->text();
     //Score_setAccuracyCalculationLevel = ui->ScoreComboBoxAcuuracyLevel->currentText();
-    Score_setRadioNucleidDataLineEdit = ui->lineEditRadioNucleid->text() + " " + RadDataType[ui->comboBoxActivityUnits->currentText()] + " " + ui->RadioNucleidlineEmissionDataEdit->text();
+
+    Score_setRadioNucleidDataLineEdit = ui->lineEditRadioNucleid->text() + " " + RadDataType[ui->comboBoxRadionuclidedataType->currentText()] + " " + ui->RadioNucleidlineEmissionDataEdit->text();
     Score_setRadioNucleidBiokineticsLineEdit = ui->lineEditRadioNucleid->text() + " " + ui->RadioNucleidAdmActivitylineEdit->text() + " " + ui->comboBoxActivityUnits->currentText() + " " + ui->comboBoxTimeUnit->currentText() + " " + ui->RadioNucleidSourceResTimelineEdit->text();
 
-    Score_setRadiationFactors = ui->radiationEnergyFactor->text();
+    //Score_setRadiationFactors = ui->radiationEnergyFactor->text();
     Score_setTissueFactors = ui->TissueFactorLineEdit->text();
     Score_setQuantitiesUnits = " AE " +ui->comboBoxAEUnits->currentText() + " SAF " +ui->comboBoxSAFUnits->currentText() +" AD " +ui->comboBoxADUnits->currentText() +" S " +ui->comboBoxSUnits->currentText() +" H " +ui->comboBoxHUnits->currentText() + " E " +ui->comboBoxEUnits->currentText();
 
@@ -2750,6 +2751,9 @@ void MainWindow::SaveROOTAnalysisInputs(){
     if(ui->checkBoxRelSDev->isChecked()){
         Analysis_GenerateRelativeSDevGraph = "yes" ;
     }
+    else{
+        Analysis_GenerateRelativeSDevGraph = "no" ;
+    }
 
     //if(ui->comboBoxRelDiff->currentText() != "" ){
     //if(ui->checkBoxRelErr->isChecked()){
@@ -2759,9 +2763,17 @@ void MainWindow::SaveROOTAnalysisInputs(){
     if(ui->checkBoxRegionParameter->isChecked()){
         Analysis_GenerateRegionsVariableGraph = "yes" ;
     }
+    else{
+        Analysis_GenerateRegionsVariableGraph = "no" ;
+    }
+
     if(ui->checkBoxEventsDataHisto->isChecked()){
         Analysis_GenerateEventsDataHisto = "yes" ;
     }
+    else{
+        Analysis_GenerateEventsDataHisto = "no" ;
+    }
+
 
     PositionsDataFilePath = ui->AnalysisLineEditPositionsFile->text();
     EnergiesDataFilePath = ui->AnalysisLineEditEnergiesFile->text();
@@ -2774,25 +2786,44 @@ void MainWindow::SaveROOTAnalysisInputs(){
     if(ui->checkBoxUseLogE->isChecked()){
         Analysis_UseLogE = "yes" ;
     }
+    else{
+        Analysis_UseLogE = "no" ;
+    }
+
     if(ui->checkBoxUseLogVar->isChecked()){
         Analysis_UseLogVariable = "yes" ;
     }
+    else{
+        Analysis_UseLogVariable = "no" ;
+    }
+
+
     if(ui->checkBoxUseGrid->isChecked()){
         Analysis_UseGridXY = "yes" ;
     }
+    else{
+        Analysis_UseGridXY = "no" ;
+    }
+
     if(ui->checkBoxPrintTitle->isChecked()){
         Analysis_PrintTitle = "yes" ;
+    }else{
+        Analysis_PrintTitle = "no" ;
     }
 
     Analysis_LegendPos = ui->AnalysisLegendPoscomboBox->currentText() ;
-    Analysis_setGraphsExt = ui->AnalysisComboBoxGraphsExt->currentText();
 
     if(ui->checkBoxAddErrorBar->isChecked()){
         Analysis_AddErrorBar = "yes" ;
     }
+    else{
+        Analysis_AddErrorBar = "no" ;
+    }
+
 
     Analysis_LegendWidth = ui->lineEditLegendXYWidth->text();
 
+    Analysis_setGraphsExt = ui->AnalysisComboBoxGraphsExt->currentText();
 }
 
 void MainWindow::InitialiseGeometryInputs(){
@@ -2874,9 +2905,8 @@ void MainWindow::InitialiseROOTAnalysisInputs(){
     ui->RadioNucleidSourceResTimelineEdit->setText("");
     ui->comboBoxTimeUnit->setCurrentIndex(0);
 
-    ui->radiationEnergyFactor->setText("");
+    //ui->radiationEnergyFactor->setText("");
     ui->TissueFactorLineEdit->setText("");
-
 
     // analysis
     ui->AnalysisComboBoxGraphData->setCurrentIndex(0);
@@ -3027,11 +3057,11 @@ void MainWindow::RefillROOTAnalysisInputs(){
     ui->AnalysisLineEditVarToScore->setText(Score_setVariableToScore);
     //ui->ScoreComboBoxAcuuracyLevel->setCurrentText(Score_setAccuracyCalculationLevel);
 
-    ui->radiationEnergyFactor->setText(Score_setRadiationFactors);
+    //ui->radiationEnergyFactor->setText(Score_setRadiationFactors);
     ui->TissueFactorLineEdit->setText(Score_setTissueFactors);
 
-    ui->lineEditRadioNucleid->setText(Score_setRadioNucleidDataLineEdit);
-    ui->RadioNucleidlineEmissionDataEdit->setText(Score_setRadioNucleidDataLineEdit);
+    //ui->lineEditRadioNucleid->setText(Score_setRadioNucleidDataLineEdit);
+    //ui->RadioNucleidlineEmissionDataEdit->setText(Score_setRadioNucleidDataLineEdit);
 
     // analysis
     ui->AnalysisComboBoxGraphData->setCurrentText(Analysis_setCompareType);
@@ -3377,7 +3407,6 @@ void MainWindow::on_actionVisualization_triggered()
 
                 ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
             }
-
         }
         else{
 
@@ -3597,7 +3626,7 @@ void MainWindow::on_actionUpdate_triggered()
                 "bash \n"
                 ;
         EditFlag = 12;
-        ui->tabWidget->setTabText(0,"Update DoseCalcs Commands");
+        ui->tabWidget->setTabText(0,"DoseCalcs Updating commands");
         ui->GeometryFileTextEdit->clear();
         showResultsOutput("", 4);
         ui->GeometryFileTextEdit->setPlainText(BashCommandsForExecuting);
@@ -4126,6 +4155,7 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
         if(InputsVals.size() > 0){
             ui->lineEditRadioNucleid->setText(InputsVals[0]);
             if(InputsVals.size() > 1){
+                ui->comboBoxRadionuclidedataType->setCurrentText(InputsVals[1]);
                 QString aa = "";
                 for(int cc=2; cc < InputsVals.size();cc++){
                     aa += InputsVals[cc] + " ";
@@ -4159,7 +4189,7 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
             if(InputsVals[cc] == "E"){ cc++; ui->comboBoxEUnits->setCurrentText(InputsVals[cc]);}
         }
 
-        ui->radiationEnergyFactor->setText(lines[RunAndScoreCommands[9]]);
+        //ui->radiationEnergyFactor->setText(lines[RunAndScoreCommands[9]]);
         ui->TissueFactorLineEdit->setText(lines[RunAndScoreCommands[11]]);
 
     }
@@ -4198,8 +4228,14 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
             if(InputsVals.size() > 3){
                 ui->AnalysisLineEdit_RefName->setText(InputsVals[2]);
                 ui->AnalysisLineEditRefFile->setText(InputsVals[3]);
+                if(InputsVals.size() > 5){
+                    ui->AnalysisLineEdit_RefName->setText(ui->AnalysisLineEdit_RefName->text()+" "+InputsVals[4]);
+                    ui->AnalysisLineEditRefFile->setText(ui->AnalysisLineEditRefFile->text()+" "+InputsVals[5]);
+                }
             }
         }
+
+
         for ( auto Abeg = lines.begin(); Abeg != lines.end(); ++Abeg  ){
 
             if(AnalysisCommands[1] == Abeg.key()){ // "/AnalysisData/generateRelativeErrGraph"
@@ -4339,7 +4375,7 @@ void MainWindow::CreateUserCommands(){
 }
 QString MainWindow::generateInputUserTextForinputFile(){
 
-    showResultsOutput("Generating user Commands text...", 0);
+    showResultsOutput("Generating Geometry,Physics, and Radiation Source Commands text...", 0);
 
     QString MaterialsAndWorldData = "";
     QString GeometryData = "";
@@ -4404,15 +4440,21 @@ QString MainWindow::generateInputUserTextForinputFile(){
             //RunAndScoreCommands[4] + " " + Execution_setEventNumber + "\n"+
             RunAndScoreCommands[5] + " " + ValuesOfInputs[Score_setSimNumOnRanksLineEdit]+ "\n"+
             RunAndScoreCommands[10] + " " + UserCurrentResultsDirPath + "\n" +
-            RunAndScoreCommands[8] + " " + Score_setQuantitiesUnits + "\n" +
-            RunAndScoreCommands[9] + " " + Score_setRadiationFactors + "\n" +
-            RunAndScoreCommands[11] + " " + Score_setTissueFactors + "\n" +
-            RunAndScoreCommands[6] + " " + Score_setRadioNucleidDataLineEdit + "\n" +
-            RunAndScoreCommands[7] + " " + Score_setRadioNucleidBiokineticsLineEdit + "\n" ;
+            RunAndScoreCommands[8] + " " + Score_setQuantitiesUnits + "\n"
+            //RunAndScoreCommands[9] + " " + Score_setRadiationFactors + "\n" +
+            ;
+
+    if(Score_setTissueFactors != "" ){
+        ScoreData += RunAndScoreCommands[11] + " " + Score_setTissueFactors + "\n" ;
+    }
+    if(ui->lineEditRadioNucleid->text() != "" && ui->RadioNucleidAdmActivitylineEdit->text().toDouble() != 0.){
+        ScoreData +=
+                RunAndScoreCommands[6] + " " + Score_setRadioNucleidDataLineEdit + "\n" +
+                RunAndScoreCommands[7] + " " + Score_setRadioNucleidBiokineticsLineEdit + "\n" ;
+    }
 
     // Analysis
 
-    //if(ui->ROOTUsecheckBox->isChecked()){
 
     Analysis_GenerateSelfCrossGraphs = Analysis_setGraphsData +" " +
             Analysis_setCompareType +" " +
@@ -4422,7 +4464,7 @@ QString MainWindow::generateInputUserTextForinputFile(){
     AnalysisData += AnalysisCommands[0] + " " + Analysis_GenerateSelfCrossGraphs + "\n" ;
 
     if(Analysis_GenerateRelativeErrGraph != ""){
-        AnalysisData += AnalysisCommands[1] + "\n" ;
+        AnalysisData += AnalysisCommands[1] + " " + Analysis_GenerateRelativeErrGraph + "\n" ;
     }
     if(Analysis_GenerateRelativeSDevGraph == "yes"){
         AnalysisData += AnalysisCommands[2] + "\n" ;
@@ -4464,6 +4506,7 @@ QString MainWindow::generateInputUserTextForinputFile(){
     return commandsText ;
 
 }
+
 bool MainWindow::TestSimulateExecutableInputsToRun(){
 
     QStringList InputsVals;
@@ -4784,23 +4827,25 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
         }
     }
 
-    InputsVals = ui->radiationEnergyFactor->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
+    InputsVals = ui->lineEditRadioNucleid->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
+    QStringList InputsVals2 = ui->RadioNucleidlineEmissionDataEdit->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
     if(InputsVals.size() < 1){}else{
-        if(InputsVals[0] == "File"){
-            if(InputsVals.size() < 3){
-                if(!QFile::exists(InputsVals[0])){
+        if(ui->comboBoxRadionuclidedataType->currentText() == "File"){
+            if(InputsVals2.size() > 1){
+                if(!QFile::exists(InputsVals2[0])){
                     ui->Tab->setCurrentIndex(2);
-                    QMessageBox::information(this, tr(""), "The file ");
-                    return false;
+                    QMessageBox::information(this, tr(""), "There is no file contains the "+InputsVals[0]+ " radiation data");
+                    //return false;
                 }
             }
         }else{
-            for(int aa=0; aa < InputsVals.size();aa++){
+            for(int aa=0; aa < InputsVals2.size();aa++){
                 bool IsIn = false;
-                for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals[aa]){ IsIn = true;}}
+                for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals2[aa]){ IsIn = true;}}
                 if(IsIn == false){
                     ui->Tab->setCurrentIndex(2);
-                    QMessageBox::information(this, tr(""), "Warning: The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the radiation factors LineEdit widget");
+                    QMessageBox::information(this, tr(""), "Warning: The particle\""+ InputsVals2[aa] +"\" is not known by DoseCalcs. Remove it from the radiation factors LineEdit widget");
                     break;
                     //return false;
                 }
@@ -4809,24 +4854,6 @@ bool MainWindow::TestMergeExecutableInputsToRun(){
                 }
                 aa+=2;
             }
-        }
-    }
-
-    InputsVals = ui->RadioNucleidlineEmissionDataEdit->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/GeometryData/createWorld"
-    if(InputsVals.size() < 1){}else{
-        for(int aa=0; aa < InputsVals.size();aa++){
-            bool IsIn = false;
-            for(int dd=0; dd < DefinedParticlesNames.size();dd++){ if(DefinedParticlesNames[dd] == InputsVals[aa]){ IsIn = true;}}
-            if(IsIn == false){
-                ui->Tab->setCurrentIndex(2);
-                QMessageBox::information(this, tr(""), "Warning: The particle\""+ InputsVals[aa] +"\" is not known by DoseCalcs. Remove it from the radionuclide particles-yields LineEdit widget");
-                break;
-                //return false; just warning
-            }
-            if(IsIn == false){
-                break;
-            }
-            aa+=2;
         }
     }
 
@@ -6094,97 +6121,38 @@ void MainWindow::on_btnMomDirsFile_clicked()
 void MainWindow::on_btnAnalysiInputFileFile_clicked()
 {
 
-    showResultsOutput("---------- Reading " + DoseCalcsCore_build_dir_path+"/"+MacroFileName , 4);
+    showResultsOutput("---------- Filling analysis inputs by default values ", 4);
 
-    QString maccros = DoseCalcsCore_build_dir_path+"/"+MacroFileName;
+    ui->AnalysisComboBoxGraphData->setCurrentText("Result");
+    ui->AnalysisComboBoxGraphsType->setCurrentText("Self_Cross");
+    ui->AnalysisLineEdit_RefName->setText("ICRP");
+    ui->AnalysisLineEditRefFile->setText(UserCurrentResultsDirPath+"/ICRPValues");
 
-    if(!QFile::exists(maccros)){
-        maccros = QFileDialog::getOpenFileName( this, tr("Choose the simulation macros file for analysis"), DoseCalcsCore_build_dir_path, tr("Simulation data files (*)") );
-    }
+    ui->comboBoxRelDiff->setCurrentText("RA");
+    ui->checkBoxRelSDev->setChecked(true) ;
+    ui->checkBoxRegionParameter->setChecked(true) ;
+    ui->AnalysisComboBoxRegionVariable->setCurrentText("Mass");
 
-    QStringList InputsVals;
-    QMap <QString,QString> lines = fileManagerObject->ReadLinesFromFileWithFirstWordIndicator(maccros);
-    if(lines.size() == 0){
-        showResultsOutput("Cannot find the macros for analysis in " + maccros , 3);
-    }
-    InputsVals = lines[AnalysisCommands[0]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/Analysis/GenerateSelfCrossGraphs"
-    if(InputsVals.size() > 1){
-        ui->AnalysisComboBoxGraphData->setCurrentText(InputsVals[0]);
-        ui->AnalysisComboBoxGraphsType->setCurrentText(InputsVals[1]);
-        if(InputsVals.size() > 3){
-            ui->AnalysisLineEdit_RefName->setText(InputsVals[2]);
-            ui->AnalysisLineEditRefFile->setText(InputsVals[3]);
-            if(InputsVals.size() > 5){
-                ui->AnalysisLineEdit_RefName->setText(ui->AnalysisLineEdit_RefName->text()+" "+InputsVals[4]);
-                ui->AnalysisLineEditRefFile->setText(ui->AnalysisLineEditRefFile->text()+" "+InputsVals[5]);
-            }
-        }
+    ui->AnalysisLineEditPositionsFile->setText(DoseCalcsCore_build_dir_path+"/EventsData/Pos_Liver_Voxels_100000000_0.bin");
+    ui->AnalysisLineEditEnergiesFile->setText(DoseCalcsCore_build_dir_path+"/EventsData/Ene_Mono_0.01_100000000_0.bin");
+    ui->AnalysisLineEditMomDirsFile->setText(DoseCalcsCore_build_dir_path+"/EventsData/MomDir_Isotropic_100000000_0.bin");
+    ui->checkBoxEventsDataHisto->setChecked(true);
 
-    }
-    for ( auto Abeg = lines.begin(); Abeg != lines.end(); ++Abeg  ){
+    ui->AnalysisComboBoxSliceFor2DGraph->setCurrentText("XY");
+    ui->AnalysisComboBoxBeamAxis->setCurrentText("Z");
+    ui->AnalysisLineEdit_SliceID->setText("5");
 
-        if(AnalysisCommands[1] == Abeg.key()){ // "/AnalysisData/generateRelativeErrGraph"
-            //ui->checkBoxRelErr->setChecked(true) ;
-            ui->comboBoxRelDiff->setCurrentText(lines[AnalysisCommands[1]]);
-        }
+    ui->checkBoxPrintTitle->setChecked(true);
+    ui->checkBoxUseLogE->setChecked(true);
+    ui->checkBoxUseLogVar->setChecked(true);
+    ui->checkBoxUseGrid->setChecked(true);
 
-        if(AnalysisCommands[2] == Abeg.key()){ // /AnalysisData/generateRelativeSDevGraph
-            ui->checkBoxRelSDev->setChecked(true) ;
-        }
+    ui->AnalysisLegendPoscomboBox->setCurrentText("RightTop");
+    ui->lineEditLegendXYWidth->setText("0.15 0.23");
 
-        if(AnalysisCommands[3] == Abeg.key()){ // /AnalysisData/generateVariableRegionGraph
-            ui->checkBoxRegionParameter->setChecked(true) ;
-            ui->AnalysisComboBoxRegionVariable->setCurrentText(lines[AnalysisCommands[3]]);
-        }
-    }
+    ui->checkBoxAddErrorBar->setChecked(false);
 
-    InputsVals = lines[AnalysisCommands[4]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/Analysis/GenerateSelfCrossGraphs"
-    if(InputsVals.size() > 2){
-        ui->AnalysisLineEditPositionsFile->setText(InputsVals[0]);
-        ui->AnalysisLineEditEnergiesFile->setText(InputsVals[1]);
-        ui->AnalysisLineEditMomDirsFile->setText(InputsVals[2]);
-        ui->checkBoxEventsDataHisto->setChecked(true);
-    }
-
-    ui->AnalysisComboBoxSliceFor2DGraph->setCurrentText(lines["/Analysis/setSliceFor2DGraph"]);
-    ui->AnalysisComboBoxBeamAxis->setCurrentText(lines["/Analysis/setBeamAxis"]);
-    ui->AnalysisLineEdit_SliceID->setText(lines["/Analysis/setSliceID"]);
-
-    InputsVals = lines[AnalysisCommands[8]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setSourceGenerationData"
-    if(InputsVals.size() > 8){
-
-        if(InputsVals[0].toLower() == "yes"){
-            ui->checkBoxPrintTitle->setChecked(true);
-        }else{
-            ui->checkBoxPrintTitle->setChecked(false);
-        }
-        if(InputsVals[1].toLower() == "yes"){
-            ui->checkBoxUseLogE->setChecked(true);
-        }else{
-            ui->checkBoxUseLogE->setChecked(false);
-        }
-        if(InputsVals[2].toLower() == "yes"){
-            ui->checkBoxUseLogVar->setChecked(true);
-        }else{
-            ui->checkBoxUseLogVar->setChecked(false);
-        }
-        if(InputsVals[3].toLower() == "yes"){
-            ui->checkBoxUseGrid->setChecked(true);
-        }else{
-            ui->checkBoxUseGrid->setChecked(false);
-        }
-
-        ui->AnalysisLegendPoscomboBox->setCurrentText(InputsVals[4]);
-        ui->lineEditLegendXYWidth->setText(InputsVals[5] +" "+ InputsVals[6]);
-
-        if(InputsVals[7].toLower() == "yes"){
-            ui->checkBoxAddErrorBar->setChecked(true);
-        }else{
-            ui->checkBoxAddErrorBar->setChecked(false);
-        }
-
-        ui->AnalysisComboBoxGraphsExt->setCurrentText(InputsVals[8]);
-    }
+    ui->AnalysisComboBoxGraphsExt->setCurrentText(".root");
 
     updateApplicationTabs();
     /*
@@ -6281,83 +6249,14 @@ void MainWindow::on_AnalysisbtnGraphsDirPath_clicked()
         showResultsOutput("cannot find analysis graphs directory", 4);
     }
 }
-void MainWindow::on_AnalysisbtnSaveInputs_clicked()
-{
-
-    if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+MacroFileName)){
-
-        QVector< QPair<QString,QString>> Commlines1 = fileManagerObject->ReadTextFromFileInQStringList(DoseCalcsCore_build_dir_path+"/"+MacroFileName);
-
-        for ( int ds = 0 ; ds < Commlines1.size(); ds++  ){
-
-            if(Commlines1[ds].first == "GraphsData" ){Commlines1[ds].second = ui->AnalysisComboBoxGraphData->currentText() ; }
-            if(Commlines1[ds].first == "CompareType" ){Commlines1[ds].second = ui->AnalysisComboBoxGraphsType->currentText() ; }
-            if(Commlines1[ds].first == "RefFilePath" ){Commlines1[ds].second = ui->AnalysisLineEditRefFile->text() ; }
-            if(Commlines1[ds].first == "RefName" ){Commlines1[ds].second = ui->AnalysisLineEdit_RefName->text() ; }
-
-            if(Commlines1[ds].first == "RegionVariableName" ){Commlines1[ds].second = ui->AnalysisComboBoxRegionVariable->currentText() ; }
-
-            if(Commlines1[ds].first == "GenerateRegionsVariableGraph"){
-                if(ui->checkBoxRegionParameter->isChecked()){
-                    Commlines1[ds].second = "yes" ;
-                }
-            }
-            if(Commlines1[ds].first == "GenerateRelativeSDevGraph" ){
-                if(ui->checkBoxRelSDev->isChecked()){
-                    Commlines1[ds].second = "yes" ;
-                }
-            }
-            if(Commlines1[ds].first == "GenerateRelativeErrGraph" ){
-                if(ui->comboBoxRelDiff->currentText() != "" ){
-                    //if(ui->checkBoxRelErr->isChecked()){
-                    Commlines1[ds].second = ui->comboBoxRelDiff->currentText() ;
-                }
-            }
-
-            if(Commlines1[ds].first == "SliceFor2DGraph" ){Commlines1[ds].second = ui->AnalysisComboBoxSliceFor2DGraph->currentText() ; }
-            if(Commlines1[ds].first == "BeamAxis" ){Commlines1[ds].second = ui->AnalysisComboBoxBeamAxis->currentText(); }
-            if(Commlines1[ds].first == "SliceID" ){Commlines1[ds].second = ui->AnalysisLineEdit_SliceID->text() ; }
-
-            if(Commlines1[ds].first == "PositionDataFile" ){Commlines1[ds].second = ui->AnalysisLineEditPositionsFile->text() ; }
-            if(Commlines1[ds].first == "EnergyDataFile" ){Commlines1[ds].second = ui->AnalysisLineEditEnergiesFile->text() ; }
-            if(Commlines1[ds].first == "MomDirDataFile" ){Commlines1[ds].second = ui->AnalysisLineEditMomDirsFile->text() ; }
-
-            if(Commlines1[ds].first == "EventsDataHistograms"){ if(ui->checkBoxEventsDataHisto->isChecked()){ Commlines1[ds].second = "yes" ; }}
-
-            if(Commlines1[ds].first == "UseLogE"){ if(ui->checkBoxUseLogE->isChecked()){ Commlines1[ds].second = "yes" ; }}
-            if(Commlines1[ds].first == "UseLogVariable"){ if(ui->checkBoxUseLogVar->isChecked()){ Commlines1[ds].second = "yes" ; }}
-            if(Commlines1[ds].first == "UseGridXY"){ if(ui->checkBoxUseGrid->isChecked()){ Commlines1[ds].second = "yes" ; }}
-            if(Commlines1[ds].first == "PrintTitle"){ if(ui->checkBoxPrintTitle->isChecked()){ Commlines1[ds].second = "yes" ; }}
-            if(Commlines1[ds].first == "LegendPos" ){Commlines1[ds].second = ui->AnalysisLegendPoscomboBox->currentText() ; }
-
-            QStringList InputsVals = ui->lineEditLegendXYWidth->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
-            if(InputsVals.size() > 1){
-                if(Commlines1[ds].first == "LegendXWidth" ){Commlines1[ds].second = InputsVals[0]; }
-                if(Commlines1[ds].first == "LegendYHeight" ){Commlines1[ds].second = InputsVals[0]; }
-            }else{
-                if(Commlines1[ds].first == "LegendXWidth" ){Commlines1[ds].second = "0.15"; }
-                if(Commlines1[ds].first == "LegendYHeight" ){Commlines1[ds].second = "0.23"; }
-            }
-
-            if(Commlines1[ds].first == "AddErrorBarInGraphs" ){if(ui->checkBoxAddErrorBar->isChecked()){ Commlines1[ds].second = "yes" ; }}
-            if(Commlines1[ds].first == "GraphsExt" ){Commlines1[ds].second = ui->AnalysisComboBoxGraphsExt->currentText() ; }
-
-            showResultsOutput(Commlines1[ds].first + " " + Commlines1[ds].second , 4);
-            //AnalysisData.push_back()
-        }
-    }
-    else{
-        showResultsOutput("Verify that the Analysis input file exists in the build under Source directory. Please choose Source directory", 4);
-    }
-}
 void MainWindow::on_AnalysisbtnGenerate_clicked()
 {
 
     if(UserCurrentResultsDirPath == "" || UserCurrentResultsDirPath.isEmpty()){UserCurrentResultsDirPath = DoseCalcsCore_build_dir_path + "/" + ResultDirectoryName;}
 
-    if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+MacroFileName) || !QFile::exists(UserCurrentResultsDirPath+"/"+ResultFileName)){
-        QMessageBox::information(this, tr(""), "Cannot find macros file and/or ResultsData files in this directory. Choose a result directory that contains ResultsData file to perform root analysis tasks." );
-        UserCurrentResultsDirPath = QFileDialog::getExistingDirectory(0, ("Choose results directory"), UserCurrentResultsDirPath);
+    if(!QFile::exists(UserCurrentResultsDirPath+"/"+ResultFileName)){
+        //QMessageBox::information(this, tr(""), "Cannot find ResultsData file in the given result directory. Choose a result directory that contains ResultsData file to perform root analysis tasks." );
+        UserCurrentResultsDirPath = QFileDialog::getExistingDirectory(0, ("Cannot find ResultsData file in the given result directory. Choose a result directory that contains ResultsData file to perform root analysis tasks."), UserCurrentResultsDirPath);
         if(UserCurrentResultsDirPath.isEmpty()){
             return;
         }
@@ -6368,16 +6267,27 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
         dir->mkdir(UserCurrentResultsDirPath+"/"+GraphsOutDirName);
     }
 
+
     if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName)){
 
+        initializeVariable();
+        SaveDataFromInputComponents(); // get the same componenet data but the four under variable values are related to the SaveEnePharOrgLists() data that is called one time when the the run in pushed
+        CreateUserCommands(); //fill the variables with all values to save it to user file and not inputFile executed by the geant4 application core
+        fileManagerObject->WriteTextToFile(DoseCalcsCore_build_dir_path+"/"+MacroFileName, generateInputUserTextForinputFile());
+
+        if(!QFile::exists(DoseCalcsCore_build_dir_path+"/"+MacroFileName)){
+            QMessageBox::information(this, tr(""), "Cannot create macros file "+DoseCalcsCore_build_dir_path+"/"+MacroFileName+" for analysis" );
+        }
+
+
         if(!QFile::exists(Root_Lib_dir_path+"/thisroot.sh")){
-            Root_Lib_dir_path = ShowMessageBoxAndGetPath("Directory Containing thisroot.sh Not Found, Click OK to Choose the Directory");
+            Root_Lib_dir_path = ShowMessageBoxAndGetPath("Directory Containing thisroot.sh Not Found, Click OK to Choose the Directory, else, you will just generate .tex and .csv tables without graphs");
         }
 
         //CoreProcess.execute("sh " + UserCurrentResultsDirPath+"/"+DoseCalcsExecutingFileName);
         BashCommandsForExecuting = "#! /bin/bash \n . " +Root_Lib_dir_path +"/thisroot.sh \n"+
                 "cd " + DoseCalcsCore_build_dir_path + "\n" +
-                DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " " + UserCurrentResultsDirPath
+                DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " " + DoseCalcsCore_build_dir_path+"/"+MacroFileName
                 ;
         BashCommandsForExecuting += "\n bash \n";
         fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
@@ -6388,7 +6298,7 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
 
         if(QFile::exists(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName)){
 
-            showResultsOutput("Generating ROOT graphs and histograms, and Latex table from DoseCalcs results" , 1);
+            showResultsOutput("Generating DoseCalcs Results in tables .tex and .csv and ROOT graphs and histograms" , 1);
 
             ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
 
@@ -6398,7 +6308,7 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
         }
 
     }else{
-        showResultsOutput("Cannot find the analysis executable \""+ DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " , you should build DoseCalcs with ROOT Analysis option" , 3);
+        QMessageBox::information(this, tr("Performing root analysis tasks"), "Cannot find analysis executable. Reinstall DoseCalcs-Core with  -DWITH_ANALYSIS_USE=OFF option in cmake command. Also if you will generate graphs, set ROOT analysis system bin path in the DoseCalcs-Core installation cmake command -DROOT_DIR=/home/../root_install/bin" );
     }
 }
 void MainWindow::on_RootAnalysispushButtonOpenROOTGUI_clicked()
@@ -6482,8 +6392,8 @@ void MainWindow::ReadLoadICRPSpectrumData(){
 
     if(!IsICRPFilesAreRead){
 
-        fileManagerObject->Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
-        ICRPRadioNuclideDataDiscSpec = fileManagerObject->getICRPRadioNuclideDataDiscSpec();
+        Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
+        //ICRPRadioNuclideDataDiscSpec = fileManagerObject->getICRPRadioNuclideDataDiscSpec();
 
         if(ICRPRadioNuclideDataDiscSpec.size() != 0){
             IsICRPFilesAreRead = true;
@@ -7926,27 +7836,35 @@ void MainWindow::removeHugFiles_slot(){
 
 
 
-// for ICRP radionuclides and biokinetic Dose Estimation Tab
+
 void MainWindow::on_pushButtonReadUSERData_clicked()
 {
-    setBiokineticsDefaulsInputs();
+    ReadUserilesAndGetData();
+    //QFuture<void> future = QtConcurrent::run(this, &MainWindow::ReadUserilesAndGetData);
 }
 void MainWindow::on_pushButtonReadICRPData_clicked()
 {
-    QFuture<void> future = QtConcurrent::run(this, &MainWindow::ReadICRPilesAndGetData);
+    ReadICRPilesAndGetData();
+    //QFuture<void> future = QtConcurrent::run(this, &MainWindow::ReadICRPilesAndGetData);
+}
+void MainWindow::ReadUserilesAndGetData(){
+
+    QString DataDirName = QFileDialog::getOpenFileName( this, tr("Choose DoseCalcs ResultsData file"), UserCurrentResultsDirPath, tr("All files (*)") );
+
+    if(DataDirName.isEmpty() || DataDirName.isNull()){
+    }else{
+        if(QFile::exists(DataDirName)){
+            Read_final_result_file(DataDirName);
+            ui->pushButtonReadUSERData->setToolTip("Current readed file path: "+DataDirName);
+            setBiokineticsDefaulsInputs();
+        }
+    }
 }
 void MainWindow::ReadICRPilesAndGetData(){
 
-    fileManagerObject->Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
-    RegionParameterValueMap = fileManagerObject->getRegionParameterValueMap();
-    ICRPSAFs = fileManagerObject->getICRPSAFs();
-    ICRPRadioNuclideData = fileManagerObject->getICRPRadioNuclideData();
-    ICRPRadioNuclideDataDiscSpec = fileManagerObject->getICRPRadioNuclideDataDiscSpec();
-    ICRPRadioNuclideHalfLives = fileManagerObject->getICRPRadioNuclideHalfLives();
-    SourceParticleEnergyValues = fileManagerObject->getSourceParticleEnergyValues();
-    RadionuclidesParticles = fileManagerObject->getRadionuclidesParticles();
-    RadioTracerSourceOrganResidenceTime = fileManagerObject->getRadioTracerSourceOrganResidenceTime();
-    RadiotracerradionucleidMap = fileManagerObject->getRadiotracerradionucleidMap();
+    Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
+
+    setBiokineticsDefaulsInputs();
 
     /*
     // test inputs
@@ -8022,41 +7940,111 @@ void MainWindow::ReadICRPilesAndGetData(){
     }
 
     */
+    /*
+    for ( auto it = ICRPRadioNuclideData.begin(); it != ICRPRadioNuclideData.end(); ++it  ){
 
-    QString TextMessage = QString::number(ICRPRadioNuclideHalfLives.size()) + " radionuclides\n"
-            +QString::number(ICRPSAFs["SAF"]["ICRPAdultMale"]["gamma"].size())+" particles\n"
-            +QString::number(RegionParameterValueMap.size()) + " regions"
-            ;
+        QString RadioTracer_NAME = it.key();
+        QTextStream(stdout) << "\n\n\n\n\n------------------RadioTracer_NAME " << RadioTracer_NAME <<"\n";
 
-    //ui->labelReadICRMessageOutput->setText(TextMessage);
-    //ui->labelReadICRMessageOutput->setVisible(false);
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            QString Particle_NAME = it2.key();
+            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                double Energy_Val  = it3.key();
+                double yield  = it3.value();
+
+                QTextStream(stdout) << "----Energy_Val " << Energy_Val  << "----yield " << yield <<"\n";
+
+            }
+        }
+    }
+*/
+
+    QStringList args=(QStringList()<<"Pancreas"<<"Spleen"<<"Thyroid");
+
+    QMap<QString,QMap<QString,QMap<double,QMap<QString,QMap<QString,double>>>>> SAFMap = ICRPSAFs["SAF"];
+
+    for ( auto it = SAFMap.begin(); it != SAFMap.end(); ++it  ){
+
+        QString Geometry_NAME = it.key();
+        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            QString Particle_NAME = it2.key();
+            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                double Energy_Val = it3.key();
+                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
+
+                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
+                    QString Source_NAME  = DD.key();
+                    //                    QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
+
+                    bool IsIn = false;
+                    for(int dd=0; dd < args.size();dd++){ if(args[dd] == Source_NAME){ IsIn = true;}}
+                    if(IsIn == false){
+
+                        for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
+                            QString  Target_NAME  = CC.key();
+                            double SAFValue  = CC.value();
+
+                            ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val]["OtherTissues"][Target_NAME] += SAFValue;
+
+                            //                        QTextStream(stdout) << "------Target_NAME " << Target_NAME <<"\n";
+                            //                        QTextStream(stdout) << "-------SAFValue " << SAFValue <<"\n";
+                            //if(Source_NAME == "Liver" && Target_NAME == "Brain"){
+                            //QTextStream(stdout) << " Geometry_NAME " << Geometry_NAME << " Particle_NAME " << Particle_NAME << " Energy_Val " << Energy_Val << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " SAFValue " << SAFValue <<"\n";
+                            //}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+void MainWindow::setBiokineticsDefaulsInputs(){
+
+    QTextStream(stdout) <<"Data reading terminated \n";
 
     QStringList Organs;
     for ( auto it = SourceParticleEnergyValues.begin(); it != SourceParticleEnergyValues.end(); ++it  ){Organs.push_back(it->first);}
     ui->comboBoxSources->clear();
+    //ui->comboBoxSources->addItem("all");
     ui->comboBoxSources->addItems(Organs);
+
     for ( auto it = RegionParameterValueMap.begin(); it != RegionParameterValueMap.end(); ++it  ){Organs.push_back(it.key());}
     ui->comboBoxTargets->clear();
+    //ui->comboBoxTargets->addItem("all");
     ui->comboBoxTargets->addItems(Organs);
 
-    /*
-    for ( auto it = ICRPRadioNuclideHalfLives.begin(); it != ICRPRadioNuclideHalfLives.end(); ++it  ){
-        bool isin = false;
-        for (int dd = 0 ; dd < ui->comboBoxRadioPharmaceutiques->count(); dd++) {
-            if(it.key() == ui->comboBoxRadioPharmaceutiques->itemText(dd)){
-                isin = true;break;
-            }
-        }
-        if(isin == false){
-            ui->comboBoxRadioPharmaceutiques->addItem(it.key());
-        }
-    }
-    */
-
+    ui->comboBoxRadioPharmaceutiques->clear();
     for ( auto it = RadiotracerradionucleidMap.begin(); it != RadiotracerradionucleidMap.end(); ++it  ){
             ui->comboBoxRadioPharmaceutiques->addItem(it->first);
     }
 
+    QStringList Geometries;
+    for ( auto it = ICRPSAFs.begin(); it != ICRPSAFs.end(); ++it  ){
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            bool isIn = false;
+            for(int gg = 0 ; gg < Geometries.size() ; gg++){
+                if(it2.key() == Geometries[gg]){
+                    isIn = true; break;
+                }
+            }
+            if(isIn == false){
+                Geometries.push_back(it2.key());
+            }
+        }
+    }
+    ui->comboBoxPhantom->clear();
+    ui->comboBoxPhantom->addItems(Geometries);
+
+
+    if( ICRPSAFs["SAF"].size() == 0){
+        QMessageBox::information(this, tr(""), "No SAF data were registered");
+    }
 
     TissueFactorMap["World"]=1;
     TissueFactorMap["Gonads"]=0.08;
@@ -8072,17 +8060,33 @@ void MainWindow::ReadICRPilesAndGetData(){
     TissueFactorMap["VOXEL"]= 0.12;
     TissueFactorMap["Others"]= 0.12;
 
-    CalculateQuantitiesBasedOnICRPData();
+    // these energies should be sorted one time for all source particle to be used in the calculations of E1 E2 for E value finding
+    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  )
+    {
+        for ( auto Bbeg = Abeg->second.begin(); Bbeg != Abeg->second.end(); ++Bbeg  ){
+            std::sort(Bbeg->second.begin(), Bbeg->second.end());
+        }
+    }
 
+    ui->comboBoxQuantityNucl->setCurrentText("SAF");
+    ui->comboBoxTotalorSourceOrCombNucl->setCurrentIndex(0);
+    ui->comboBoxSourceOrTargetsForBiokinetics->setCurrentIndex(1);
+    ui->comboBoxSources->setCurrentText("Liver");
+    ui->comboBoxTargets->setCurrentText("Brain");
+    ui->comboBoxRadioPharmaceutiques->setCurrentIndex(0);
+    ui->doubleSpinBoxAdministeredActivity->setValue(1);
 }
 void MainWindow::CalculateQuantitiesBasedOnICRPData()
 {
     // quantity, geometry, radionuclide, source, target, value
 
+    ValuesOrderedData.clear();ValuesOrderedData.empty(); // Radionuclide, QuantityValue
+    NamesOrderedData.clear(); // QuantityValue, Radionuclide
+
+    QString Quantity_NAME = ui->comboBoxQuantityNucl->currentText();
+    QString Geometry_NAME = ui->comboBoxPhantom->currentText();
 
     QString RadioTracer_NAME;
-    QString Quantity_NAME;
-    QString Geometry_NAME;
     QString Particle_NAME;
     QString Source_NAME;
     QString Target_NAME;
@@ -8130,101 +8134,256 @@ void MainWindow::CalculateQuantitiesBasedOnICRPData()
     }
 */
 
-    // For the radionuclides we calculate other AE, AF, S values, H, E for each geometry, radionuclide, source target energy
-    for (int dd = 0 ; dd < ui->comboBoxPhantom->count(); dd++) {
+    //QTextStream(stdout) <<"The quantities values will be calculated for "<< ICRPRadioNuclideData.size()<<" radionuclide\n";
 
-        Geometry_NAME = ui->comboBoxPhantom->itemText(dd);
-
-        for ( auto it = ICRPRadioNuclideData.begin(); it != ICRPRadioNuclideData.end(); ++it  ){
-
-            RadioTracer_NAME = it.key();
-
-            //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-
-            for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
-                Particle_NAME = it2.key();
-                //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
-
-                for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-                    Energy_Val = it3.key();
-
-                    double RadiationPerCent = ICRPRadioNuclideData[RadioTracer_NAME][Particle_NAME][Energy_Val];
-                    //QTextStream(stdout) << "Energy_Val " << Energy_Val << " RadiationPerCent " << RadiationPerCent <<"\n";
-
-                    if(ICRPSAFs["AE"][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
-                        //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
-                        GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
-                    }
-
-                    // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
-                    for ( auto DD = ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
-                        Source_NAME  = DD.key();
-                        //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
-
-                        for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
-                            Target_NAME  = CC.key();
-
-                            double vb= ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
-                            if(__isinf(vb) || __isnan(vb) || vb == 0.){continue;}
-
-                            //double CumulatedActivityInSource = RadioTracerSourceOrganResidenceTime[]
-                            //        *RadioTracerSourceTi_Fs_ai_AsPerA0[RadioTracer_NAME][Source_NAME];
-                            double CumulatedActivityInSource = 1*1;
-
-                            // values and variance calculation for chosen quantities
-                            for (int rr = 0 ; rr < DoseCalcsQuantities.size() ; rr++) {
-
-                                double ccc = ICRPSAFs[DoseCalcsQuantities[rr]][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
-
-                                if( !__isnan(ccc) && !__isinf(ccc) && ccc != 0 && ccc != NULL){
-                                    QuatititesRadioNuclidesParticlesCalculatedData[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME] +=
-                                            RadiationPerCent
-                                            *ccc;
-
-                                    QuatititesRadioNuclidesParticlesCalculatedDataInOrgan[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Target_NAME] +=
-                                            RadiationPerCent
-                                            *CumulatedActivityInSource
-                                            *ccc;
-
-
-                                    if(Source_NAME == "Liver" && Target_NAME == "Brain"){
-                                        //QTextStream(stdout) << DoseCalcsQuantities[rr] << " " << RadioTracer_NAME<< " " << Geometry_NAME  << " " << Particle_NAME  << " " << Target_NAME  << "<--" << Source_NAME << " = " << ccc << " Tot: " << QuatititesRadioNuclidesParticlesCalculatedData[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME]
-                                          //                     << " for Organ = " << QuatititesRadioNuclidesParticlesCalculatedDataInOrgan[DoseCalcsQuantities[rr]][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Target_NAME] << "\n";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    double QuantityMinValue;
+    double QuantityMaxValue;
+    if(ui->checkBoxEffDoseLimNucl->isChecked()){
+        QuantityMinValue = ui->doubleSpinBoxMinEffDose->value();
+        if(ui->doubleSpinBoxMaxEffDose->value() == 0.){
+            QuantityMaxValue = 1.7e+308; // maxdouble value
+        }
+        else{
+            QuantityMaxValue = ui->doubleSpinBoxMaxEffDose->value();
         }
     }
 
+    double TMinValue;
+    double TMaxValue;
+    if(ui->checkBoxHalflivesNucl->isChecked()){
+
+        //QTextStream(stdout) << ui->doubleSpinBoxMaxHalflives->value() << " " << ui->doubleSpinBoxMinHalflives->value() << " " << QuantitiesConversionFromDefault["T"][ui->comboBoxPeriodUnit->currentText()] << "\n";
+
+        if(ui->doubleSpinBoxMaxHalflives->value() == 0.){
+            TMaxValue = 1.7e+308;// maxdouble value
+        }
+        else{
+            TMaxValue = ui->doubleSpinBoxMaxHalflives->value()/QuantitiesConversionFromDefault["T"][ui->comboBoxPeriodUnit->currentText()];
+        }
+        TMinValue = ui->doubleSpinBoxMinHalflives->value()/QuantitiesConversionFromDefault["T"][ui->comboBoxPeriodUnit->currentText()];
+    }
+
+    //QTextStream(stdout) <<"Number of readed radionuclides data "<< ICRPRadioNuclideData.size() << " " << ICRPRadioNuclideHalfLives.size()<<"\n";
+
+    //QTextStream(stdout) <<"Filter on Emitters and particles and half-lives min-max\n";
+
+    ui->progressBarReadingCalcData->setRange(0, 100);
+    ui->progressBarReadingCalcData->setValue(0);
+    ui->progressBarReadingCalcData->show();
+    double radincc = 0;
+    double percent = 0;
+
+
+    for ( auto it = ICRPRadioNuclideData.begin(); it != ICRPRadioNuclideData.end(); ++it  ){
+
+        percent = (radincc/ICRPRadioNuclideData.size())*100;
+        ui->progressBarReadingCalcData->setValue(percent);
+        radincc++;
+
+        RadioTracer_NAME = it.key();
+        double Value = 0;
+
+        bool SaveOrNotRadionuclide = true;
+        if(ui->checkBoxHalflivesNucl->isChecked()){
+            if(ICRPRadioNuclideHalfLives[RadioTracer_NAME] >= TMinValue && ICRPRadioNuclideHalfLives[RadioTracer_NAME] < TMaxValue ){
+            }else{
+                SaveOrNotRadionuclide = false;
+            }
+        }
+        if(SaveOrNotRadionuclide == false){
+            continue;
+            //QTextStream(stdout) << "1 Remove RadioTracer_NAME " << RadioTracer_NAME << " because its not emitter of " << pn <<"\n";
+        }
+
+        if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() != 0){
+
+            QString pn="";
+
+            if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 1){
+                pn="gamma";
+            }
+            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 2){
+                pn="e-";
+            }
+            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 3){
+                pn="e+";
+            }
+            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 4){
+                pn="alpha";
+            }
+            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 5){
+                pn="neutron";
+            }
+
+            //QTextStream(stdout) << RadioTracer_NAME << " " << it.value().size() <<"\n";
+            SaveOrNotRadionuclide = false;
+            for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+                //QTextStream(stdout) << it2.key() <<" ";
+                if(pn == it2.key()){
+                    SaveOrNotRadionuclide = true;
+                }
+            }
+        }
+
+        if(SaveOrNotRadionuclide == false){
+            continue;
+            //QTextStream(stdout) << "2 Remove RadioTracer_NAME " << RadioTracer_NAME << " because its not emitter of " << pn <<"\n";
+        }
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            Particle_NAME = it2.key();
+
+            if(!ui->RadPhotonCheckBox->isChecked() && Particle_NAME == "gamma"){
+                continue;
+            }
+            if(!ui->RadelectronCheckBox->isChecked() && Particle_NAME == "e-"){
+                continue;
+            }
+            if(!ui->RadPositronCheckBox->isChecked() && Particle_NAME == "e+"){
+                continue;
+            }
+            if(!ui->RadAlphaCheckBox->isChecked() && Particle_NAME == "alpha"){
+                continue;
+            }
+            if(!ui->RadNeutronCheckBox->isChecked() && Particle_NAME == "neutron"){
+                continue;
+            }
+
+            QString Partial_Particle_NAME = Particle_NAME;
+            if(Particle_NAME == "e+"){
+                Partial_Particle_NAME = "e-";
+            }
+
+            //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                Energy_Val = it3.key();
+
+                //QTextStream(stdout) << "Energy_Val " << Energy_Val << " RadiationPerCent " << RadiationPerCent <<"\n";
+                double ccc;
+                if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 0){ // region source as a target
+                    if(ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val][ui->comboBoxSources->currentText()][ui->comboBoxSources->currentText()] == 0){
+                        //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                        GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Partial_Particle_NAME,Energy_Val);
+                    }
+                    ccc= ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val][ui->comboBoxSources->currentText()][ui->comboBoxSources->currentText()];
+
+                }
+                else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1){ // in one target from all sources
+                    if(ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val]["all"][ui->comboBoxTargets->currentText()] == 0){
+                        //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                        GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Partial_Particle_NAME,Energy_Val);
+                    }
+                    ccc= ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val]["all"][ui->comboBoxTargets->currentText()];
+                }
+                else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 2){ // Combinations
+                    if(ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val][ui->comboBoxSources->currentText()][ui->comboBoxTargets->currentText()] == 0){
+                        //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                        GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Partial_Particle_NAME,Energy_Val);
+                    }
+                    ccc= ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val][ui->comboBoxSources->currentText()][ui->comboBoxTargets->currentText()];
+                }
+                else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 3){ // in all targets from all sources
+                    if(ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val]["all"]["all"] == 0){
+                        //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
+                        GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Partial_Particle_NAME,Energy_Val);
+                    }
+                    ccc= ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val]["all"]["all"];
+                }
+                else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 4){ // in specific targets from specific sources
+                    GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Partial_Particle_NAME,Energy_Val);
+                    ccc= ICRPSAFs[Quantity_NAME][Geometry_NAME][Partial_Particle_NAME][Energy_Val]["specific"]["specific"];
+                }
+
+                Value += ICRPRadioNuclideData[RadioTracer_NAME][Particle_NAME][Energy_Val]
+                        *ccc;
+            }
+        }
+
+        bool save0 = false;
+        bool save1 = false;
+
+        if( !__isnan(Value) && !__isinf(Value) && Value != 0 && Value != NULL){
+            save0 = true;
+        }
+        if(ui->checkBoxEffDoseLimNucl->isChecked()){
+            if(Value >= QuantityMinValue && Value < QuantityMaxValue){
+                save1 = true;
+            }
+        }else{
+            save1 = true;
+        }
+
+        if(save0 == true && save1 == true){
+                ValuesOrderedData["Ascending"].push_back(Value);
+                NamesOrderedData["Ascending"].push_back(RadioTracer_NAME);
+        }
+    }
+
+    ui->progressBarReadingCalcData->setValue(100);
+
+    //QTextStream(stdout) << "The calculation terminated, showing data in table" << "\n";
+
+    std::sort(ValuesOrderedData["Ascending"].begin(), ValuesOrderedData["Ascending"].end());
+
+    // show the results
+    //QTextStream(stdout) << "\n\n********** Values of "<< ui->comboBoxQuantityNucl->currentText() << " in " << ui->comboBoxPhantom->currentText()<< ":\n\n";
+
+    bool isin = false;
+    for(int gg = 0 ; gg < (int)ValuesOrderedData["Ascending"].size() ; gg++){
+        //QTextStream(stdout) << NamesOrderedData["Ascending"] << " T(s):" << ICRPRadioNuclideHalfLives[NamesOrderedData["Ascending"] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
+        if(ValuesOrderedData["Ascending"][gg] != 0.){ isin = true;}
+    }
+
+    if(isin == false){
+        QMessageBox::information(this, tr(""), "No data were registered for this configuration, change emitters, particles, "+ui->comboBoxTotalorSourceOrCombNucl->currentText()+", "+ui->comboBoxPhantom->currentText()+", target "+ui->comboBoxTargets->currentText()+", source "+ui->comboBoxSources->currentText()+", or "+ ui->comboBoxQuantityNucl->currentText() +" not calculated for this configuration");
+        ui->tableWidgetForOneGraph->clear();
+        ui->tableWidgetForOneGraph->setRowCount(0);
+        ui->tableWidgetForOneGraph->setColumnCount(0);
+        return;
+    }
+
+
+    for(int gg = (int)ValuesOrderedData["Ascending"].size()-1 ; gg > -1 ; gg--){
+        //QTextStream(stdout) << NamesOrderedData["Ascending"] << " T(s):" << ICRPRadioNuclideHalfLives[NamesOrderedData["Ascending"] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
+        ValuesOrderedData["Descending"].push_back(ValuesOrderedData["Ascending"][gg]);
+        NamesOrderedData["Descending"].push_back(NamesOrderedData["Ascending"][gg]);
+    }
+
+    //IsICRPCalculationTerminated = true;
+    //GenerateDataInTableView();
 
 }
 void MainWindow::GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(QString ParticleName, double Energy){
 
-    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  )
-    {
-        for ( auto Bbeg = Abeg->second.begin(); Bbeg != Abeg->second.end(); ++Bbeg  ){
-            std::sort(Bbeg->second.begin(), Bbeg->second.end());
+    QString Geometry_NAME = ui->comboBoxPhantom->currentText();
+    QString Quantity_Name = ui->comboBoxQuantityNucl->currentText();
+    QString Source_NAME = ui->comboBoxSources->currentText();
+    QString Target_NAME = ui->comboBoxTargets->currentText();
+
+    double Val1 = 0;
+    double Val2 = 0;
+    double Val = 0;
+    double Energy1;
+    double Energy2;
+
+    Energy1 = 0;
+    Energy2 = 0;
+
+    if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 0 || ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 2){ // region source as a target
+
+        if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 0){
+            Target_NAME = Source_NAME;
         }
-    }
 
-    double Energy1 = 0;
-    double Energy2 = 0;
-
-    //for(int gg = 0 ; gg < (int)OrgansNameVector.size() ; gg++){
-    for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  ){
-
-        for(int ss = 0 ; ss < Abeg->second[ParticleName].size() ; ss++){
+        for(int ss = 0 ; ss < SourceParticleEnergyValues[Source_NAME][ParticleName].size() ; ss++){
 
             int ff = ss+1;
 
-            int da = Abeg->second[ParticleName].size()-1; if(ff == da){break;}
+            int da = SourceParticleEnergyValues[Source_NAME][ParticleName].size()-1; if(ff == da){break;}
 
-            double E1 = Abeg->second[ParticleName][ss];
-            double E2 = Abeg->second[ParticleName][ff];
+            double E1 = SourceParticleEnergyValues[Source_NAME][ParticleName][ss];
+            double E2 = SourceParticleEnergyValues[Source_NAME][ParticleName][ff];
             //QTextStream(stdout) << ss << " " << E1 << " " << ff << " " << E2 << "\n" ;
 
             if(E1 < Energy && Energy < E2){
@@ -8236,78 +8395,177 @@ void MainWindow::GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(QStri
             }
         }
 
-        for (int dd = 0 ; dd < ui->comboBoxPhantom->count(); dd++) {
+        if(Quantity_Name == "AE"){
+            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy1);
+            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy2);
+        }
+        else if(Quantity_Name == "AF"){
+            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+        }
+        else if(Quantity_Name == "SAF"){
+            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME];
+            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME];
+        }
+        else if(Quantity_Name == "S"){
+            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1);
+            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2);
+        }
+        else if(Quantity_Name == "H"){
+            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
+            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
+        }
+        else if(Quantity_Name == "E"){
+            Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(Target_NAME);
+            Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(Target_NAME);
+        }
 
-            QString Geometry_NAME = ui->comboBoxPhantom->itemText(dd);
+        Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+
+        if( !__isnan(Val) && !__isinf(Val) && Val != 0 && Val != NULL){
+            ICRPSAFs[Quantity_Name][Geometry_NAME][ParticleName][Energy][Source_NAME][Target_NAME] = Val;
+        }
+    }
+    else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1 || ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 3){
+
+        for ( auto Abeg = SourceParticleEnergyValues.begin(); Abeg != SourceParticleEnergyValues.end(); ++Abeg  ){
+
+            for(int ss = 0 ; ss < Abeg->second[ParticleName].size() ; ss++){
+
+                int ff = ss+1;
+
+                int da = Abeg->second[ParticleName].size()-1; if(ff == da){break;}
+
+                double E1 = Abeg->second[ParticleName][ss];
+                double E2 = Abeg->second[ParticleName][ff];
+                //QTextStream(stdout) << ss << " " << E1 << " " << ff << " " << E2 << "\n" ;
+
+                if(E1 < Energy && Energy < E2){
+                    Energy1 = E1;
+                    Energy2 = E2;
+
+                    //QTextStream(stdout) << " ParticleName " << ParticleName << " Energy1 " << Energy1 << " Energy " << Energy << " Energy2 " << Energy2 << "\n" ;
+                    break;
+                }
+            }
 
             for ( auto VVbeg = RegionParameterValueMap[Geometry_NAME]["Mass"].begin(); VVbeg != RegionParameterValueMap[Geometry_NAME]["Mass"].end(); ++VVbeg  ){
+                Target_NAME = VVbeg.key();
 
-                QString OrganName = VVbeg.key();
+                if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1 && Target_NAME != Target_NAME){
+                    continue;
+                }
+                if(Quantity_Name == "AE"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy1);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy2);
+                }
+                else if(Quantity_Name == "AF"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+                }
+                else if(Quantity_Name == "SAF"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][Target_NAME];
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][Target_NAME];
+                }
+                else if(Quantity_Name == "S"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][Target_NAME]*(Energy1);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][Target_NAME]*(Energy2);
+                }
+                else if(Quantity_Name == "H"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
+                }
+                else if(Quantity_Name == "E"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(Target_NAME);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(Target_NAME);
+                }
 
-                //for(int vc = 0 ; vc < (int)DoseCalcsQuantities.size() ; vc++){
-                //    double Val1 = ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName];
-                //    double Val2 = ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName];
-                //    double Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                //    ICRPSAFs[DoseCalcsQuantities[vc]][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-                //}
-
-                double Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName];
-                double Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName];
-                double Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-                //if(Abeg->first == "Liver" && OrganName == "Brain"){
-                //QTextStream(stdout) << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " val1 " << Val1 << " val2 " << Val2 << " val " << Val << " " << Abeg->first << " " << OrganName  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(OrganName) << "\n";
-                //}
-
-                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]*Energy1);
-                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]*Energy2);
-                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                ICRPSAFs["AE"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]);
-                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(RegionParameterValueMap[Geometry_NAME]["Mass"][OrganName]);
-                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                ICRPSAFs["AF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1);
-                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2);
-                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                ICRPSAFs["S"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
-                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
-                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                ICRPSAFs["H"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-                Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Abeg->first][OrganName]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(OrganName);
-                Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Abeg->first][OrganName]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(OrganName);
-                Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
-                ICRPSAFs["E"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] = Val;
-
-                if(Abeg->first == "Liver" && OrganName == "Brain"){
-
-                    /*
-            //QTextStream(stdout) << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " " << Abeg->first << " " << OrganName  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(OrganName) <<
-                                   " SAF " << ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " AF " << ICRPSAFs["AF"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " AE " << ICRPSAFs["AE"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " S " << ICRPSAFs["S"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " H " << ICRPSAFs["H"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   " E " << ICRPSAFs["E"][Geometry_NAME][ParticleName][Energy][Abeg->first][OrganName] <<
-                                   "\n" ;
-*/            }
+                double vv = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                if( !__isnan(vv) && !__isinf(vv) && vv != 0 && vv != NULL){
+                    Val += vv;
+                }
             }
+
+            if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1){
+                ICRPSAFs[Quantity_Name][Geometry_NAME][ParticleName][Energy]["all"][Target_NAME] = Val;
+            }
+            else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 3){
+                ICRPSAFs[Quantity_Name][Geometry_NAME][ParticleName][Energy]["all"]["all"] = Val;
+            }
+            //QTextStream(stdout) << Quantity_Name << " " << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " val1 " << Val1 << " val2 " << Val2 << " val " << Val << " " << Abeg->first << " " << Target_NAME  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(Target_NAME) << "\n";
         }
+    }
+    else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 4){
+
+        QStringList srcs = ui->lineEditSourcesToUse->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+        QStringList trgs = ui->lineEdittargetsToUse->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+        for(int a = 0 ; a < srcs.size() ; a++){
+
+            Source_NAME = srcs[a];
+            for(int ss = 0 ; ss < SourceParticleEnergyValues[Source_NAME][ParticleName].size() ; ss++){
+
+                int ff = ss+1;
+
+                int da = SourceParticleEnergyValues[Source_NAME][ParticleName].size()-1; if(ff == da){break;}
+
+                double E1 = SourceParticleEnergyValues[Source_NAME][ParticleName][ss];
+                double E2 = SourceParticleEnergyValues[Source_NAME][ParticleName][ff];
+                //QTextStream(stdout) << ss << " " << E1 << " " << ff << " " << E2 << "\n" ;
+
+                if(E1 < Energy && Energy < E2){
+                    Energy1 = E1;
+                    Energy2 = E2;
+
+                    //QTextStream(stdout) << " ParticleName " << ParticleName << " Energy1 " << Energy1 << " Energy " << Energy << " Energy2 " << Energy2 << "\n" ;
+                    break;
+                }
+            }
+
+            for(int b = 0 ; b < trgs.size() ; b++){
+
+                Target_NAME = trgs[b];
+
+                if(Quantity_Name == "AE"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy1);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy2);
+                }
+                else if(Quantity_Name == "AF"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+                }
+                else if(Quantity_Name == "SAF"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME];
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME];
+                }
+                else if(Quantity_Name == "S"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2);
+                }
+                else if(Quantity_Name == "H"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
+                }
+                else if(Quantity_Name == "E"){
+                    Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(Target_NAME);
+                    Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(Target_NAME);
+                }
+
+                double vv = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+                if( !__isnan(vv) && !__isinf(vv) && vv != 0 && vv != NULL){
+                    Val += vv;
+                }
+            }
+
+            ICRPSAFs[Quantity_Name][Geometry_NAME][ParticleName][Energy]["specific"]["specific"] = Val;
+            //QTextStream(stdout) << Quantity_Name << " " << Geometry_NAME << " " << ParticleName << " E1:" << Energy1 << " E:" << Energy << " E2:" << Energy2 << " val1 " << Val1 << " val2 " << Val2 << " val " << Val << " " << srcs[a] << " " << Target_NAME  << " WR " << GenerateRadiationFactor(ParticleName,Energy) << " WT " << GenerateTissueFactor(Target_NAME) << "\n";
+        }
+
     }
 }
 double MainWindow::GenerateRadiationFactor(QString ParticleName, double Energy){ // enerrgy in MeV
 
-    double factor = RadiationFactorMap[ParticleName][Energy];
-
-    if(factor == 0.){
-        factor = 1;
-    }
+    double factor = 1;
 
     if(ParticleName == "gamma"){
         factor = 1; // all energies
@@ -8371,223 +8629,8 @@ double MainWindow::GenerateTissueFactor(QString OrganName){
 }
 void MainWindow::on_pushButtonGetResultsNucl_clicked()
 {
-
-    ValuesOrderedData.clear(); // Radionuclide, QuantityValue
-    ValueRadioNuclideOrderedData.clear(); // QuantityValue, Radionuclide
-
-    QString RadioTracer_NAME;
-    QString Quantity_NAME;
-    QString Geometry_NAME;
-    QString Particle_NAME;
-    QString Source_NAME;
-    QString Target_NAME;
-    double Energy_Val;
-    double Value;
-
-    double TMinValue;
-    double TMaxValue;
-    if(ui->checkBoxHalflivesNucl->isChecked()){
-
-        //QTextStream(stdout) << ui->doubleSpinBoxMaxHalflives->value() << " " << ui->doubleSpinBoxMinHalflives->value() << " " << QuantitiesConversionFromDefault["T"][ui->comboBoxPeriodUnit->currentText()] << "\n";
-
-        if(ui->doubleSpinBoxMaxHalflives->value() == 0.){
-            TMaxValue = 1.7e+308;// maxdouble value
-        }
-        else{
-            TMaxValue = ui->doubleSpinBoxMaxHalflives->value()/QuantitiesConversionFromDefault["T"][ui->comboBoxPeriodUnit->currentText()];
-        }
-        TMinValue = ui->doubleSpinBoxMinHalflives->value()/QuantitiesConversionFromDefault["T"][ui->comboBoxPeriodUnit->currentText()];
-    }
-
-
-    double QuantityMinValue;
-    double QuantityMaxValue;
-    if(ui->checkBoxEffDoseLimNucl->isChecked()){
-        QuantityMinValue = ui->doubleSpinBoxMinEffDose->value();
-        if(ui->doubleSpinBoxMaxEffDose->value() == 0.){
-            QuantityMaxValue = 1.7e+308; // maxdouble value
-        }
-        else{
-            QuantityMaxValue = ui->doubleSpinBoxMaxEffDose->value();
-        }
-    }
-
-    QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>>>> EditedQuatititesRadioNuclidesParticlesCalculatedData = QuatititesRadioNuclidesParticlesCalculatedData; // Quantity, Geometry, Radionuclide, organ, value
-
-    for ( auto it2 = EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].begin(); it2 != EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].end(); ++it2  ){
-
-        RadioTracer_NAME = it2.key();
-        if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 0){
-
-        }
-        else {
-            QString pn="";
-            if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 1){
-                pn="gamma";
-            }
-            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 2){
-                pn="e-";
-            }
-            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 3){
-                pn="e+";
-            }
-            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 4){
-                pn="alpha";
-            }
-            else if(ui->comboBoxRedionuclidesRadEmmiterType->currentIndex() == 5){
-                pn="neutron";
-            }
-
-            bool isin = false;
-            for (int dd = 0 ; dd < RadionuclidesParticles[RadioTracer_NAME].size(); dd++) {
-                if(pn == RadionuclidesParticles[RadioTracer_NAME][dd]){
-                    isin = true;break;
-                }
-            }
-            if(isin == false){
-                EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME].clear();
-            }
-        }
-
-        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-    }
-
-    // to filter the calculated data with particles.
-    for ( auto it2 = EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].begin(); it2 != EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].end(); ++it2  ){
-
-        RadioTracer_NAME = it2.key();
-        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-
-        if(!ui->RadPhotonCheckBox->isChecked()){
-            EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["gamma"].clear();
-        }
-        else if(!ui->RadelectronCheckBox->isChecked()){
-            EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["e-"].clear();
-        }
-        else if(!ui->RadPositronCheckBox->isChecked()){
-            EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["e+"].clear();
-        }
-        else if(!ui->RadAlphaCheckBox->isChecked()){
-            EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["alpha"].clear();
-        }
-        else if(!ui->RadNeutronCheckBox->isChecked()){
-            EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["neutron"].clear();
-        }
-
-    }
-
-    QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>>>> EditedQuatititesRadioNuclidesParticlesCalculatedData2 = EditedQuatititesRadioNuclidesParticlesCalculatedData; // Quantity, Geometry, QuatititesRadioNuclidesParticlesCalculatedDataRadionuclide, organ, value
-
-    // to create data for sources, combinations and phantoms.
-    for ( auto it2 = EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].begin(); it2 != EditedQuatititesRadioNuclidesParticlesCalculatedData[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].end(); ++it2  ){
-
-        RadioTracer_NAME = it2.key();
-        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-
-        for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-
-            Particle_NAME = it3.key();
-            //QTextStream(stdout) << "Energy_Val " << Energy_Val <<"\n";
-
-            for ( auto it4 = it3.value().begin(); it4 != it3.value().end(); ++it4  ){
-
-                Source_NAME  = it4.key();
-                //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
-
-                for ( auto it5 = it4.value().begin(); it5 != it4.value().end(); ++it5  ){
-
-                    Target_NAME  = it5.key();
-                    //QTextStream(stdout) << "Target_NAME " << Target_NAME << "\n";
-                    Value  = it5.value();
-
-                    //QTextStream(stdout) << ui->comboBoxQuantityNucl->currentText() << " " << ui->comboBoxPhantom->currentText() <<  " RadioTracer_NAME " << RadioTracer_NAME << " Particle_NAME " << Particle_NAME << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " Value " << Value <<"\n";
-
-                    if( !__isnan(Value) && !__isinf(Value) && Value != 0 && Value != NULL){
-
-                        // for Phantom
-                        EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"]["all"]["all"] += Value;
-                        // for Targets
-                        EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"]["all"][Target_NAME] += Value;
-                        // for Combinations and Sources
-                        EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"][Source_NAME][Target_NAME] += Value;
-                    }
-                }
-            }
-        }
-    }
-
-
-    // to filter the calculated data with quantity value and half live limits.
-    for ( auto it0 = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].begin(); it0 != EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()].end(); ++it0  ){
-
-        RadioTracer_NAME = it0.key();
-        //QTextStream(stdout) << "RadioTracer_NAME " << RadioTracer_NAME <<"\n";
-
-        if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 0){ // region source as a target
-            Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"][ui->comboBoxSources->currentText()][ui->comboBoxSources->currentText()];
-        }
-        else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 1){ // in one target from all sources
-            Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"]["all"][ui->comboBoxTargets->currentText()];
-        }
-        else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 2){ // Combinations
-            Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"][ui->comboBoxSources->currentText()][ui->comboBoxTargets->currentText()];
-        }
-        else if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 2){ // in all targets from all sources
-            Value = EditedQuatititesRadioNuclidesParticlesCalculatedData2[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxPhantom->currentText()][RadioTracer_NAME]["all"]["all"]["all"];
-        }
-
-        //QTextStream(stdout) << ui->comboBoxQuantityNucl->currentText() << " " << ui->comboBoxPhantom->currentText() <<  " RadioTracer_NAME " << RadioTracer_NAME << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " Value in default: " << Value  << " In " << ui->comboBoxEffDoseUnit->currentText() << ": "<< Value/QuantitiesConversionFromDefault[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxEffDoseUnit->currentText()] <<"\n";
-
-        bool save0 = false;
-        bool save1 = false;
-        bool save2 = false;
-
-        if( !__isnan(Value) && !__isinf(Value) && Value != 0 && Value != NULL){
-            save0 = true;
-        }
-        if(ui->checkBoxEffDoseLimNucl->isChecked()){
-            if(Value >= QuantityMinValue && Value < QuantityMaxValue){
-                save1 = true;
-            }
-        }else{
-            save1 = true;
-        }
-        if(ui->checkBoxHalflivesNucl->isChecked()){
-            if(ICRPRadioNuclideHalfLives[RadioTracer_NAME] >= TMinValue && ICRPRadioNuclideHalfLives[RadioTracer_NAME] < TMaxValue ){
-                save2 = true;
-            }
-        }else{
-            save2 = true;
-        }
-
-        if(save0 == true && save1 == true && save2 == true){
-            ValuesOrderedData["Ascending"].push_back(Value);
-            ValueRadioNuclideOrderedData[Value] = RadioTracer_NAME;
-        }
-    }
-
-    std::sort(ValuesOrderedData["Ascending"].begin(), ValuesOrderedData["Ascending"].end());
-
-    // show the results
-    //QTextStream(stdout) << "\n\n********** Values of "<< ui->comboBoxQuantityNucl->currentText() << " in " << ui->comboBoxPhantom->currentText()<< ":\n\n";
-
-    bool isin = false;
-    for(int gg = 0 ; gg < (int)ValuesOrderedData["Ascending"].size() ; gg++){
-        //QTextStream(stdout) << ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]] << " T(s):" << ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]]] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
-        if(ValuesOrderedData["Ascending"][gg] != 0.){ isin = true;}
-    }
-
-    if(isin == false){
-        QMessageBox::information(this, tr(""), "No data were registered for this configuration, change emitters, particles, "+ui->comboBoxTotalorSourceOrCombNucl->currentText()+", "+ui->comboBoxPhantom->currentText()+", target "+ui->comboBoxTargets->currentText()+", source "+ui->comboBoxSources->currentText());
-        return;
-    }
-
-    for(int gg = (int)ValuesOrderedData["Ascending"].size()-1 ; gg > -1 ; gg--){
-        //QTextStream(stdout) << ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]] << " T(s):" << ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[ValuesOrderedData["Ascending"][gg]]] << " " << ValuesOrderedData["Ascending"][gg] << " " << ui->comboBoxEffDoseUnit->currentText() << "\n";
-        ValuesOrderedData["Descending"].push_back(ValuesOrderedData["Ascending"][gg]);
-    }
-
-    GenerateDataInTableView();
+    //QFuture<void> future = QtConcurrent::run(this, &MainWindow::CalculateQuantitiesBasedOnICRPData);
+    CalculateQuantitiesBasedOnICRPData();
 }
 void MainWindow::on_pushButtonReverseData_clicked()
 {
@@ -8596,13 +8639,16 @@ void MainWindow::on_pushButtonReverseData_clicked()
 void MainWindow::GenerateDataInTableView(){ // energy in MeV
 
     QVector<double> Data;
+    QVector<QString> Data1;
 
-    if(ui->pushButtonReverseData->text() == "Ascending"){
-        ui->pushButtonReverseData->setText("Descending");
+    if(ui->pushButtonReverseData->text() == "Show in Table (Ascending)"){
+        ui->pushButtonReverseData->setText("Show in Table (Descending)");
         Data = ValuesOrderedData["Descending"];
+        Data1 = NamesOrderedData["Descending"];
     }else {
-        ui->pushButtonReverseData->setText("Ascending");
+        ui->pushButtonReverseData->setText("Show in Table (Ascending)");
         Data = ValuesOrderedData["Ascending"];
+        Data1 = NamesOrderedData["Ascending"];
     }
 
     ui->tableWidgetForOneGraph->clear();
@@ -8627,31 +8673,13 @@ void MainWindow::GenerateDataInTableView(){ // energy in MeV
     for(int row = 0 ; row < Data.size(); row++){
         // Insert row
 
-        double valuee = ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]];
+        double valuee = ICRPRadioNuclideHalfLives[Data1[row]];
         QString Tval = QString::number(valuee)+"s";
 
-        //QTextStream(stdout) << row << "  "<< Data[row] << " " << ValueRadioNuclideOrderedData[Data[row]] << "\n";
+        //QTextStream(stdout) << row << "  "<< Data[row] << " " << Data1[row] << "\n";
 
-        /*
-        if(600 < ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]] <= 3600){
-            valuee = ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]]/QuantitiesConversionFromDefault["T"]["min"];
-            Tval = QString::number(valuee)+"min";
-        }
-        else if( 3600 < ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]] <= 864000){
-            valuee = ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]]/QuantitiesConversionFromDefault["T"]["h"];
-            Tval = QString::number(valuee)+"h";
-        }
-        else if( 864000 < ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]] <= 60315360000){
-            valuee = ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]]/QuantitiesConversionFromDefault["T"]["d"];
-            Tval = QString::number(valuee)+"d";
-        }
-        else if(ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]] > 60315360000){
-            valuee = ICRPRadioNuclideHalfLives[ValueRadioNuclideOrderedData[Data[row]]]/QuantitiesConversionFromDefault["T"]["y"];
-            Tval = QString::number(valuee)+"y";
-        }
-        */
         ui->tableWidgetForOneGraph->insertRow(row);
-        ui->tableWidgetForOneGraph->setItem(row,0, new QTableWidgetItem(ValueRadioNuclideOrderedData[Data[row]]+" ("+Tval+")"));
+        ui->tableWidgetForOneGraph->setItem(row,0, new QTableWidgetItem(Data1[row]+" ("+Tval+")"));
         ui->tableWidgetForOneGraph->setItem(row,1, new QTableWidgetItem(QString::number(Data[row]/QuantitiesConversionFromDefault[ui->comboBoxQuantityNucl->currentText()][ui->comboBoxEffDoseUnit->currentText()])));
     }
 
@@ -8667,6 +8695,55 @@ void MainWindow::on_comboBoxQuantityNucl_currentTextChanged(const QString &arg1)
     ui->comboBoxEffDoseUnit->addItems(QuantitiesUnitsLists[arg1]);
     ui->checkBoxEffDoseLimNucl->setText(ui->comboBoxQuantityNucl->currentText()+" limits");
 }
+void MainWindow::on_comboBoxSources_currentTextChanged(const QString &arg1)
+{
+    if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 4 || ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 3){
+        bool IsIn = false;
+        QStringList args = ui->lineEditSourcesToUse->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+        for(int dd=0; dd < args.size();dd++){ if(args[dd] == arg1){ IsIn = true;}}
+        if(IsIn == false){
+
+            if(arg1 != ""){
+                QString nn = ui->lineEditSourcesToUse->text();
+                ui->lineEditSourcesToUse->setText(nn + " " + arg1);
+            }
+        }
+    }
+}
+void MainWindow::on_comboBoxTargets_currentTextChanged(const QString &arg1)
+{
+    if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 4){
+        bool IsIn = false;
+        QStringList args = ui->lineEdittargetsToUse->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+        for(int dd=0; dd < args.size();dd++){ if(args[dd] == arg1){ IsIn = true;}}
+        if(IsIn == false){
+
+            if(arg1 != ""){
+                QString nn = ui->lineEdittargetsToUse->text();
+                ui->lineEdittargetsToUse->setText(nn + " " + arg1);
+            }
+        }
+    }
+}
+void MainWindow::on_comboBoxTotalorSourceOrCombNucl_currentTextChanged(const QString &arg1)
+{
+    if(ui->comboBoxTotalorSourceOrCombNucl->currentIndex() == 4){
+        ui->lineEditSourcesToUse->setVisible(true);
+        ui->lineEdittargetsToUse->setVisible(true);
+    }else{
+        ui->lineEditSourcesToUse->setVisible(false);
+        ui->lineEdittargetsToUse->setVisible(false);
+    }
+}
+void MainWindow::on_comboBoxSourceOrTargetsForBiokinetics_currentTextChanged(const QString &arg1)
+{
+    if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 3){
+        ui->lineEditSourcesToUse->setVisible(true);
+    }else{
+        ui->lineEditSourcesToUse->setVisible(false);
+    }
+}
+
 void MainWindow::on_pushButtonSaveTableInPDF_clicked()
 {
 
@@ -8779,15 +8856,67 @@ void MainWindow::on_pushButtonChangeMasses_clicked()
 void MainWindow::on_pushButtonSaveMasses_clicked()
 {
     int rowNum = ui->tableWidgetForOneGraph->rowCount();
+    QMap<QString,double> TargetMassMap = RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"];
+
     for(int ii = 0; ii < rowNum; ii++){
 
-        RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"][ui->tableWidgetForOneGraph->item( ii, 0 )->text()] = ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble();
-     /*QTextStream(stdout) << ii <<" For Phantom with " << ui->comboBoxPhantom->currentText()
+    /*QTextStream(stdout) << ii <<" For Phantom with " << ui->comboBoxPhantom->currentText()
                             <<" organ " << ui->tableWidgetForOneGraph->item( ii, 0 )->text()
                            <<" mass " << ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble()
                           << "\n";
     */
+
+        TargetMassMap[ui->tableWidgetForOneGraph->item( ii, 0 )->text()] = ui->tableWidgetForOneGraph->item( ii, 1 )->text().toDouble();
     }
+
+    QMap<QString,QMap<QString,QMap<double,QMap<QString,QMap<QString,double>>>>> SAFMap = ICRPSAFs["SAF"];
+
+    ui->progressBarReadingCalcData->setRange(0, 100);
+    ui->progressBarReadingCalcData->setValue(0);
+    ui->progressBarReadingCalcData->show();
+    double radincc = 0;
+    double percent = 0;
+
+    for ( auto it = SAFMap.begin(); it != SAFMap.end(); ++it  ){
+
+        QString Geometry_NAME = it.key();
+        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            QString Particle_NAME = it2.key();
+            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                double Energy_Val = it3.key();
+                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
+
+                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
+                    QString Source_NAME  = DD.key();
+                    //                    QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
+
+                    for ( auto CC = DD.value().begin(); CC != DD.value().end(); ++CC  ){
+                        QString  Target_NAME  = CC.key();
+                        double SAFValue  = CC.value();
+
+                        percent = (radincc/ICRPRadioNuclideData.size())*100;
+                        ui->progressBarReadingCalcData->setValue(percent);
+                        radincc++;
+
+                        ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME] = SAFValue * RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"][Target_NAME]/TargetMassMap[Target_NAME];
+
+
+                        //                        QTextStream(stdout) << "------Target_NAME " << Target_NAME <<"\n";
+                        //                        QTextStream(stdout) << "-------SAFValue " << SAFValue <<"\n";
+                        //if(Source_NAME == "Liver" && Target_NAME == "Brain"){
+                            //QTextStream(stdout) << " Geometry_NAME " << Geometry_NAME << " Particle_NAME " << Particle_NAME << " Energy_Val " << Energy_Val << " Source_NAME " << Source_NAME << " Target_NAME " << Target_NAME << " SAFValue " << SAFValue <<"\n";
+                        //}
+                    }
+                }
+            }
+        }
+    }
+    TargetMassMap = RegionParameterValueMap[ui->comboBoxPhantom->currentText()]["Mass"];
+    ui->progressBarReadingCalcData->setValue(100);
 
     ui->tableWidgetForOneGraph->clear();
     ui->tableWidgetForOneGraph->setRowCount(0);
@@ -8965,10 +9094,83 @@ void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
 
     // For the radionuclides we calculate other AE, AF, S values, H, E for each geometry, radionuclide, source target energy
 
+
+    // check if the specific sources are in the radiotracer biokinetics
+    if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 3 ){ // from a specifc sources
+        QStringList srcs = ui->lineEditSourcesToUse->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+        QString nain = "";
+        for(int b=0; b < srcs.size();b++){
+            bool isin = false;
+            for ( auto DD = RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].begin(); DD != RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].end(); ++DD  ){
+                Source_NAME  = DD.key();
+                if(srcs[b] == Source_NAME){
+                    isin = true;
+                    break;
+                }
+            }
+            if(isin == false){
+                nain += srcs[b] + " ";
+            }
+        }
+        if(nain != ""){
+            QMessageBox::information(this, tr("Warning"), "The specific sources ("+ nain +")are not defined in the biokinetics data of "+ ui->comboBoxRadioPharmaceutiques->currentText());
+        }
+    }
+
+
+    // check if the source region name in the biokinetics is defined in the SAF data file with that name
+    // modify the name to be used in all session until it is modified by edit biokinetics data button
+    QMap<QString,QMap<QString,QMap<QString,double>>> RadioTracerSourceOrganResidenceTime1 = RadioTracerSourceOrganResidenceTime;
+    for ( auto DD = RadioTracerSourceOrganResidenceTime1[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].begin(); DD != RadioTracerSourceOrganResidenceTime1[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].end(); ++DD  ){
+        Source_NAME = DD.key();
+
+        bool isin = false;
+        for ( auto CC = SourceParticleEnergyValues.begin(); CC != SourceParticleEnergyValues.end(); ++CC  ){
+            if(CC->first == Source_NAME){
+                QTextStream(stdout) << " Source_NAME " << Source_NAME << " CC->first " << CC->first <<"\n";
+                isin = true; break;
+            }
+        }
+        if(isin == false){
+
+            QDialog * d = new QDialog(); d->setWindowTitle("Source Region Name Not Defined");
+            QVBoxLayout * vbox = new QVBoxLayout();
+            QLineEdit * DefinedSourceNameInBiokinetics = new QLineEdit(); DefinedSourceNameInBiokinetics->setText(Source_NAME); vbox->addWidget(DefinedSourceNameInBiokinetics);
+
+            QComboBox * CorrespondingSourceNameInSAFFiles = new QComboBox();
+            for ( auto it = SourceParticleEnergyValues.begin(); it != SourceParticleEnergyValues.end(); ++it  ){CorrespondingSourceNameInSAFFiles->addItem(it->first);}
+            vbox->addWidget(CorrespondingSourceNameInSAFFiles);
+
+            QDialogButtonBox * buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+            QObject::connect(buttonBox, SIGNAL(accepted()), d, SLOT(accept()));
+            QObject::connect(buttonBox, SIGNAL(rejected()), d, SLOT(reject()));
+            vbox->addWidget(buttonBox);
+            d->setLayout(vbox);
+
+            int result = d->exec();
+            if(result == QDialog::Accepted)
+            {
+
+                QTextStream(stdout) << "Source_NAME " << Source_NAME << " Changed to " << CorrespondingSourceNameInSAFFiles->currentText() <<"\n";
+
+                RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME] = NULL;
+                RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].remove(Source_NAME);
+                RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][CorrespondingSourceNameInSAFFiles->currentText()] = RadioTracerSourceOrganResidenceTime1[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME];
+            }
+
+        }
+    }
+
+
     for ( auto it2 = ICRPRadioNuclideData[RadioTracer_NAME].begin(); it2 != ICRPRadioNuclideData[RadioTracer_NAME].end(); ++it2  ){
 
         Particle_NAME = it2.key();
-        QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
+        QString Partial_Particle_NAME = Particle_NAME;
+        if(Particle_NAME == "e+"){
+            Partial_Particle_NAME = "e-";
+        }
+
+        //QTextStream(stdout) << "Particle_NAME " << Particle_NAME <<"\n";
 
         bool isin = false;
         for(int b=0; b < Particles.size();b++){ if(Particles[b] == Particle_NAME){isin = true; break;}}
@@ -8978,41 +9180,44 @@ void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
             Energy_Val = it3.key();
             double RadiationPerCent = ICRPRadioNuclideData[RadioTracer_NAME][Particle_NAME][Energy_Val];
 
-            QTextStream(stdout) << "Energy_Val " << Energy_Val << " RadiationPerCent " << RadiationPerCent <<"\n";
-
-            if(ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val].size() == 0){
-                //QTextStream(stdout) << "\n-----> For Radiotracer " << RadioTracer_NAME << ", the data for particle "<< Particle_NAME << " with energy "<< Energy_Val << " are not found (this source configuration not simulated), the related quantities values will be generated by interpolating the already existed data of " << Particle_NAME << " with energies surround the " << Energy_Val << " from the existing source regions." << "\n";
-                GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(Particle_NAME,Energy_Val);
-            }
-
             // this is to provide results for all sources that can user simulate without taking into account the RadioTracer source Organs
 
             for ( auto DD = RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].begin(); DD != RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME].end(); ++DD  ){
-
-            //for ( auto DD = ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val].begin(); DD != ICRPSAFs["SAF"][Geometry_NAME][Particle_NAME][Energy_Val].end(); ++DD  ){
                 Source_NAME  = DD.key();
-                //QTextStream(stdout) << "Source_NAME " << Source_NAME <<"\n";
+
+                // check if the specific sources are in the radiotracer biokinetics
+                if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 3 ){ // from a specifc sources
+                    bool isin = false;
+                    QStringList srcs = ui->lineEditSourcesToUse->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+                    for(int b=0; b < srcs.size();b++){
+                        Source_NAME  = DD.key();
+                        if(srcs[b] == Source_NAME){
+                            isin = true;
+                            break;
+                        }
+                    }
+                    if(isin == false){
+                        continue;
+                    }
+                }
 
                 double CumulatedActivityInSource = ui->doubleSpinBoxAdministeredActivity->value()*QuantitiesConversionFromDefault["A"][ui->comboBoxActivityAdministered->currentText()]*RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME]/QuantitiesConversionFromDefault["T"]["h"];
-                QTextStream(stdout) << " A " << ui->doubleSpinBoxAdministeredActivity->value()/QuantitiesConversionFromDefault["A"][ui->comboBoxActivityAdministered->currentText()]
-                        << " Tho of source " << Source_NAME << " " << RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME]/QuantitiesConversionFromDefault["T"]["h"]
-                        << " CumulatedActivityInSource " << CumulatedActivityInSource <<"\n";
+
+                //QTextStream(stdout) << " A " << ui->doubleSpinBoxAdministeredActivity->value()/QuantitiesConversionFromDefault["A"][ui->comboBoxActivityAdministered->currentText()]
+                  //      << " Tho of source " << Source_NAME << " " << RadioTracerSourceOrganResidenceTime[ui->comboBoxRadioPharmaceutiques->currentText()][RadioTracer_NAME][Source_NAME]/QuantitiesConversionFromDefault["T"]["h"]
+                    //    << " CumulatedActivityInSource " << CumulatedActivityInSource <<"\n";
 
                 if( !__isnan(CumulatedActivityInSource) && !__isinf(CumulatedActivityInSource) && CumulatedActivityInSource != 0 && CumulatedActivityInSource != NULL){}
                 else{continue;}
 
-                for ( auto CC = ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME].begin(); CC != ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME].end(); ++CC  ){
+                for ( auto CC = RegionParameterValueMap[Geometry_NAME]["Mass"].begin(); CC != RegionParameterValueMap[Geometry_NAME]["Mass"].end(); ++CC  ){
                     Target_NAME  = CC.key();
 
                     bool isin = false;
                     for(int b=0; b < Targets.size();b++){ if(Targets[b] == Target_NAME){isin = true; break;}}
                     if(isin == false){Targets.push_back(Target_NAME);}
 
-                    double vb= ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
-                    if(__isinf(vb) || __isnan(vb) || vb == 0.){continue;}
-
-                    double ccc = ICRPSAFs[Quantity_NAME][Geometry_NAME][Particle_NAME][Energy_Val][Source_NAME][Target_NAME];
-
+                    double ccc = GenerateRadiotracerQuantitiesByInterpolationInDefaultUnitForBiokinetic(Partial_Particle_NAME,Energy_Val, Source_NAME,Target_NAME);
                     if( !__isnan(ccc) && !__isinf(ccc) && ccc != 0 && ccc != NULL){
 
                         DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME] +=
@@ -9047,22 +9252,28 @@ void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
                                 RadiationPerCent
                                 *ccc;
 
+                        /*
                         if(Source_NAME == "Liver" && Target_NAME == "Brain"){
                            QTextStream(stdout) << Quantity_NAME << " " << RadioTracer_NAME<< " " << Geometry_NAME  << " " << Particle_NAME  << " " << Target_NAME  << "<--" << Source_NAME << " = " << DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME][Source_NAME][Target_NAME]
                                                    << " for Target Organ = " << DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particle_NAME]["All Sources"][Target_NAME] << "\n";
                         }
+                        */
                     }
                 }
             }
         }
     }
 
-
     ui->tableWidgetForOneGraph->clear();
     ui->tableWidgetForOneGraph->setRowCount(0);
     ui->tableWidgetForOneGraph->setColumnCount(0);
-    QStringList headers;
 
+    if(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME].size() == 0){
+        QMessageBox::information(this, tr(""), "No data were registered for this configuration, "+ui->comboBoxSourceOrTargetsForBiokinetics->currentText()+", "+ui->comboBoxPhantom->currentText()+", source "+ui->comboBoxSources->currentText()+", or "+ ui->comboBoxQuantityNucl->currentText() +" not calculated for this configuration, or the biokinetics data table of " + ui->comboBoxRadioPharmaceutiques->currentText() + " not defined for this configuration");
+        return;
+    }
+
+    QStringList headers;
 
     if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 0 ){ // In all sources
         Targets.clear();
@@ -9101,19 +9312,19 @@ void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
 
         if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 0 ){ // In all sources with each source as a target
             for(int b=0; b < Particles.size();b++){
-                QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][Targets[a]][Targets[a]]/convfac) <<"\n";
+                //QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][Targets[a]][Targets[a]]/convfac) <<"\n";
                 ui->tableWidgetForOneGraph->setItem(row,b+1, new QTableWidgetItem(QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][Targets[a]][Targets[a]]/convfac)));
             }
         }
-        if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 1){ // From a specific Source or To all targets
+        if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 1){ // From a Source or to each of targets
             for(int b=0; b < Particles.size();b++){
-                QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac) <<"\n";
+                //QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac) <<"\n";
                 ui->tableWidgetForOneGraph->setItem(row,b+1, new QTableWidgetItem(QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac)));
             }
         }
-        else if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 2){ // From all Sources to Target (all targets also included in list of targets)
+        else if(ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 2 || ui->comboBoxSourceOrTargetsForBiokinetics->currentIndex() == 3){ // From all Sources to each of targets (all targets also included in list of targets)
             for(int b=0; b < Particles.size();b++){
-                QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac) <<"\n";
+                //QTextStream(stdout) << "Col "<< b+1 << " Particle " << Particles[b] << " val " << QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]][ui->comboBoxSources->currentText()][Targets[a]]/convfac) <<"\n";
                 ui->tableWidgetForOneGraph->setItem(row,b+1, new QTableWidgetItem(QString::number(DATAMap[Quantity_NAME][Geometry_NAME][RadioTracer_NAME][Particles[b]]["All Sources"][Targets[a]]/convfac)));
             }
         }
@@ -9126,14 +9337,781 @@ void MainWindow::on_pushButtonGenerateQuantitiesWithBiokineticData_clicked()
     ui->tableWidgetForOneGraph->horizontalHeader()->viewport()->installEventFilter(this);
 
 }
-void MainWindow::setBiokineticsDefaulsInputs(){
-    ui->comboBoxQuantityNucl->setCurrentText("S");
-    ui->comboBoxTotalorSourceOrCombNucl->setCurrentIndex(2);
-    ui->comboBoxSourceOrTargetsForBiokinetics->setCurrentIndex(1);
-    ui->comboBoxSources->setCurrentText("Liver");
-    ui->comboBoxTargets->setCurrentText("Brain");
-    ui->comboBoxRadioPharmaceutiques->setCurrentIndex(0);
-    ui->doubleSpinBoxAdministeredActivity->setValue(1);
+double MainWindow::GenerateRadiotracerQuantitiesByInterpolationInDefaultUnitForBiokinetic(QString ParticleName, double Energy, QString Source_NAME, QString Target_NAME){
+
+    QString Geometry_NAME = ui->comboBoxPhantom->currentText();
+    QString Quantity_Name = ui->comboBoxQuantityNucl->currentText();
+
+    double Val1 = 0;
+    double Val2 = 0;
+    double Val = 0;
+    double Energy1;
+    double Energy2;
+
+    Energy1 = 0;
+    Energy2 = 0;
+
+    std::map<QString,std::map<QString, std::vector<double>>> Sourecee = SourceParticleEnergyValues ;
+
+    for(int ss = 0 ; ss < Sourecee[Source_NAME][ParticleName].size() ; ss++){
+
+        int ff = ss+1;
+
+        int da = Sourecee[Source_NAME][ParticleName].size()-1; if(ff == da){break;}
+
+        double E1 = Sourecee[Source_NAME][ParticleName][ss];
+        double E2 = Sourecee[Source_NAME][ParticleName][ff];
+        //QTextStream(stdout) << ss << " " << E1 << " " << ff << " " << E2 << "\n" ;
+
+        if(E1 < Energy && Energy < E2){
+            Energy1 = E1;
+            Energy2 = E2;
+
+            //QTextStream(stdout) << " ParticleName " << ParticleName << " Energy1 " << Energy1 << " Energy " << Energy << " Energy2 " << Energy2 << "\n" ;
+            break;
+        }
+    }
+
+    if(Quantity_Name == "AE"){
+        Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy1);
+        Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]*Energy2);
+    }
+    else if(Quantity_Name == "AF"){
+        Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+        Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(RegionParameterValueMap[Geometry_NAME]["Mass"][Target_NAME]);
+    }
+    else if(Quantity_Name == "SAF"){
+        Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME];
+        Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME];
+    }
+    else if(Quantity_Name == "S"){
+        Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1);
+        Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2);
+    }
+    else if(Quantity_Name == "H"){
+        Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1);
+        Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2);
+    }
+    else if(Quantity_Name == "E"){
+        Val1 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy1][Source_NAME][Target_NAME]*(Energy1)*GenerateRadiationFactor(ParticleName,Energy1)*GenerateTissueFactor(Target_NAME);
+        Val2 = ICRPSAFs["SAF"][Geometry_NAME][ParticleName][Energy2][Source_NAME][Target_NAME]*(Energy2)*GenerateRadiationFactor(ParticleName,Energy2)*GenerateTissueFactor(Target_NAME);
+    }
+
+    Val  = Val1 + (Energy-Energy1)*((Val2-Val1)/(Energy2-Energy1));
+
+    if( !__isnan(Val) && !__isinf(Val) && Val != 0 && Val != NULL){
+        return Val;
+        //ICRPSAFs[Quantity_Name][Geometry_NAME][ParticleName][Energy][Source_NAME][Target_NAME] = Val;
+    }else{
+        return 0.;
+    }
+
 }
 
+void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
 
+    ICRPRadioNuclideData.clear();
+    ICRPRadioNuclideDataDiscSpec.clear();
+    ICRPRadioNuclideHalfLives.clear();
+    RadionuclidesParticles.clear();
+    RadioTracerSourceOrganResidenceTime.clear();
+    RadiotracerradionucleidMap.clear();
+
+    SourceParticleEnergyValues.clear();
+    RegionParameterValueMap.clear();
+    ICRPSAFs.clear();
+
+    ui->progressBarReadingCalcData->setRange(0, 100);
+    ui->progressBarReadingCalcData->setValue(0);
+    ui->progressBarReadingCalcData->show();
+    double percent = 0;
+
+    for (int zzz = 0 ; zzz < 17; zzz++) { // ICRP files  "< 14"
+
+        percent = ((zzz+1)/17.)*100;
+
+        ui->progressBarReadingCalcData->setValue(percent);
+
+        QVector< double > particleEnergies;
+
+        QString Geometry ,
+                Quantity = "SAF",
+                SrcRegionName ,
+                organTargetname,
+                ParticleName,
+                RadioNuclideName,
+                FilePathString,
+                word;
+
+        if(zzz==0){
+            Geometry = "ICRPAdultMale";
+            ParticleName = "gamma";
+            FilePathString = "rcp-am_photon_2016-08-12.SAF";
+        }
+        else if(zzz==1){
+            Geometry = "ICRPAdultMale";
+            ParticleName = "e-";
+            FilePathString = "rcp-am_electron_2016-08-12.SAF";
+        }
+        else if(zzz==3){
+            Geometry = "ICRPAdultMale";
+            ParticleName = "alpha";
+            FilePathString = "rcp-am_alpha_2016-08-12.SAF";
+        }
+        else if(zzz==4){
+            Geometry = "ICRPAdultMale";
+            ParticleName = "neutron";
+            FilePathString = "rcp-am_neutron_2016-08-12.SAF";
+        }
+        else if(zzz==5){
+            Geometry = "ICRPAdultFemale";
+            ParticleName = "gamma";
+            FilePathString = "rcp-af_photon_2016-08-12.SAF";
+        }
+        else if(zzz==6){
+            Geometry = "ICRPAdultFemale";
+            ParticleName = "e-";
+            FilePathString = "rcp-af_electron_2016-08-12.SAF";
+        }
+        else if(zzz==7){
+            Geometry = "ICRPAdultFemale";
+            ParticleName = "alpha";
+            FilePathString = "rcp-af_alpha_2016-08-12.SAF";
+        }
+        else if(zzz==8){
+            Geometry = "ICRPAdultFemale";
+            ParticleName = "neutron";
+            FilePathString = "rcp-af_neutron_2016-08-12.SAF";
+        }
+        else if(zzz==9){
+            FilePathString = "sregions_2016-08-12.NDX";
+        }
+        else if(zzz==10){
+            FilePathString = "torgans_2016-08-12.NDX";
+        }
+        else if(zzz==11){
+            FilePathString = "ICRP-07.RAD";
+        }
+        else if(zzz==12){
+            FilePathString = "ICRP-07.BET";
+        }
+        else if(zzz==13){
+            FilePathString = "ICRP-07.ACK";
+        }
+        else if(zzz==14){
+            FilePathString = "ICRP-07.NSF";
+        }
+        else if(zzz==15){
+            FilePathString = "RadioPharmaceuticalsICRP.dat";
+        }
+        else if(zzz==16){
+            FilePathString = "ICRP-07.NDX";
+        }
+
+        QString fm = DataDirName+"/"+FilePathString;
+        QFile file(fm);
+
+        if(!file.open(QIODevice::ReadOnly)) {
+            //QMessageBox::information(0, "error", file.errorString());
+
+        }else{
+
+            //QTextStream(stdout) <<zzz << " -Reading file: " << fm << "....\n";
+
+            QTextStream in(&file);
+
+            int lineInc = 0;
+            int NumOfDataLines = 0;
+            int DataLineInc = 0;
+            int RadioNuclideDataInc = 0;
+            int NumberOfEneRows = 0;
+            double LastEnergy = 0;
+            double Prob = 0;
+            while(!in.atEnd()) {
+
+                QRegExp space("\\s++");
+                QString line = in.readLine().remove(space);
+
+                //if(lineInc == 10000){
+                //  break;
+                //}
+
+                if(!line.isEmpty()){
+
+                    //QTextStream(stdout) << "line: " << line << "\n";
+
+                    if(zzz<9){ // for SAFs files
+
+                        //if(lineInc == 10000){ // energies line
+                        //  return;
+                        //}
+
+                        if(lineInc == 3){ // energies line
+
+                            QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+                            //QTextStream(stdout) << "Particle Energies" << "\n";
+
+                            for (int ff = 2 ; ff < fields.size()-2; ff++) { // two data values of cutoff and ID
+                                //                       //QTextStream(stdout) << "fields[ff] : " + fields[ff] << "\n";
+                                particleEnergies.push_back(fields[ff].toDouble());
+                                //QTextStream(stdout) << fields[ff].toDouble() << "\n";
+
+                            }
+                        }else if(lineInc > 4) { //begin of SAFs values
+
+                            QString s1 = line.mid(0, 23);
+                            line.remove(s1);
+
+                            //QTextStream(stdout) << "s1 " << s1 << " line "<< line << "\n";
+
+                            QStringList InputsVals = s1.remove(space).split("<-");
+                            if(InputsVals.size() < 2 ){
+                                break;
+                            }else{
+                                SrcRegionName = InputsVals[1].replace(" ","");
+                                organTargetname = InputsVals[0].replace(" ","");
+                                //if(SrcRegionName == "Liver" && organTargetname == "Liver"){
+                                //QTextStream(stdout)  << " SrcRegionName " << SrcRegionName << " organTargetname " << organTargetname << "\n";
+                                //}
+                            }
+                            QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+                            for (int ff = 0 ; ff < particleEnergies.size(); ff++) {
+
+
+                                ICRPSAFs["SAF"][Geometry][ParticleName][particleEnergies[ff]][SrcRegionName][organTargetname] = fields[ff].toDouble();
+
+                                //if(SrcRegionName == "Liver" && organTargetname == "Liver"){
+                                    //QTextStream(stdout) << "Geometry " << Geometry <<  " ParticleName "<< ParticleName << " particleEnergies[ff] " << particleEnergies[ff] << " SrcRegionName " << SrcRegionName << " organTargetname " << organTargetname << " fields[ff].toDouble() "<< fields[ff].toDouble() << "\n";
+                                //}
+                                bool isin = false;
+                                for (int dd = 0 ; dd < SourceParticleEnergyValues[SrcRegionName][ParticleName].size(); dd++) {
+                                    if(particleEnergies[ff] == SourceParticleEnergyValues[SrcRegionName][ParticleName][dd]){isin = true;break;}}
+                                if(isin == false){SourceParticleEnergyValues[SrcRegionName][ParticleName].push_back(particleEnergies[ff]);                                    }
+                            }
+                        }
+                    }
+                    else if(zzz==9 || zzz==10){ // for Masses data files
+
+                        int nonelines = 4; int numchara = 12; //for zzz==9, source
+
+                        if (line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).size() < 3){continue;}
+
+                        if(zzz==10){if(lineInc > 84 ){break;}}
+                        if(zzz==9){if(lineInc > 47 ){break;}}
+
+                        if(zzz==10){nonelines = 3;numchara = 13;} //for zzz==10, target
+
+                        if(lineInc > nonelines) {//begin of Masses values
+
+                            QString s1 = line.mid(0, numchara);
+                            line.remove(s1);
+                            s1.replace(" ","");
+                            //QTextStream(stdout) << "line " << line << " s1 " << s1 << "\n";
+
+                            QStringList InputsVals = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+                            if(InputsVals.size() < 2 ){
+                                continue;
+                            }else{
+
+                                if(zzz==9){ // source regions file
+                                    //QTextStream(stdout) << " s1 " << s1 << " InputsVals[0] "<< InputsVals[0] << " InputsVals[2] "<< InputsVals[2] << "\n";
+                                    RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] = InputsVals[0].toDouble();
+                                    RegionParameterValueMap["ICRPAdultFemale"]["Mass"][s1] = InputsVals[2].toDouble();
+                                }else if(zzz==10){ // target regions file
+                                    //QTextStream(stdout) << " s1 " << s1 << " InputsVals[0] "<< InputsVals[0] << " InputsVals[1] "<< InputsVals[1] << "\n";
+
+                                    if(RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] == 0.){
+                                        RegionParameterValueMap["ICRPAdultMale"]["Mass"][s1] = InputsVals[0].toDouble();
+                                        RegionParameterValueMap["ICRPAdultFemale"]["Mass"][s1] = InputsVals[1].toDouble();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if(zzz==11){ // for Radiation files
+
+                        QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+                        if(fields.size() == 3){ // radionu data
+
+                            RadioNuclideName = fields[0];
+/*
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+
+                                    ){
+                                continue;
+                            }
+*/
+                            int HLConversion = 1;
+                            QString HLunit = "s";
+                            if(fields[1].contains("s")){HLConversion = 1;HLunit = "s";}
+                            else if(fields[1].contains("m")){HLConversion = 60;HLunit = "m";}
+                            else if(fields[1].contains("h")){HLConversion = 60*60;HLunit = "h";}
+                            else if(fields[1].contains("d")){HLConversion = 60*60*24;HLunit = "d";}
+                            else if(fields[1].contains("y")){HLConversion = 60*60*24*365;HLunit = "y";}
+
+                            ICRPRadioNuclideHalfLives[RadioNuclideName] = HLConversion*fields[1].remove(HLunit).toDouble() ;
+
+                            //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " Half-life "<< ICRPRadioNuclideHalfLives[RadioNuclideName] << "\n";
+
+                        }else if(fields.size() == 4) { //radiation data ene yield par...
+
+/*
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+
+                                    ){
+                                continue;
+                            }
+*/
+                            QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+                            if(fields[3] == "G"){ParticleName = "gamma";}
+                            else if(fields[3] == "PG"){ParticleName = "gamma";}
+                            else if(fields[3] == "DG"){ParticleName = "gamma";}
+                            else if(fields[3] == "X"){ParticleName = "gamma";}
+                            else if(fields[3] == "AQ"){ParticleName = "gamma";}
+                            else if(fields[3] == "B+"){ParticleName = "e+";}
+                            else if(fields[3] == "B-"){ParticleName = "e-";}
+                            else if(fields[3] == "BD"){ParticleName = "e-";}
+                            else if(fields[3] == "IE"){ParticleName = "e-";}
+                            else if(fields[3] == "AE"){ParticleName = "e-";}
+                            else if(fields[3] == "A"){ParticleName = "alpha";}
+                            else if(fields[3] == "AR"){ParticleName = "alpha";}
+                            else if(fields[3] == "FF"){ParticleName = "FF";}
+                            else if(fields[3] == "N"){ParticleName = "neutron";}
+
+                            //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " fields[3] " << fields[3]  << " ParticleName " << ParticleName << " fields[2].toDouble() " << fields[2].toDouble() << " fields[1].toDouble() " << fields[1].toDouble() << "\n";
+/*
+                            bool isin = false;
+                            for (int dd = 0 ; dd < RadionuclidesParticles[RadioNuclideName].size(); dd++) {
+                                if(fields[3] == RadionuclidesParticles[RadioNuclideName][dd]){isin = true;break;}}
+                            if(isin == false){
+                                RadionuclidesParticles[RadioNuclideName].push_back(fields[3]);
+                            }
+*/
+
+                            /*
+                            if(ParticleName != "e-" && ParticleName != "e+"){
+                                ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[2].toDouble()] = fields[1].toDouble();
+                            }
+                            */
+                            //if(ParticleName=="e+"){ParticleName = "e-";};
+                            ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[2].toDouble()] = fields[1].toDouble();
+
+                        }
+                    }
+                    /*else if(zzz==12){ // for beta and electron Radiation files
+
+                        QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+                        if(fields.size() == 2){ // radionu data
+
+                            if(NumberOfEneRows == 0){ //
+                                RadioNuclideName = fields[0];
+                                NumberOfEneRows = fields[1].toInt();
+
+                            }else if(RadioNuclideDataInc > NumberOfEneRows){
+
+                                RadioNuclideName = fields[0];
+                                NumberOfEneRows = fields[1].toInt();
+                                RadioNuclideDataInc = 0;
+
+                                //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " NumberOfEneRows " << NumberOfEneRows  << " RadioNuclideDataInc " << RadioNuclideDataInc  << "\n";
+                            }
+                            else{
+
+                                if(fields[0].toDouble() == 0 && fields[1].toDouble() == 0){
+
+                                }else{
+
+                                    //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " ParticleName " << ParticleName << " RadioNuclideDataInc " << RadioNuclideDataInc << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
+                                    //ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[0].toDouble()] = fields[1].toDouble();
+
+                                    //double Energy = LastEnergy + (fields[0].toDouble()-LastEnergy)*QRandomGenerator::global()->generateDouble();
+                                    double Energy = fields[0].toDouble();
+                                    Prob = fields[1].toDouble();
+
+                                    //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " RadioNuclideDataInc " << RadioNuclideDataInc << " Random Energy " << Energy << " Prob " << Prob << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
+
+                                    if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                            ){
+                                        continue;
+                                    }
+
+                                    ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["e-"]["Spectrum"][Energy] = Prob;
+                                    ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["e+"]["Spectrum"][Energy] = Prob;
+                                    LastEnergy = fields[0].toDouble();
+                                }
+                            }
+                            RadioNuclideDataInc++;
+                        }
+                    }
+                    *//*else if(zzz==13){ // for Auger elect...
+
+                        QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+
+                        if(NumberOfEneRows == 0){ //
+                            if(fields.size() == 3){ // radionu data
+                                RadioNuclideName = fields[0];
+                                NumberOfEneRows = fields[2].toInt();
+                            }
+
+                        }else if(NumberOfEneRows == RadioNuclideDataInc){
+
+                            if(fields.size() == 3){
+                                RadioNuclideName = fields[0];
+                                NumberOfEneRows = fields[2].toInt();
+                                RadioNuclideDataInc = 0;
+                            }
+                            //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " NumberOfEneRows " << NumberOfEneRows  << " RadioNuclideDataInc " << RadioNuclideDataInc  << "\n";
+
+                        }else{
+
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                    ){
+                                continue;
+                            }
+
+                            //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " RadioNuclideDataInc " << RadioNuclideDataInc << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
+                            //ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[0].toDouble()] = fields[1].toDouble();
+                            ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[0].toDouble()] = fields[1].toDouble();
+
+                            RadioNuclideDataInc ++;
+                        }
+                    }
+                    *//*else if(zzz==14){ // for Neutron spectrum fission file
+
+                        QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
+                            //QTextStream(stdout) << "size "<< fields.size() << " -line: " << line << "\n";
+
+                        if((lineInc == 0) || (lineInc != 0 && NumOfDataLines == DataLineInc)){ // radionu data
+
+                            RadioNuclideName = fields[0];
+                            NumOfDataLines = fields[2].toInt();
+                            DataLineInc = 0;
+                            //QTextStream(stdout) << "\n\n\n#"<< RadioNuclideName << "\n/SourceData/setEventsInitialEneData MeV Spectrum 0.2222222 0.000 0.00E+00 ";
+
+                            //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " fields[1].toDouble() " << fields[1].toDouble() << " fields[2].toDouble() " << fields[2].toDouble()  << " DataLineInc " << DataLineInc<< " NumOfDataLines " << NumOfDataLines << "\n";
+
+                        }else{
+
+                            //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " fields[0].toDouble() " << fields[0].toDouble() << " fields[1].toDouble() " << fields[1].toDouble() << " fields[2].toDouble() " << fields[2].toDouble()<< "\n";
+                            //QTextStream(stdout) << fields[0].toDouble() << " " << fields[2].toDouble() << " " ;
+                            if(NumOfDataLines-1 == DataLineInc){ // radionu data
+                                //QTextStream(stdout) << fields[1].toDouble() << " 0 ";
+                            }
+
+                            if(
+                                    //positron emitters for PET
+                                    RadioNuclideName != "F-18" &&
+                                    RadioNuclideName != "O-15" &&
+                                    RadioNuclideName != "C-11" &&
+                                    RadioNuclideName != "N-13" &&
+
+                                    //Targeted therapy with alpha emitters
+                                    RadioNuclideName != "At-211" &&
+                                    RadioNuclideName != "Bi-213" &&
+                                    RadioNuclideName != "Ac-225" &&
+                                    RadioNuclideName != "Ra-223" &&
+                                    RadioNuclideName != "Th-227" &&
+                                    //Spontaneous neutron emitters
+                                    RadioNuclideName != "U-238" &&
+                                    RadioNuclideName != "Pu-240" &&
+                                    RadioNuclideName != "Fm-258" &&
+                                    RadioNuclideName != "Es-254" &&
+                                    RadioNuclideName != "Cm-244" &&
+                                    RadioNuclideName != "Cf-252" &&
+                                    // For cancer imaging
+                                    RadioNuclideName != "I-131" &&
+                                    RadioNuclideName != "Ga-68" &&
+                                    RadioNuclideName != "Tc-99m"
+                                    ){
+                                continue;
+                            }
+
+                            //ICRPRadioNuclideFSNData[RadioNuclideName][fields[0].toDouble()][fields[1].toDouble()] = fields[2].toDouble();
+                            //ICRPRadioNuclideData[RadioNuclideName]["neutron"][fields[0].toDouble()] = fields[2].toDouble();
+                            ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["neutron"]["Spectrum"][fields[0].toDouble()] = fields[2].toDouble();
+
+                            DataLineInc++;
+
+                            if(NumOfDataLines == DataLineInc){
+                                ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["neutron"]["Spectrum"][fields[1].toDouble()] = 0;
+                            }
+                        }
+                    }*/
+                    else if(zzz==15){ // for Radiotracer data
+
+                        std::string c1; std::string c2; std::string c3; double val;
+                        std::string line1 = line.toStdString();
+                        std::istringstream LineString(line1);
+
+                        if(LineString.str().empty()){
+                            continue;
+                        }
+
+                        LineString  >> c1 ;
+                        LineString  >> c2 ;
+
+                        RadiotracerradionucleidMap[c1.c_str()] = c2.c_str();
+
+                        while(LineString >> c3 ){
+                           LineString >> val;
+                           RadioTracerSourceOrganResidenceTime[c1.c_str()][c2.c_str()][c3.c_str()] = val;
+                        }
+
+                    }
+                }
+                lineInc++;
+            }
+            file.close();
+            //QTextStream(stdout) << "Closing file " << file.fileName() << "\n";
+        }
+    }
+
+    ui->progressBarReadingCalcData->setValue(100);
+
+    if(ICRPSAFs.size() == 0){
+        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data");
+        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
+    }else{
+        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data *");
+        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
+    }
+}
+void MainWindow::Read_final_result_file(QString FilePath){
+
+
+    QTextStream(stdout) << "---------------- Read_final_result_file() ------------------" << "\n";
+    showResultsOutput("Reading Result file... " + FilePath, 4);
+
+    QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<double,double>>>>>> ResultTable;
+    QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<double,double>>>>>> ErrorTables;
+
+    QString line, Geometry, Quantity,SrcRegionName , organTargetname, RadTracerName , ParticleName , word;
+    std::string Quantity1, Geometry1, SrcRegionName1 , organTargetname1,RadTracerName1 ,  ParticleName1 , word1;
+    double mass, volume, density, particleE, Val, StandardDeviation, err, CompuTime;
+    unsigned long long int ival;
+    bool isADataLines = false ;
+
+    std::ifstream fileR;
+
+    fileR.open(FilePath.toStdString(), std::ios::binary | std::ios::in);
+    fileR.seekg(0, std::ios::end);
+    long file_size = fileR.tellg();
+    fileR.close();
+
+    fileR.open(FilePath.toStdString(), std::ios::binary | std::ios::in);
+
+    long curr, end;
+    int percent;
+    end = file_size;
+    ui->progressBarReadingCalcData->setRange(0, 100);
+    ui->progressBarReadingCalcData->setValue(0);
+    ui->progressBarReadingCalcData->show();
+
+
+    if(fileR.is_open()){
+
+        RegionParameterValueMap.clear();
+        ICRPSAFs.clear();
+        SourceParticleEnergyValues.clear();
+
+        std::string linee = line.toStdString() ;
+
+        // to fill the map array DataTables[SrcRegionName][organTargetname][ParticleName][particleE] = Val;
+        while ( getline(fileR, linee)) {
+
+            //QTextStream(stdout) << " the line " << linee.c_str() << "\n" ;
+
+            curr = fileR.tellg();
+            if (curr != -1)
+                percent = curr * 100 / end;
+            else
+                percent = 100;
+
+            ui->progressBarReadingCalcData->setValue(percent);
+
+            std::istringstream LineString(linee);
+            LineString >> word1;
+            word = QString::fromStdString(word1);
+
+            //G4cout << " the word " << word << G4"\n" ;
+
+            if(isADataLines == true){
+
+                if (word == "*") {
+
+                    isADataLines = false;
+                    continue;
+                }
+                if (word == "#") {
+                    continue;
+                }
+                organTargetname = word;
+
+                LineString >> Val;
+                LineString >> StandardDeviation;
+                LineString >> err;
+                LineString >> ival; // for Num Steps
+                LineString >> mass;
+                LineString >> volume;
+                LineString >> density;
+
+                if(ParticleName == "RadioTracer"){
+
+                }
+                else{
+
+                    ICRPSAFs[Quantity][Geometry][ParticleName][particleE][SrcRegionName][organTargetname] = Val;
+                    //QTextStream(stdout) << " Quantity " << Quantity << " Geometry " << Geometry << " SrcRegionName " << SrcRegionName<< " ParticleName " << ParticleName << " particleE " << particleE << " Val " << Val << "\n" ;
+
+                    bool isin = false;
+                    for (int dd = 0 ; dd < SourceParticleEnergyValues[SrcRegionName][ParticleName].size(); dd++) {
+                        if(particleE == SourceParticleEnergyValues[SrcRegionName][ParticleName][dd]){isin = true;break;}}
+                    if(isin == false){SourceParticleEnergyValues[SrcRegionName][ParticleName].push_back(particleE);                                    }
+                }
+
+                RegionParameterValueMap[Geometry]["Mass"][organTargetname] = mass;
+                RegionParameterValueMap[Geometry]["Volume"][organTargetname] = volume;
+                RegionParameterValueMap[Geometry]["Density"][organTargetname] = density;
+            }
+
+            if (word == "******" && isADataLines == false) {
+
+                LineString >> Quantity1 >> SrcRegionName1 >> ParticleName1 ;
+
+                //std::cout << " Quantity " << Quantity << " Geometry " << Geometry << " SrcRegionName " << SrcRegionName<< " ParticleName " << ParticleName  << std::"\n" ;
+
+                Quantity = QString::fromStdString(Quantity1);
+                ParticleName = QString::fromStdString(ParticleName1);
+                SrcRegionName = QString::fromStdString(SrcRegionName1);
+
+                if(ParticleName == "RadioTracer"){
+                    LineString >> RadTracerName1 >> Geometry1 ;
+                    RadTracerName = QString::fromStdString(RadTracerName1);
+                    Geometry = QString::fromStdString(Geometry1);
+                }
+                else{
+                    LineString >> particleE
+                            >> Geometry1 >> word1 >> word1 >> word1 >> word1
+                            >> word1 >> word1 >> word1 >> word1 >> word1
+                            >> word1 >> word1 >> word1 >> word1 >> word1
+                            >> word1 >> CompuTime ;
+
+                    Geometry = QString::fromStdString(Geometry1);
+                }
+                isADataLines = true;
+            }
+        }
+
+        fileR.close();
+    }
+    else{
+        showResultsOutput("canno't open the file : "+FilePath , 4 );
+    }
+
+    ui->progressBarReadingCalcData->setValue(100);
+
+    if(ICRPSAFs.size() == 0){
+        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data");
+        ui->pushButtonReadUSERData->setText("Read User SAFs Data *");
+    }else{
+        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data");
+        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
+    }
+}

@@ -149,8 +149,8 @@ public:
     void OpenDialogOfCombinationChooser();
 
 
-    void GenerateLatexTableResultReferenceForOneEnergy();
-    void GenerateLatexTableResultReferenceRadioTracerSValues();
+    //void GenerateLatexTableResultReferenceForOneEnergy();
+    //void GenerateLatexTableResultReferenceRadioTracerSValues();
 
     QVector <QString> readFilesAndGetFilesNamesVector();
 
@@ -274,16 +274,14 @@ private slots:
     void on_pushButtonAddGraph_clicked();
     void on_pushButtonSaveGraphData_clicked();
     void on_pushButtonFillTable_clicked();
-    void on_pushButtonGenerateRegionDataTable_clicked();
-    void on_pushButtonGenerateSelfCrossTable_clicked();
-    void on_pushButtonSelfCrossLatex_clicked();
-    void on_pushButtonRegionLatex_clicked();
-    void on_pushButtonCrossSectionLatex_clicked();
-    void on_checkBoxAppendGraph_stateChanged(int arg1);
-    void on_pushButton_clicked();
-    void on_pushButtonShow_clicked();
-    void on_pushButtonWrite_clicked();
-    void on_pushButtonFile_clicked();
+    //void on_pushButtonGenerateRegionDataTable_clicked();
+    //void on_pushButtonGenerateSelfCrossTable_clicked();
+    //void on_pushButtonSelfCrossLatex_clicked();
+    //void on_pushButtonRegionLatex_clicked();
+    //void on_pushButtonCrossSectionLatex_clicked();
+    //void on_pushButtonGenerateCSV_clicked();
+    //void on_pushButtonOpenCSV_clicked();
+
     void on_pushButtonGenerateGraphsForEnergy_clicked();
 
     void on_PlotButtonReadAllData_clicked();
@@ -304,9 +302,6 @@ private slots:
 
     void on_checkBoxDiffForRadiotracerOr_stateChanged(int arg1);
 
-    void on_pushButtonGenerateCSV_clicked();
-
-    void on_pushButtonOpenCSV_clicked();
 
     void on_pushButtonOpenInRoot_clicked();
 /*

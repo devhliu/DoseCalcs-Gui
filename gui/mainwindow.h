@@ -350,7 +350,7 @@ private:
     QString Score_setSimNumOnRanksLineEdit;
     QString Score_setRadioNucleidDataLineEdit;
     QString Score_setRadioNucleidBiokineticsLineEdit;
-    QString Score_setRadiationFactors;
+    //QString Score_setRadiationFactors;
     QString Score_setTissueFactors;
     QString Score_setQuantitiesUnits;
 
@@ -408,10 +408,14 @@ private:
     void setBiokineticsDefaulsInputs();
     void CalculateQuantitiesBasedOnICRPData();
     void GenerateRadiotracerQuantitiesByInterpolationInDefaultUnit(QString, double);
+    double GenerateRadiotracerQuantitiesByInterpolationInDefaultUnitForBiokinetic(QString, double, QString, QString);
     double  GenerateRadiationFactor(QString, double);
     void GenerateDataInTableView();
     void ReadICRPilesAndGetData();
+    void ReadUserilesAndGetData();
     void ReadLoadICRPSpectrumData();
+    void Read_ICRP110MasssSAFs107RadiationFiles(QString);
+    void Read_final_result_file(QString);
 
     double  GenerateTissueFactor(QString);
     QMap<QString,QMap<QString,QMap<QString,QMap<double,QMap<QString,QMap<QString,double>>>>>> ICRPSAFs ;
@@ -424,13 +428,14 @@ private:
     QMap<QString,QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>>> QuatititesRadioNuclidesCalculatedData; // Quantity, Geometry, Radionuclide, source, target, value
     QMap<QString,QMap<QString,QMap<QString,QMap<QString,double>>>> QuatititesRadioNuclidesCalculatedDataInOrgan; // Quantity, Geometry, Radionuclide, organ, value
     QMap<QString,QVector<double>> ValuesOrderedData; // Radionuclide, QuantityValue
-    QMap<double,QString> ValueRadioNuclideOrderedData; // QuantityValue, Radionuclide
+    QMap<QString,QVector<QString>> NamesOrderedData; // Radionuclide, QuantityValue
     std::map<QString,std::map<QString, std::vector<double>>> SourceParticleEnergyValues ;
     std::map<QString,double> TissueFactorMap ;
-    std::map<QString,std::map<double,double>> RadiationFactorMap ;
+    //std::map<QString,std::map<double,double>> RadiationFactorMap ;
     QMap<QString,QVector<QString>> RadionuclidesParticles ;
     QMap<QString,QMap<QString,QMap<QString,double>>> RadioTracerSourceOrganResidenceTime;
     std::map<QString,QString> RadiotracerradionucleidMap;
+    //bool IsICRPCalculationTerminated;
 
 private slots:
 
@@ -500,7 +505,6 @@ private slots:
     void on_AnalysisbtnGraphsDirPath_clicked();
     void on_radioButtonVoxIDs_clicked(bool checked);
     void on_radioButtonTEXT_clicked(bool checked);
-    void on_AnalysisbtnSaveInputs_clicked();
     void on_AnalysisbtnGenerate_clicked();
     void on_RootAnalyseBtnReset_clicked();
     void on_RootAnalyseBtnReturn_clicked();
@@ -620,6 +624,14 @@ private slots:
     void on_actionRestart_triggered();
 
     void on_radioButtonTET_clicked();
+
+    void on_comboBoxSources_currentTextChanged(const QString &arg1);
+
+    void on_comboBoxTargets_currentTextChanged(const QString &arg1);
+
+    void on_comboBoxTotalorSourceOrCombNucl_currentTextChanged(const QString &arg1);
+
+    void on_comboBoxSourceOrTargetsForBiokinetics_currentTextChanged(const QString &arg1);
 
 private:
 

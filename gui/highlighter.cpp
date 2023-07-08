@@ -73,6 +73,8 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
         QStringLiteral("\\bDR\\b"), QStringLiteral("\\bE\\b"),
         QStringLiteral("\\bH\\b"),
 
+        QStringLiteral("\\bsource\\b"), QStringLiteral("\\btarget\\b"),
+
         QStringLiteral("\\ball\\b"), QStringLiteral("\\bAll\\b"),
         QStringLiteral("\\bm\\b"), QStringLiteral("\\bo\\b"),
 
@@ -106,6 +108,11 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
     }
 
     const QString UnitsPatterns[] = {
+        QStringLiteral("\\bs\\b"),
+        QStringLiteral("\\bmin\\b"),
+        QStringLiteral("\\bh\\b"),
+        QStringLiteral("\\bd\\b"),
+        QStringLiteral("\\by\\b"),
         QStringLiteral("\\bmm\\b"),
         QStringLiteral("\\bcm\\b"),
         QStringLiteral("\\bm\\b"),
@@ -129,9 +136,6 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
         QStringLiteral("\\bMGy\\b"), QStringLiteral("\\bmiGy\\b"), QStringLiteral("\\bnGy\\b"),
         QStringLiteral("\\bMeV\\b"), QStringLiteral("\\bMeV\\b"), QStringLiteral("\\bMeV\\b"),
         QStringLiteral("\\bSv\\b"), QStringLiteral("\\bmSv\\b"),
-
-
-
     };
 
     UnitsFormat.setFontWeight(QFont::Bold);

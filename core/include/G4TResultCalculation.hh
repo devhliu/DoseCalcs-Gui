@@ -227,6 +227,7 @@ private:
     void GenerateRadiotracerQuantitiesByInterpolation(G4String, G4double);
 
     G4String RemoveWordFromString(G4String,G4String);
+    double GenerateRadiationFactor(G4String, double);
 
     G4String RegionForMaxRel_SDv, RegionForMinRel_SDv;
     G4double MaxRel_SDv, MinRel_SDv;
@@ -321,7 +322,7 @@ private:
     std::map<G4String, std::map<G4String,std::map<G4double,std::map<G4String,std::vector<G4double>>>>> SourceDataRankDataFile;
 
     std::map<G4String, G4double> TissueFactorMap; // organ Name, the tissue factor value
-    std::map<G4String, std::map<G4double, G4double>> RadiationFactorMap; // Name of particle, interval of energy, the radiation factor value
+    //std::map<G4String, std::map<G4double, G4double>> RadiationFactorMap; // Name of particle, interval of energy, the radiation factor value
     G4int intOfEneForRadFac;
 
     std::map<G4String,std::map<G4String,std::map<G4String, std::vector<G4double>>>> SourceParticleEnergyValues;

@@ -71,14 +71,14 @@ G4TResultCalculation::G4TResultCalculation(){
     TissueFactorMap["Others"]= 0.12;
     */
 
-    RadiationFactorMap["gamma"][1.]= 1.;
-    RadiationFactorMap["e-"][1.]= 1.;
-    RadiationFactorMap["muon"][1.]=  1.;
-    RadiationFactorMap["proton"][1.]= 2.;
-    RadiationFactorMap["pion"][1.]=  2.;
-    RadiationFactorMap["alpha"][1.]= 20.;
-    RadiationFactorMap["neutron"][1.]= 5.;
-    
+    //RadiationFactorMap["gamma"][1.]= 1.;
+    //RadiationFactorMap["e-"][1.]= 1.;
+    //RadiationFactorMap["muon"][1.]=  1.;
+    //RadiationFactorMap["proton"][1.]= 2.;
+    //RadiationFactorMap["pion"][1.]=  2.;
+    //RadiationFactorMap["alpha"][1.]= 20.;
+    //RadiationFactorMap["neutron"][1.]= 5.;
+
     MeV_to_J = 1.60218e-13;
     Gy_to_Sv = 1. ;
     Bq_to_MBq = 1e-6 ;
@@ -124,7 +124,7 @@ G4TResultCalculation::G4TResultCalculation(){
     AdministeredActivityUnit = "Bq";
     
     intOfEneForRadFac = 1;
-    RadiationFactorMap[ParticleName][ParticleSourceEnergy] = 1.; // Name of particle, interval of energy, the radiation factor value
+    //RadiationFactorMap[ParticleName][ParticleSourceEnergy] = 1.; // Name of particle, interval of energy, the radiation factor value
     PhantomEffectiveDose = 0.;
     
     RadiotracerDataFomFile = false;
@@ -1045,14 +1045,13 @@ void G4TResultCalculation::ReadSimulationData(){
                 
             }
             else if(ParameterName =="/RunAndScoreData/setRadiationFactors"){// to evaluate the last 4 lines
-                G4double Ene, Fac; G4String pn;
-                
-                while(LineString >> pn ){
-                    LineString >> Ene;
-                    LineString >> Fac;
-                    RadiationFactorMap[pn][Ene] = Fac;
-                    if(V)G4cout << " pn " << pn << " Ene " << Ene << " Fac " << Fac << G4endl ;
-                }
+                //G4double Ene, Fac; G4String pn;
+                //while(LineString >> pn ){
+                    //LineString >> Ene;
+                    //LineString >> Fac;
+                    //RadiationFactorMap[pn][Ene] = Fac;
+                    //if(V)G4cout << " pn " << pn << " Ene " << Ene << " Fac " << Fac << G4endl ;
+                //}
             }
             else if(ParameterName =="/RunAndScoreData/setTissueFactors"){// to evaluate the last 4 lines
                 G4double Fac; G4String pn;
@@ -1315,7 +1314,7 @@ void G4TResultCalculation::VoxelQuantitiesCalculation(){
         VoxSAFCte[gg] = 1./((double)TotalEmittedEnergy*CopyNumberMassSize[gg]);
         VoxADCte[gg]  = (1./(CopyNumberMassSize[gg]))*MeV_to_J ;
         VoxSCte[gg]   = 1./(double)TotalEventNumber;
-        VoxHCte[gg]   = RadiationFactorMap[ParticleName][ParticleSourceEnergy]*Gy_to_Sv;
+        VoxHCte[gg]   = GenerateRadiationFactor(ParticleName,ParticleSourceEnergy)*Gy_to_Sv;
         VoxECte[gg]   = (double)TissueFactorMap[CopyNumberRegionNameMap[gg]] ;
         //std::fprintf(stdout,"%-15u%-15u%-15e%-15e%-15e%-15e%-15e%-15e\n", gg , VoxNOfValues[gg], VoxAFCte[gg] , VoxSAFCte[gg] , VoxADCte[gg] , VoxSCte[gg], VoxHCte[gg] , VoxECte[gg]);
         
@@ -1441,7 +1440,7 @@ void G4TResultCalculation::GenerateVoxelsResultFiles(){
               << TotalNumberOfSteps << "Step "
               << CutsDistance << "mm "
               << CutsEnergy << "MeV "
-              << RadiationFactorMap[ParticleName][ParticleSourceEnergy] <<"Wr "
+              << GenerateRadiationFactor(ParticleName,ParticleSourceEnergy) <<"Wr "
               << ExecutionMode << " "
               << RankID << " "
               << TotalEmittedEnergy << "MeV "
@@ -1528,8 +1527,9 @@ bool G4TResultCalculation::ReadThreadRegionResultFile(G4String fm){
             
             std::istringstream LineString(line);
             LineString >> ParameterName;
-            //if(V)G4cout << "\nParameterName " << ParameterName << G4endl ;
-            if(ParameterName.empty() || ParameterName == "RegionName"){ IsRegionsAreRead = true ; continue; }
+
+            if(V)G4cout << "\nParameterName " << ParameterName << G4endl ;
+            if(ParameterName.empty() || ParameterName == "RegionName" || ParameterName == "RegionsData"){ IsRegionsAreRead = true ; continue; }
             
             if(ParameterName =="TotalEventNumber"){
                 LineString >> ival; TotalEventNumber += ival ;
@@ -1608,10 +1608,9 @@ bool G4TResultCalculation::ReadThreadRegionResultFile(G4String fm){
             }
         }
         
-        if(RadiationFactorMap[ParticleName][ParticleSourceEnergy] == 0.){
-            RadiationFactorMap[ParticleName][ParticleSourceEnergy] = 1;
-        }
-        
+        //if(GenerateRadiationFactor(ParticleName,ParticleSourceEnergy) == 0.){
+          //  RadiationFactorMap[ParticleName][ParticleSourceEnergy] = 1;
+        //}
 
         bool IsIn = false;
         for (int gg = 0 ; gg < SourceParticleEnergyValues[GeometrySymbol][SourceRegionName][ParticleName].size() ; gg++) {if(SourceParticleEnergyValues[GeometrySymbol][SourceRegionName][ParticleName][gg] == 0){IsIn = true;break;}}
@@ -1636,9 +1635,7 @@ bool G4TResultCalculation::ReadThreadRegionResultFile(G4String fm){
         file.close();
     }
     else{
-
         return false;
-
         G4cout << "cannot open the file " << fm << G4endl ;
     }
 }
@@ -1809,8 +1806,8 @@ void G4TResultCalculation::RegionQuantitiesCalculation(){
         SAFCte[OrgansNameVector[gg]] = SAFUnitFactor  /(VolumeNameMassMap[OrgansNameVector[gg]]*TotalEmittedEnergy);
         ADCte[OrgansNameVector[gg]]  = ADUnitFactor   /(VolumeNameMassMap[OrgansNameVector[gg]]*(double)TotalEventNumber);
         SCte[OrgansNameVector[gg]]   = SUnitFactor    /(VolumeNameMassMap[OrgansNameVector[gg]]*(double)TotalEventNumber);
-        HCte[OrgansNameVector[gg]]   = HUnitFactor*(1./(VolumeNameMassMap[OrgansNameVector[gg]]*(double)TotalEventNumber))*RadiationFactorMap[ParticleName][ParticleSourceEnergy];
-        ECte[OrgansNameVector[gg]]   = EUnitFactor*(1./(VolumeNameMassMap[OrgansNameVector[gg]]*(double)TotalEventNumber))*RadiationFactorMap[ParticleName][ParticleSourceEnergy]*TissueFactorMap[OrgansNameVector[gg]];
+        HCte[OrgansNameVector[gg]]   = HUnitFactor*(1./(VolumeNameMassMap[OrgansNameVector[gg]]*(double)TotalEventNumber))*GenerateRadiationFactor(ParticleName,ParticleSourceEnergy);
+        ECte[OrgansNameVector[gg]]   = EUnitFactor*(1./(VolumeNameMassMap[OrgansNameVector[gg]]*(double)TotalEventNumber))*GenerateRadiationFactor(ParticleName,ParticleSourceEnergy)*TissueFactorMap[OrgansNameVector[gg]];
         
         AF_Total[OrgansNameVector[gg]]  = ED_Total[OrgansNameVector[gg]]*AFCte[OrgansNameVector[gg]];
         SAF_Total[OrgansNameVector[gg]] = ED_Total[OrgansNameVector[gg]]*SAFCte[OrgansNameVector[gg]]; ;
@@ -2100,7 +2097,7 @@ void G4TResultCalculation::GenerateRegionResultFile(){
             for(G4int dd = 0 ; dd < (G4int)TargetNamesToScore.size(); dd++){
                 if(TargetNamesToScore[dd] == "World" || TargetNamesToScore[dd] == "VOXEL"){continue;}
                 
-                if(!__isnan(ChosenVariableTotal[TargetNamesToScore[dd]]) || !__isinf(ChosenVariableTotal[TargetNamesToScore[dd]])){
+                if(!__isnan(ChosenVariableTotal[TargetNamesToScore[dd]]) || !__isinf(ChosenVariableTotal[TargetNamesToScore[dd]]) || ChosenVariableTotal[TargetNamesToScore[dd]] != NULL){
 
                     //G4cout.setf(std::ios::fixed,std::ios::floatfield);
 
@@ -2771,6 +2768,46 @@ void G4TResultCalculation::GenerateRadiotracerQuantitiesByInterpolation(G4String
     }
 }
 
+double G4TResultCalculation::GenerateRadiationFactor(G4String ParticleName, double Energy){ // enerrgy in MeV
+
+    double factor = 1.;
+    //double factor = RadiationFactorMap[ParticleName][Energy];
+
+    if(ParticleName == "gamma"){
+        factor = 1; // all energies
+    }
+    else if (ParticleName == "e-" || ParticleName == "e+"){
+        factor = 1; // all energies
+    }
+    else if (ParticleName == "alpha"){
+        factor = 20; // all energies for alpha and heavy nuclei
+    }
+    else if (ParticleName == "proton"){
+        if(Energy <= 2.){
+            factor = 1;
+        }else{
+            factor = 5;
+        }
+    }
+    else if (ParticleName == "neutron"){
+        if(Energy < 0.01){
+            factor = 5;
+        }
+        else if( 0.01 <= Energy && Energy <= 0.1){
+            factor = 10;
+        }
+        else if( 0.1 < Energy && Energy <= 2){
+            factor = 20;
+        }
+        else if( 2 < Energy && Energy <= 10){
+            factor = 20;
+        }
+        else if( 20 < Energy){
+            factor = 5;
+        }
+    }
+    return factor;
+}
 G4String G4TResultCalculation::RemoveWordFromString(G4String str, G4String word){
     
     if(V)G4cout << str << G4endl;

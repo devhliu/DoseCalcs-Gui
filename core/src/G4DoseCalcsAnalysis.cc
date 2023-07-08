@@ -87,6 +87,7 @@ G4DoseCalcsAnalysis::G4DoseCalcsAnalysis(std::string CurrentResultsDir){
     RootC = {1,2,3,4,5,6,7,8,9,11,12,28,30,32,35,38,39,41, 42, 43, 46, 47, 49, 48, 49, 22, 23 };
     RootM = {53, 54, 55, 56, 59, 65, 67, 50, 51, 57, 58, 60, 61, 62, 63, 64, 66, 29, 43, 41, 39, 52};
 
+    GenerateResultsForRadioTracer = false;
 }
 
 // read inputs for analysis
@@ -319,6 +320,8 @@ void G4DoseCalcsAnalysis::ReadSimulationData(){
                             G4double Pval = atof(Word);
                             G4double EVal; file1 >> EVal;
                             RadioTracerEnergyPerCent[RadioTracerName][RPar][EVal] = Pval*100;
+
+                            GenerateResultsForRadioTracer = true;
                             //std::cout << " RadioTracerName " << RadioTracerName << " RPar = " << RPar << " Pval = " << Pval << " EVal = " << EVal << std::endl;
                         }
                         file1.close();
@@ -332,9 +335,10 @@ void G4DoseCalcsAnalysis::ReadSimulationData(){
                         LineString >> PerC;
                         RadioTracerEnergyPerCent[RadioTracerName][pn][Ene] = PerC;
                         G4cout << " pn " << pn << " Ene " << Ene << " PerC " << PerC << G4endl ;
+
+                        GenerateResultsForRadioTracer = true;
                     }
                 }
-                GenerateResultsForRadioTracer = true;
             }
             else if(ParameterName =="/RunAndScoreData/setQuantitiesUnits"){// to evaluate the last 4 lines
                 std::string Quant; std::string uni;
@@ -3937,16 +3941,31 @@ void G4DoseCalcsAnalysis::GenerateSelfCrossGraphs(){
 
         DataInitialization();
 
-        if(GenerateRelativeSDevGraph == "yes"){GenerateStandardDeviationGraphs();}
-        GenerateResultInOneGraph();
-        GenerateResultReferenceInOneGraph();
-        GenerateSourceEnegyGraph();
-        if(GenerateRelativeErrGraph == "yes"){GenerateComparisonFactorGraphs(); }
+        if(GenerateRelativeSDevGraph == "yes"){
+            GenerateStandardDeviationGraphs();
+        }
 
-        GenerateRadioTracerResultsInOneGraphSourceTargets();
-        GenerateRadioTracerResultsInOneGraphForAllComAndSrcReg();
-        GenerateRadioTracerResultsInOneGraphWithComparisonForAllComAndSrcReg();
-        GenerateRadioTracerComparisonFactorGraphsForAllComAndSrcReg();
+        GenerateResultInOneGraph();
+        GenerateSourceEnegyGraph();
+
+        if(GenerateRelativeErrGraph == "yes" && CompareReferenceNames.size() != 0 && RefFilePaths.size() != 0){
+            GenerateRadioTracerResultsInOneGraphWithComparisonForAllComAndSrcReg();
+            GenerateRadioTracerComparisonFactorGraphsForAllComAndSrcReg();
+        }else{
+            std::cout << "Check the name and data file path of reference, or set /AnalysisData/generateRelativeErrGraph ... command" << std::endl;
+        }
+
+        if(GenerateResultsForRadioTracer == true){
+            GenerateRadioTracerResultsInOneGraphSourceTargets();
+            GenerateRadioTracerResultsInOneGraphForAllComAndSrcReg();
+            if(GenerateRelativeErrGraph == "yes" && CompareReferenceNames.size() != 0 && RefFilePaths.size() != 0){
+                GenerateComparisonFactorGraphs();
+                GenerateResultReferenceInOneGraph();
+            }else{
+                std::cout << "Check the name and data file path of reference, or set /AnalysisData/generateRelativeErrGraph ... command" << std::endl;
+            }
+        }
+
     }
 # endif
     
@@ -4800,284 +4819,6 @@ void G4DoseCalcsAnalysis::GenerateStandardDeviationGraphs(){
     if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ QuantityUnit[QuantitiesToScore];}
     CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
 }
-void G4DoseCalcsAnalysis::GenerateComparisonFactorGraphs(){
-
-    std::cout << "\n\n                                                          ========= "<< __FUNCTION__ << " ========= "<< "\n" << std::endl;
-
-    std::string Source_ORG;
-    std::string Target_ORG;
-
-    std::string FileName ;
-    TMultiGraph *mg ;
-    TLegend *leg ;
-
-    std::map<std::string,std::map<std::string,std::map<std::string,std::map<std::string,TGraph*>>>> GraphsForSDv;
-    std::map<std::string,std::map<std::string,std::map<std::string,TGraph*>>> GraphsMap; // Result_Reference Particle Source Target Energy Value
-
-    for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
-        for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
-
-            GeometrySymbol = GeometryList[bb];
-            ParticleName = ParticleList[cc];
-
-            // iterations on particle name
-            for ( auto Abeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
-            {
-                Source_ORG = Abeg->first;
-
-                bool IsIn = false;
-                for (int gg = 0 ; gg < SourceNamesToScore.size() ; gg++) {
-                    if(SourceNamesToScore[gg] == Source_ORG){
-                        IsIn = true;
-                        break;
-                    }
-                }
-                if(IsIn == false){
-                    continue;
-                }
-
-                // iterations on target name
-                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg )
-                {
-                    Target_ORG = Cbeg->first;
-
-                    bool IsIn = false;
-                    for (int gg = 0 ; gg < TargetNamesToScore.size() ; gg++) {
-                        if(TargetNamesToScore[gg] == Target_ORG){
-                            IsIn = true;
-                            break;
-                        }
-                    }
-                    if(IsIn == false){
-                        continue;
-                    }
-
-                    // iterations on particle energies
-                    for ( auto Dbeg = Cbeg->second.begin(); Dbeg != Cbeg->second.end(); ++Dbeg )
-                    {
-                        //ResEneValMap[Dbeg->first] = Dbeg->second;
-                        //std::cout << ResEneValMap[Dbeg->first] << "" <<  std::endl ;
-
-                        double a1 = Dbeg->second ;
-                        double a2 = ReferenceTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first];
-                        double a3 = RelativeDifferenceCalculation(a1,a2);
-                        if(a3==NULL || a3==0.){a3 = MinValForLog;}
-
-                        ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first] = a3;
-                    }
-                }
-            }
-
-            // iterations on source name
-            for ( auto Abeg = ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
-            {
-
-                Source_ORG = Abeg->first;
-
-                // iterations on target name
-                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg  )
-                {
-
-                    Target_ORG = Cbeg->first;
-
-                    bool IsIn = false;
-                    for (int gg = 0 ; gg < TargetNamesToScore.size() ; gg++) {
-                        if(TargetNamesToScore[gg] == Target_ORG){
-                            IsIn = true;
-                            break;
-                        }
-                    }
-                    if(IsIn == false){
-                        continue;
-                    }
-
-                    int jh = 0; // to fill the dataArray that will be used by the graph
-
-                    NumOfEne = Cbeg->second.size();
-                    double xi[NumOfEne], yi[NumOfEne];
-                    //, errInE[NumOfEne] , err[NumOfEne];
-
-                    for ( auto Dbeg = Cbeg->second.begin(); Dbeg != Cbeg->second.end(); ++Dbeg  )
-                    {
-                        xi[jh] = Dbeg->first;
-                        yi[jh] = Dbeg->second;
-
-                        if(Source_ORG == "Liver" && Target_ORG == "Liver"){
-                            //std::cout << " PARTICLE_NAME " << PARTICLE_NAME << " Source_ORG " << Source_ORG << " Target_ORG " << Target_ORG << " Ene " << xi[jh] << " Val " << yi[jh] << std::endl ;
-                        }
-
-                        jh++;
-                    }
-
-                    TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
-
-                    //TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
-                    GraphsMap["Ratio"][Source_ORG][Target_ORG] = gr1;
-                }
-            }
-
-            FileName = GraphsDirectoryPath+"RelativeDiff_"+ParticleName+"_"+QuantitiesToScore+"_"+CompareReferenceName+"_"+GeometrySymbol+GraphsExt;
-            mg = new TMultiGraph();
-            leg = new TLegend();
-
-            int jj = 0;
-
-            // generate just for Cross-irradiation
-            for ( auto Abeg = GraphsMap["Ratio"].begin(); Abeg != GraphsMap["Ratio"].end(); ++Abeg  )
-            {
-
-                Source_ORG = Abeg->first;
-
-                int hh = 0;
-
-                // iterations on particle name
-                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg  )
-                {
-                    Target_ORG = Cbeg->first;
-
-                    TGraph* graph = GraphsMap["Ratio"][Source_ORG][Target_ORG];
-
-                    std::string graph_label = Target_ORG+"<-"+Source_ORG;
-                    graph->SetName(graph_label.c_str());
-                    graph->SetTitle(graph->GetName());
-
-                    mg->Add(setGraphData(graph, hh, jj));
-                    leg->AddEntry(graph,graph->GetName(),"LP");  // to add the explanation of this colored line
-
-                    hh++;
-
-                }
-
-                jj++;
-
-            }
-
-            std::cout << "\n\n-------------------------------- In One Graph ratios DoseCalcs" << CompareReferenceName <<", for all combinations, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
-
-            std::string multiGraphTitle = "DoseCalcs and "+CompareReferenceName +" differences for " + GeometrySymbol + ", " + ParticleName + " and combinations  ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
-            if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ DiffExp;}
-            CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
-        }
-    }
-
-    GraphsForSDv.clear();
-
-    for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
-        for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
-
-            GeometrySymbol = GeometryList[bb];
-            ParticleName = ParticleList[cc];
-
-            // iterations on particle name
-            for ( auto Abeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
-            {
-                Source_ORG = Abeg->first;
-
-                bool IsIn = false;
-                for (int gg = 0 ; gg < SourceNamesToScore.size() ; gg++) {
-                    if(SourceNamesToScore[gg] == Source_ORG){
-                        IsIn = true;
-                        break;
-                    }
-                }
-                if(IsIn == false){
-                    continue;
-                }
-
-                // iterations on target name
-                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg )
-                {
-                    Target_ORG = Cbeg->first;
-
-                    bool IsIn = false;
-                    for (int gg = 0 ; gg < TargetNamesToScore.size() ; gg++) {
-                        if(TargetNamesToScore[gg] == Target_ORG){
-                            IsIn = true;
-                            break;
-                        }
-                    }
-                    if(IsIn == false){
-                        continue;
-                    }
-
-                    int jh = 0; // to fill the dataArray that will be used by the graph
-
-                    NumOfEne = Cbeg->second.size();
-                    double xi[NumOfEne], yi[NumOfEne];
-
-                    // iterations on particle energies
-                    for ( auto Dbeg = Cbeg->second.begin(); Dbeg != Cbeg->second.end(); ++Dbeg )
-                    {
-                        double a1 = Dbeg->second ;
-                        double a2 = ReferenceTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first];
-                        double a3 = RelativeDifferenceCalculation(a1,a2);
-                        if(a3==NULL || a3==0.){a3 = MinValForLog;}
-
-                        ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first] = a3;
-
-                        xi[jh] = Dbeg->first;
-                        yi[jh] = a3;
-
-                        //std::cout << " Source_ORG " << Source_ORG << " Target_ORG " << Target_ORG << " Ene " << xi[jh] << " Val " << yi[jh] << std::endl ;
-
-                        jh++;
-                    }
-
-                    TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
-
-                    GraphsForSDv[GeometrySymbol][ParticleName][Source_ORG][Target_ORG] = gr1;
-                }
-            }
-        }
-    }
-
-    FileName = GraphsDirectoryPath+"RelativeDiff_"+QuantitiesToScore+"_AllParticlesGeometriesCombinations"+GraphsExt;
-    mg = new TMultiGraph();
-    leg = new TLegend();
-
-    int jj = 0;
-
-    // generate just for Cross-irradiation
-    for ( auto Mbeg = GraphsForSDv.begin(); Mbeg != GraphsForSDv.end(); ++Mbeg  )
-    {
-        GeometrySymbol = Mbeg->first;
-
-        for ( auto Nbeg = Mbeg->second.begin(); Nbeg != Mbeg->second.end(); ++Nbeg  )
-        {
-            ParticleName = Nbeg->first;
-
-            for ( auto Abeg = Nbeg->second.begin(); Abeg != Nbeg->second.end(); ++Abeg  )
-            {
-
-                Source_ORG = Abeg->first;
-
-                int hh = 0;
-
-                // iterations on particle name
-                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg  )
-                {
-                    Target_ORG = Cbeg->first;
-
-                    TGraph* graph = GraphsForSDv[GeometrySymbol][ParticleName][Source_ORG][Target_ORG];
-
-                    graph->SetName((GeometrySymbol +", "+ParticleName+", "+Target_ORG+"<-"+Source_ORG).c_str());
-                    graph->SetTitle(graph->GetName());
-
-                    mg->Add(setGraphData(graph, hh, jj));
-                    leg->AddEntry(graph,graph->GetName(),"LP");  // to add the explanation of this colored line
-
-                    hh++;
-                }
-                jj++;
-            }
-        }
-    }
-    std::cout << "\n\n-------------------------------- In One Graph ratios DoseCalcs" << CompareReferenceName <<", for all combinations, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
-
-    std::string multiGraphTitle = "DoseCalcs and "+CompareReferenceName +" differences for all geometries, particles and combinations for "+QuantitiesToScore+" ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
-    if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ DiffExp;}
-    CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
-}
 void G4DoseCalcsAnalysis::GenerateResultInOneGraph(){ // just for cross in one graph, because the self is already generated in one graph previously
     
     std::cout << "\n\n                                                          ========= "<< __FUNCTION__ << " ========= "<< "\n" << std::endl;
@@ -5090,7 +4831,8 @@ void G4DoseCalcsAnalysis::GenerateResultInOneGraph(){ // just for cross in one g
     TLegend *leg ;
 
     std::map<std::string,std::map<std::string,TGraph*>> GraphsMap; // Result_Reference Particle Source Target Energy Value
-    
+
+    // all combinations for each Quantity, geometry and particle
     for (int aa = 0 ; aa < QuantityNamesToScore.size() ; aa++) {
         for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
             for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
@@ -5222,10 +4964,113 @@ void G4DoseCalcsAnalysis::GenerateResultInOneGraph(){ // just for cross in one g
         }
     }
 
+    // all sources for each Quantity, geometry and particle
+    for (int aa = 0 ; aa < QuantityNamesToScore.size() ; aa++) {
+        for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
+            for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
+
+                GraphsMap.clear();
+
+                QuantitiesToScore = QuantityNamesToScore[aa];
+                GeometrySymbol = GeometryList[bb];
+                ParticleName = ParticleList[cc];
+
+                for ( auto Abeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
+                {
+
+                    Source_ORG = Abeg->first;
+
+                    bool IsIn = false;
+                    for (int gg = 0 ; gg < SourceNamesToScore.size() ; gg++) {
+                        if(SourceNamesToScore[gg] == Source_ORG){
+                            IsIn = true;
+                            break;
+                        }
+                    }
+                    if(IsIn == false){
+                        continue;
+                    }
+
+                    NumOfEne = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG].size();
+                    double xi[NumOfEne], yi[NumOfEne];
+                    //, errInE[NumOfEne] , err[NumOfEne];
+
+                    int jh = 0; // to fill the dataArray that will be used by the graph
+                    for ( auto Dbeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG].begin(); Dbeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG].end(); ++Dbeg  )
+                    {
+                        xi[jh] = Dbeg->first;
+                        yi[jh] = Dbeg->second;
+                        //err[jh] = RelativeStandartDeviationPerCent[QuantitiesToScore][GeometrySymbol][Source_ORG][Source_ORG][PARTICLE_NAME][Dbeg->first];
+                        //errInE[jh] = DefaultErrorDistance;
+
+                        if(QuantityUseLog[QuantitiesToScore] == true && yi[jh] < MinValForLog){
+                            yi[jh] = MinValForLog;
+                        }
+
+                        jh++;
+                    }
+
+                    TGraph* gr1;
+                    if(AddErrorBarInGraphs == "yes"){
+                        double zi[NumOfEne], mi[NumOfEne];
+                        for(int ii = 0; ii < NumOfEne; ii++){
+                            zi[ii] = 0;
+                            mi[ii] = RelativeStandartDeviationPerCent[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG][ResEnergies[QuantitiesToScore][GeometrySymbol][ParticleName][ii]];
+                            //std::cout <<  zi[ii] << " --- " << mi[ii] <<std::endl ;
+                        }
+                        gr1 = CreateGraphErrors(NumOfEne, xi, yi, zi, mi);
+
+                    }else{
+                        gr1 = CreateGraph (NumOfEne, xi, yi);
+                    }
+
+                    //TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
+                    GraphsMap[Source_ORG][Source_ORG] = gr1;
+                }
+
+                FileName = GraphsDirectoryPath+ParticleName+"_"+QuantitiesToScore+"_"+GeometrySymbol+"_"+"Sources"+GraphsExt;
+                mg = new TMultiGraph();
+                leg = new TLegend();
+
+                int jj = 0;
+                int hh = 0;
+
+                // generate just for Cross-irradiation
+                for ( auto Abeg = GraphsMap.begin(); Abeg != GraphsMap.end(); ++Abeg  )
+                {
+
+                    Source_ORG = Abeg->first;
+
+                    TGraph* graph = GraphsMap[Source_ORG][Source_ORG];
+
+                    //QuantitiesToScore+" "+GeometrySymbol+" "+ParticleName+" " +
+                    std::string graph_label = Source_ORG;
+                    graph->SetName(graph_label.c_str());
+                    graph->SetTitle(graph->GetName());
+
+                    mg->Add(setGraphData(graph, hh, jj));
+                    leg->AddEntry(graph,graph->GetName(),"LP");  // to add the explanation of this colored line
+
+                    hh++;
+
+                    jj++;
+
+                }
+
+                std::cout << "\n\n-------------------------------- In One Graph Result, for all sources, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
+
+                std::string multiGraphTitle = ParticleName +", " +GeometrySymbol + " in all sources ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
+                if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ QuantityUnit[QuantitiesToScore];}
+                CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
+            }
+        }
+    }
+
+    // all combinations for all Quantities, geometries and particles
     int jj = 0;
     for (int aa = 0 ; aa < QuantityNamesToScore.size() ; aa++) {
 
-        FileName = GraphsDirectoryPath+QuantitiesToScore+"_AllParticlesGeometries"+"Combinations"+GraphsExt;
+        FileName = GraphsDirectoryPath+QuantitiesToScore+"_AllParticlesGeometriesCombinations"+GraphsExt;
         mg = new TMultiGraph();
         leg = new TLegend();
 
@@ -5326,6 +5171,93 @@ void G4DoseCalcsAnalysis::GenerateResultInOneGraph(){ // just for cross in one g
         std::cout << "\n\n-------------------------------- In One Graph Result, for all geometries, particles, and combinations, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
 
         std::string multiGraphTitle = " For all geometries, particles and combinations ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
+        if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ QuantityUnit[QuantitiesToScore];}
+        CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
+    }
+
+    // all sources for all Quantities, geometries and particles
+    jj = 0;
+    for (int aa = 0 ; aa < QuantityNamesToScore.size() ; aa++) {
+
+        FileName = GraphsDirectoryPath+QuantitiesToScore+"_AllParticlesGeometriesSources"+GraphsExt;
+        mg = new TMultiGraph();
+        leg = new TLegend();
+
+        for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
+            for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
+
+                QuantitiesToScore = QuantityNamesToScore[aa];
+                GeometrySymbol = GeometryList[bb];
+                ParticleName = ParticleList[cc];
+
+                for ( auto Abeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
+                {
+
+                    Source_ORG = Abeg->first;
+
+                    bool IsIn = false;
+                    for (int gg = 0 ; gg < SourceNamesToScore.size() ; gg++) {
+                        if(SourceNamesToScore[gg] == Source_ORG){
+                            IsIn = true;
+                            break;
+                        }
+                    }
+                    if(IsIn == false){
+                        continue;
+                    }
+
+                    int hh = 0;
+
+                    NumOfEne = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG].size();
+                    double xi[NumOfEne], yi[NumOfEne];
+                    //, errInE[NumOfEne] , err[NumOfEne];
+
+                    int jh = 0; // to fill the dataArray that will be used by the graph
+                    for ( auto Dbeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG].begin(); Dbeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Source_ORG].end(); ++Dbeg  )
+                    {
+                        xi[jh] = Dbeg->first;
+                        yi[jh] = Dbeg->second;
+                        //err[jh] = RelativeStandartDeviationPerCent[QuantitiesToScore][GeometrySymbol][Source_ORG][Target_ORG][PARTICLE_NAME][Dbeg->first];
+                        //errInE[jh] = DefaultErrorDistance;
+
+                        if(QuantityUseLog[QuantitiesToScore] == true && yi[jh] < MinValForLog){
+                            yi[jh] = MinValForLog;
+                        }
+
+                        jh++;
+                    }
+
+                    TGraph* graph;
+                    if(AddErrorBarInGraphs == "yes"){
+                        double zi[NumOfEne], mi[NumOfEne];
+                        for(int ii = 0; ii < NumOfEne; ii++){
+                            zi[ii] = 0;
+                            mi[ii] = RelativeStandartDeviationPerCent[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][ResEnergies[QuantitiesToScore][GeometrySymbol][ParticleName][ii]];
+                            //std::cout <<  zi[ii] << " --- " << mi[ii] <<std::endl ;
+                        }
+                        graph = CreateGraphErrors(NumOfEne, xi, yi, zi, mi);
+
+                    }else{
+                        graph = CreateGraph (NumOfEne, xi, yi);
+                    }
+
+                    std::string graph_label = GeometrySymbol+", "+ParticleName+", "+Source_ORG;
+                    graph->SetName(graph_label.c_str());
+                    graph->SetTitle(graph->GetName());
+
+                    mg->Add(setGraphData(graph, jj, hh));
+                    leg->AddEntry(graph,graph->GetName(),"LP");  // to add the explanation of this colored line
+
+                    hh++;
+
+                    jj++;
+                }
+            }
+        }
+
+        std::cout << "\n\n-------------------------------- In One Graph Result, for all geometries, particles, and sources, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
+
+        std::string multiGraphTitle = " For all geometries, particles and sources ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
         if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ QuantityUnit[QuantitiesToScore];}
         CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
     }
@@ -5678,6 +5610,284 @@ void G4DoseCalcsAnalysis::GenerateResultReferenceInOneGraph(){
     }
 
 }
+void G4DoseCalcsAnalysis::GenerateComparisonFactorGraphs(){
+
+    std::cout << "\n\n                                                          ========= "<< __FUNCTION__ << " ========= "<< "\n" << std::endl;
+
+    std::string Source_ORG;
+    std::string Target_ORG;
+
+    std::string FileName ;
+    TMultiGraph *mg ;
+    TLegend *leg ;
+
+    std::map<std::string,std::map<std::string,std::map<std::string,std::map<std::string,TGraph*>>>> GraphsForSDv;
+    std::map<std::string,std::map<std::string,std::map<std::string,TGraph*>>> GraphsMap; // Result_Reference Particle Source Target Energy Value
+
+    for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
+        for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
+
+            GeometrySymbol = GeometryList[bb];
+            ParticleName = ParticleList[cc];
+
+            // iterations on particle name
+            for ( auto Abeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
+            {
+                Source_ORG = Abeg->first;
+
+                bool IsIn = false;
+                for (int gg = 0 ; gg < SourceNamesToScore.size() ; gg++) {
+                    if(SourceNamesToScore[gg] == Source_ORG){
+                        IsIn = true;
+                        break;
+                    }
+                }
+                if(IsIn == false){
+                    continue;
+                }
+
+                // iterations on target name
+                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg )
+                {
+                    Target_ORG = Cbeg->first;
+
+                    bool IsIn = false;
+                    for (int gg = 0 ; gg < TargetNamesToScore.size() ; gg++) {
+                        if(TargetNamesToScore[gg] == Target_ORG){
+                            IsIn = true;
+                            break;
+                        }
+                    }
+                    if(IsIn == false){
+                        continue;
+                    }
+
+                    // iterations on particle energies
+                    for ( auto Dbeg = Cbeg->second.begin(); Dbeg != Cbeg->second.end(); ++Dbeg )
+                    {
+                        //ResEneValMap[Dbeg->first] = Dbeg->second;
+                        //std::cout << ResEneValMap[Dbeg->first] << "" <<  std::endl ;
+
+                        double a1 = Dbeg->second ;
+                        double a2 = ReferenceTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first];
+                        double a3 = RelativeDifferenceCalculation(a1,a2);
+                        if(a3==NULL || a3==0.){a3 = MinValForLog;}
+
+                        ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first] = a3;
+                    }
+                }
+            }
+
+            // iterations on source name
+            for ( auto Abeg = ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
+            {
+
+                Source_ORG = Abeg->first;
+
+                // iterations on target name
+                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg  )
+                {
+
+                    Target_ORG = Cbeg->first;
+
+                    bool IsIn = false;
+                    for (int gg = 0 ; gg < TargetNamesToScore.size() ; gg++) {
+                        if(TargetNamesToScore[gg] == Target_ORG){
+                            IsIn = true;
+                            break;
+                        }
+                    }
+                    if(IsIn == false){
+                        continue;
+                    }
+
+                    int jh = 0; // to fill the dataArray that will be used by the graph
+
+                    NumOfEne = Cbeg->second.size();
+                    double xi[NumOfEne], yi[NumOfEne];
+                    //, errInE[NumOfEne] , err[NumOfEne];
+
+                    for ( auto Dbeg = Cbeg->second.begin(); Dbeg != Cbeg->second.end(); ++Dbeg  )
+                    {
+                        xi[jh] = Dbeg->first;
+                        yi[jh] = Dbeg->second;
+
+                        if(Source_ORG == "Liver" && Target_ORG == "Liver"){
+                            //std::cout << " PARTICLE_NAME " << PARTICLE_NAME << " Source_ORG " << Source_ORG << " Target_ORG " << Target_ORG << " Ene " << xi[jh] << " Val " << yi[jh] << std::endl ;
+                        }
+
+                        jh++;
+                    }
+
+                    TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
+
+                    //TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
+                    GraphsMap["Ratio"][Source_ORG][Target_ORG] = gr1;
+                }
+            }
+
+            FileName = GraphsDirectoryPath+"RelativeDiff_"+ParticleName+"_"+QuantitiesToScore+"_"+CompareReferenceName+"_"+GeometrySymbol+GraphsExt;
+            mg = new TMultiGraph();
+            leg = new TLegend();
+
+            int jj = 0;
+
+            // generate just for Cross-irradiation
+            for ( auto Abeg = GraphsMap["Ratio"].begin(); Abeg != GraphsMap["Ratio"].end(); ++Abeg  )
+            {
+
+                Source_ORG = Abeg->first;
+
+                int hh = 0;
+
+                // iterations on particle name
+                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg  )
+                {
+                    Target_ORG = Cbeg->first;
+
+                    TGraph* graph = GraphsMap["Ratio"][Source_ORG][Target_ORG];
+
+                    std::string graph_label = Target_ORG+"<-"+Source_ORG;
+                    graph->SetName(graph_label.c_str());
+                    graph->SetTitle(graph->GetName());
+
+                    mg->Add(setGraphData(graph, hh, jj));
+                    leg->AddEntry(graph,graph->GetName(),"LP");  // to add the explanation of this colored line
+
+                    hh++;
+
+                }
+
+                jj++;
+
+            }
+
+            std::cout << "\n\n-------------------------------- In One Graph ratios DoseCalcs" << CompareReferenceName <<", for all combinations, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
+
+            std::string multiGraphTitle = "DoseCalcs and "+CompareReferenceName +" differences for " + GeometrySymbol + ", " + ParticleName + " and combinations  ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
+            if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ DiffExp;}
+            CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
+        }
+    }
+
+    GraphsForSDv.clear();
+
+    for (int bb = 0 ; bb < GeometryList.size() ; bb++) {
+        for (int cc = 0 ; cc < ParticleList.size() ; cc++) {
+
+            GeometrySymbol = GeometryList[bb];
+            ParticleName = ParticleList[cc];
+
+            // iterations on particle name
+            for ( auto Abeg = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].begin(); Abeg != ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName].end(); ++Abeg  )
+            {
+                Source_ORG = Abeg->first;
+
+                bool IsIn = false;
+                for (int gg = 0 ; gg < SourceNamesToScore.size() ; gg++) {
+                    if(SourceNamesToScore[gg] == Source_ORG){
+                        IsIn = true;
+                        break;
+                    }
+                }
+                if(IsIn == false){
+                    continue;
+                }
+
+                // iterations on target name
+                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg )
+                {
+                    Target_ORG = Cbeg->first;
+
+                    bool IsIn = false;
+                    for (int gg = 0 ; gg < TargetNamesToScore.size() ; gg++) {
+                        if(TargetNamesToScore[gg] == Target_ORG){
+                            IsIn = true;
+                            break;
+                        }
+                    }
+                    if(IsIn == false){
+                        continue;
+                    }
+
+                    int jh = 0; // to fill the dataArray that will be used by the graph
+
+                    NumOfEne = Cbeg->second.size();
+                    double xi[NumOfEne], yi[NumOfEne];
+
+                    // iterations on particle energies
+                    for ( auto Dbeg = Cbeg->second.begin(); Dbeg != Cbeg->second.end(); ++Dbeg )
+                    {
+                        double a1 = Dbeg->second ;
+                        double a2 = ReferenceTable[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first];
+                        double a3 = RelativeDifferenceCalculation(a1,a2);
+                        if(a3==NULL || a3==0.){a3 = MinValForLog;}
+
+                        ResRefErrCompTables[QuantitiesToScore][GeometrySymbol][ParticleName][Source_ORG][Target_ORG][Dbeg->first] = a3;
+
+                        xi[jh] = Dbeg->first;
+                        yi[jh] = a3;
+
+                        //std::cout << " Source_ORG " << Source_ORG << " Target_ORG " << Target_ORG << " Ene " << xi[jh] << " Val " << yi[jh] << std::endl ;
+
+                        jh++;
+                    }
+
+                    TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
+
+                    GraphsForSDv[GeometrySymbol][ParticleName][Source_ORG][Target_ORG] = gr1;
+                }
+            }
+        }
+    }
+
+    FileName = GraphsDirectoryPath+"RelativeDiff_"+QuantitiesToScore+"_AllParticlesGeometriesCombinations"+GraphsExt;
+    mg = new TMultiGraph();
+    leg = new TLegend();
+
+    int jj = 0;
+
+    // generate just for Cross-irradiation
+    for ( auto Mbeg = GraphsForSDv.begin(); Mbeg != GraphsForSDv.end(); ++Mbeg  )
+    {
+        GeometrySymbol = Mbeg->first;
+
+        for ( auto Nbeg = Mbeg->second.begin(); Nbeg != Mbeg->second.end(); ++Nbeg  )
+        {
+            ParticleName = Nbeg->first;
+
+            for ( auto Abeg = Nbeg->second.begin(); Abeg != Nbeg->second.end(); ++Abeg  )
+            {
+
+                Source_ORG = Abeg->first;
+
+                int hh = 0;
+
+                // iterations on particle name
+                for ( auto Cbeg = Abeg->second.begin(); Cbeg != Abeg->second.end(); ++Cbeg  )
+                {
+                    Target_ORG = Cbeg->first;
+
+                    TGraph* graph = GraphsForSDv[GeometrySymbol][ParticleName][Source_ORG][Target_ORG];
+
+                    graph->SetName((GeometrySymbol +", "+ParticleName+", "+Target_ORG+"<-"+Source_ORG).c_str());
+                    graph->SetTitle(graph->GetName());
+
+                    mg->Add(setGraphData(graph, hh, jj));
+                    leg->AddEntry(graph,graph->GetName(),"LP");  // to add the explanation of this colored line
+
+                    hh++;
+                }
+                jj++;
+            }
+        }
+    }
+    std::cout << "\n\n-------------------------------- In One Graph ratios DoseCalcs" << CompareReferenceName <<", for all combinations, "<< QuantitiesToScore << " " << ParticleName << " ----------------------" << std::endl ;
+
+    std::string multiGraphTitle = "DoseCalcs and "+CompareReferenceName +" differences for all geometries, particles and combinations for "+QuantitiesToScore+" ;Energy(MeV); "+ QuantityUnit[QuantitiesToScore];
+    if(PrintTitle != "yes"){multiGraphTitle = "; Energy(MeV); "+ DiffExp;}
+    CreateMultiGraphParametersAndCanvas(multiGraphTitle, FileName, mg, leg);
+}
 void G4DoseCalcsAnalysis::GenerateSourceEnegyGraph(){
 
     std::cout << "\n\n                                                          ========= "<< __FUNCTION__ << " ========= "<< "\n" << std::endl;
@@ -5865,7 +6075,6 @@ void G4DoseCalcsAnalysis::GenerateSourceEnegyGraph(){
     delete mg ;
     delete Res_Ref_Canvas;
 }
-
 
 
 void G4DoseCalcsAnalysis::GenerateRadioTracerResultsInOneGraphSourceTargets(){ // just for cross in one graph, because the self is already generated in one graph previously
@@ -7187,7 +7396,6 @@ void G4DoseCalcsAnalysis::GenerateRadioTracerComparisonFactorGraphsForAllComAndS
 
             //TGraph* gr1 = CreateGraph (NumOfEne, xi, yi);
             AllGeometriesRadiotracersGraphs[GeometrySymbol][RadioTracerName] = gr1;
-
         }
     }
     FileName = GraphsDirectoryPath+"Radionuclide_"+DifferenceMethod+"_"+QuantitiesToScore+"_Geometries_Radiotracers_Combinations"+GraphsExt;

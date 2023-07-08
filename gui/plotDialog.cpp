@@ -55,7 +55,6 @@ PlotDialog::PlotDialog(QWidget *parent) : QDialog(parent), ui(new Ui::PlotDialog
     ui->PlotDataTableView->setVisible(false); //or true - later in the code
     ui->plotcomboxTableFileExtToSave_2->setVisible(false);
     ui->plotcomboxTableFileExtToSave->setVisible(false);
-    ui->frame_10->setVisible(false);
     ui->radioButtonLRD->setChecked(true);
     Data_initialization();
 
@@ -4616,6 +4615,7 @@ void PlotDialog::on_pushButtonFillTable_clicked()
 
 }
 
+/*
 void PlotDialog::on_pushButtonGenerateRegionDataTable_clicked()
 {
 
@@ -4788,17 +4788,7 @@ void PlotDialog::on_pushButtonGenerateSelfCrossTable_clicked()
                                 }else{
                                     a3 = 100;
                                 }
-                                /*if( a1 != 0. && a2 != 0. ){
-                                    if( a2 < a1){
-                                        a3 = (a2/a1)*100;
-                                    }
-                                    else{
-                                        a3 = -(a1/a2)*100;
-                                    }
-                                }else{
-                                    a3 = 100;
-                                }
-                                */
+
                             }else{
                                 if( a1 != 0. && a2 != 0. ){
                                     a3 = (a1-a2/a2)*100;
@@ -4894,17 +4884,7 @@ void PlotDialog::on_pushButtonGenerateSelfCrossTable_clicked()
                                     }else{
                                         a3 = 100;
                                     }
-                                    /*if( a1 != 0. && a2 != 0. ){
-                                        if( a2 < a1){
-                                            a3 = (a2/a1)*100;
-                                        }
-                                        else{
-                                            a3 = -(a1/a2)*100;
-                                        }
-                                    }else{
-                                        a3 = 100;
-                                    }
-                                    */
+
                                 }else{
                                     if( a1 != 0. && a2 != 0. ){
                                         a3 = (a1-a2/a2)*100;
@@ -4983,17 +4963,7 @@ void PlotDialog::on_pushButtonGenerateSelfCrossTable_clicked()
                                     }else{
                                         a3 = 100;
                                     }
-                                    /*if( a1 != 0. && a2 != 0. ){
-                                        if( a2 < a1){
-                                            a3 = (a2/a1)*100;
-                                        }
-                                        else{
-                                            a3 = -(a1/a2)*100;
-                                        }
-                                    }else{
-                                        a3 = 100;
-                                    }
-                                    */
+
                                 }else{
                                     if( a1 != 0. && a2 != 0. ){
                                         a3 = (a1-a2/a2)*100;
@@ -5152,17 +5122,6 @@ void PlotDialog::GenerateLatexTableResultReferenceForOneEnergy(){
                         }else{
                             a3 = 100;
                         }
-                        /*if( a1 != 0. && a2 != 0. ){
-                            if( a2 < a1){
-                                a3 = (a2/a1)*100;
-                            }
-                            else{
-                                a3 = -(a1/a2)*100;
-                            }
-                        }else{
-                            a3 = 100;
-                        }
-                        */
                     }else{
                         if( a1 != 0. && a2 != 0. ){
                             a3 = (a1-a2/a2)*100;
@@ -5300,17 +5259,6 @@ void PlotDialog::GenerateLatexTableResultReferenceRadioTracerSValues(){
                         }else{
                             a3 = 100;
                         }
-                        /*if( a1 != 0. && a2 != 0. ){
-                            if( a2 < a1){
-                                a3 = (a2/a1)*100;
-                            }
-                            else{
-                                a3 = -(a1/a2)*100;
-                            }
-                        }else{
-                            a3 = 100;
-                        }
-                        */
                     }else{
                         if( a1 != 0. && a2 != 0. ){
                             a3 = (a1-a2/a2)*100;
@@ -5675,9 +5623,9 @@ void PlotDialog::on_pushButtonGenerateCSV_clicked()
     }
 
 }
+
 void PlotDialog::on_pushButtonSelfCrossLatex_clicked()
 {
-
     QString command = UserCurrentResultsDirPath+"/"+ GraphsOutDirName+"/ResRefLatexTables";
     QProcess process;
     QStringList qsl = {command};
@@ -5704,11 +5652,8 @@ void PlotDialog::on_pushButtonOpenCSV_clicked()
     QStringList qsl = {command};
     process.startDetached("nautilus", qsl);
 }
+*/
 
-void PlotDialog::on_checkBoxAppendGraph_stateChanged(int arg1)
-{
-
-}
 void PlotDialog::on_checkBoxDiffForRadiotracerOr_stateChanged(int arg1)
 {
     if(ui->checkBoxDiffForRadiotracerOr->isChecked()){
@@ -5718,89 +5663,6 @@ void PlotDialog::on_checkBoxDiffForRadiotracerOr_stateChanged(int arg1)
         ui->checkBoxDiffForRadiotracerOr->setToolTip("Click on the \"Relative Diff Graph\" to calculate and plot the ratio, relative difference or logarithmic relative difference between the particle DoseCalcs results and the given reference");
     }
 
-}
-
-void PlotDialog::on_pushButton_clicked()
-{
-    double EvtNum = 100000000;
-    double a1 = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][SourceOrgan][TargetOrgan][ui->doubleSpinBoxEne->value()];
-    double a2 = ReferenceTable[QuantitiesToScore][GeometrySymbol][ParticleName][SourceOrgan][TargetOrgan][ui->doubleSpinBoxEne->value()];
-
-    // from log relative difference
-    double newQuantityVal = std::exp(ui->doubleSpinBoxRelErr->value()/100)*a2;
-    double newAE = newQuantityVal*ui->doubleSpinBoxEne->value()*EvtNum*RegionParameterValueMap[GeometrySymbol]["Mass"][TargetOrgan];
-
-    ui->doubleSpinBoxQuantityVal->setValue(newQuantityVal);
-    ui->doubleSpinBoxAE->setValue(newAE);
-
-}
-void PlotDialog::on_pushButtonShow_clicked()
-{
-    double a1 = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][SourceOrgan][TargetOrgan][ui->doubleSpinBoxEne->value()];
-    double a2 = ReferenceTable[QuantitiesToScore][GeometrySymbol][ParticleName][SourceOrgan][TargetOrgan][ui->doubleSpinBoxEne->value()];
-    double a3;
-
-    ui->radioButtonLRD->setChecked(true);
-
-    if(ui->radioButtonLRD->isChecked()){
-        if( a1 != 0. && a2 != 0. ){
-            a3 = std::log(a1/a2)*100;
-        }else{
-            a3= 100;
-        }
-    }
-    else if(ui->radioButtonRD->isChecked()){
-        if( a1 != 0. && a2 != 0. ){
-            a3 = (a1-a2/a2)*100;
-        }else{
-            a3= 100;
-        }
-    }
-    else if(ui->radioButtonRa->isChecked()){
-        if( a2 != 0. ){
-            a3 = a1/a2;
-        }else{
-            a3 = 100;
-        }
-        /*if( a1 != 0. && a2 != 0. ){
-            if( a2 < a1){
-                a3 = (a2/a1)*100;
-            }
-            else{
-                a3 = -(a1/a2)*100;
-            }
-        }else{
-            a3 = 100;
-        }
-        */
-    }
-    ui->doubleSpinBoxRelErr->setValue(a3);
-}
-void PlotDialog::on_pushButtonWrite_clicked()
-{
-    double EvtNum = 100000000;
-    double a1 = ResultTable[QuantitiesToScore][GeometrySymbol][ParticleName][SourceOrgan][TargetOrgan][ui->doubleSpinBoxEne->value()];
-
-    // from log relative difference
-    double AE = a1*ui->doubleSpinBoxEne->value()*EvtNum*RegionParameterValueMap[GeometrySymbol]["Mass"][TargetOrgan];
-
-    QString Val = QString::number(AE);
-    QString nVal = QString::number(ui->doubleSpinBoxAE->value());
-
-    QTextStream(stdout) << Val << " nVal " << nVal << "\n";
-
-    QString ReadedText = fileManagerObjectPlot->ReadTextFromFileInOneString(ui->lineEdit->text());
-
-    ReadedText.replace(Val, nVal);
-
-
-    fileManagerObjectPlot->WriteTextToFile(ui->lineEdit->text(), ReadedText);
-
-}
-void PlotDialog::on_pushButtonFile_clicked()
-{
-    QString FilePath = QFileDialog::getOpenFileName( this, tr("Choose the Result file"), UserCurrentResultsDirPath+"/"+ReferenceFileName , tr("All files (AE_for_Rank*)") );
-    ui->lineEdit->setText(FilePath);
 }
 
 void PlotDialog::on_plotcomboBoxScoredVariable_activated(const QString &arg1)
@@ -5966,10 +5828,9 @@ void PlotDialog::on_pushButtonOpenInRoot_clicked()
                 "#! /bin/bash \n . " +Root_Lib_dir_path +"/thisroot.sh \n"+
                 "cd " + DoseCalcsCore_build_dir_path + "\n" +
                 DoseCalcsCore_build_dir_path+"/"+GraphExecutableName + " a b " + UserCurrentResultsDirPath+"/"+GraphsOutDirName+"\n"
-                                                                                                                            "cd " + UserCurrentResultsDirPath+"/"+GraphsOutDirName + "\n" +
-                "root -e \"TBrowser x\" ";
+                "cd " + UserCurrentResultsDirPath+"/"+GraphsOutDirName + "\n" +
+                "root --web=off -e \"TBrowser x\" ";
         //"root -e \"TBrowser b(\"Graph.root\");\" ";
-        //"root -e \"TBrowser x\" ";
 
         fileManagerObjectPlot->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
 
@@ -6078,7 +5939,6 @@ void PlotDialog::AddAllCombinationBtnSlot(){
         }
     }
 }
-
 
 void PlotDialog::closeEvent(QCloseEvent *event)  // show prompt when user wants to close app
 {
