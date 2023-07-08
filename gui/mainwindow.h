@@ -456,18 +456,18 @@ private slots:
     void ComboxSolidType_slot();
     void btnAddDcmTypeDir_slot();
     void btnChooseDcmDir_slot();
-    void btnAddVol_slot();
+    void btnAddVol_slot();    void openqsubMacros_slot();
+
+    void btnAddVisualizationLimits_slot();
+
+    void on_BtnPhantomReturn_clicked();
+
     void btnChooseADir1_slot();
     void btnChooseADir2_slot();
     void btnAddSol_slot();
     void BtnAddSolPath_slot();
     void BtnAddVolPath_slot();
     void BtnEditVolFile_slot();
-    void openqsubMacros_slot();
-
-    void btnAddVisualizationLimits_slot();
-
-    void on_BtnPhantomReturn_clicked();
     void on_BtnsourceReturn_clicked();
     void on_btnanalyseReturn_clicked();
     void on_AnalyseBtnReset_clicked();

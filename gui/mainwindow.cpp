@@ -3617,6 +3617,7 @@ void MainWindow::on_actionUpdate_triggered()
     if(QMessageBox::Yes == QMessageBox::question(this, tr("Update"), "Automatic download and installation of the latest version of DoseCalcs on the terminal. Modify the download and installation commands if necessary and click Save/Close button. Restart DoseCalcs-Gui after finishing")){
 
         BashCommandsForExecuting = "cd "+QDir::currentPath()+"/..\n"+
+                "rm -r main.tar.gz \n"+
                 "wget "+ DoseCalcsDownloadURL +"\n"+
                 "tar xvf main.tar.gz -C " + QDir::currentPath()+"/..\n"+
                 "cd "+ QDir::currentPath() + "\n"+
