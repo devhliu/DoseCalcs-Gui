@@ -3724,6 +3724,9 @@ void MainWindow::on_actionSend_Results_triggered()
     if(result == QDialog::Accepted)
     {
 
+        Path1 = FromPath->text();
+        Path2 = ToPath->text();
+
         BashCommandsForExecuting = "#! /bin/bash \n"
                                    "scp -r " +FromPath->text() +" " + ToPath->text() + "\n"
                 ;

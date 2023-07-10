@@ -1516,6 +1516,7 @@ void InstallationDialog::on_pushButtonDownloadSupplement_clicked()
 
         QString text_shFile =
                 "cd "+GUIPackagesAndFilesDirPath+"\n"+
+                "rm -r "+ GUIPackagesAndFilesDirPath+"/DoseCalcsSupplementaries.tar.xz"+ +"\n"
                 "wget --load-cookies /tmp/cookies.txt \"https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\\1\\n/p')&id=1v9cmMbN5pNsTiqtlNA18uF_qvtlPtYpD\" -O DoseCalcsSupplementaries.tar.xz && rm -rf /tmp/cookies.txt \n"+
                 //"wget "+ Supplementary_Url_String +"\n"+
                 "tar xvf "+ GUIPackagesAndFilesDirPath+"/DoseCalcsSupplementaries.tar.xz"+ +"\n"
@@ -1528,6 +1529,5 @@ void InstallationDialog::on_pushButtonDownloadSupplement_clicked()
     }else{
 
     }
-
 }
 
