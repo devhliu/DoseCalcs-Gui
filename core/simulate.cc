@@ -710,34 +710,10 @@ int main(int argc,char** argv){
 
     G4int par = ParamType ; // because ParamType is unset accidentally !!
     VolCon->setParamType(par);  // because ParamType is unset accidentally !!
+
+
     runManager->SetUserInitialization(new G4TActionInitialization());
 
-    /*
-    G4TVolumeConstruction* det = new G4TVolumeConstruction();
-    G4GeometrySampler mgs(det->getWorldPhyVolume(),"gamma");
-    G4TUserPhysicsList* Phy = new G4TUserPhysicsList();
-    Phy->RegisterPhysics(new G4ImportanceBiasing(&mgs));
-    runManager->SetUserInitialization(Phy);
-    */
-    /*
-    G4TVolumeConstruction* VolCon= new G4TVolumeConstruction();
-    runManager->SetUserInitialization(VolCon);
-    //G4TUserPhysicsList* physics = new G4TUserPhysicsList();
-    FTFP_BERT* physicsList = new FTFP_BERT;
-    G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
-    G4String onOffBiasing  = "on";
-    if ( onOffBiasing == "on" )
-    {
-        // -- Create list of physics processes to be biased: only brem. in this case:
-        std::vector< G4String > processToBias;
-        processToBias.push_back("compt");
-        // -- Pass the list to the G4GenericBiasingPhysics, which will wrap the eBrem process of e- and e+ to activate the biasing of it:
-        biasingPhysics->PhysicsBias("gamma", processToBias);
-        physicsList->RegisterPhysics(biasingPhysics);
-       }
-    runManager->SetUserInitialization(physicsList);
-    runManager->SetUserInitialization(new G4TActionInitialization());
-    */
 
     runManager->SetNumberOfThreads(VolCon->getNumberOfThreads());
     runManager->SetNumberOfEventsToBeProcessed(VolCon->getNumberOfThreads()*EventsNumPerThreadRank);
@@ -752,105 +728,6 @@ int main(int argc,char** argv){
     }
 
     VolCon->setPointNumberToSave(EventsNumPerThreadRank); // because we eliminate the NumberOfGenPointsToSave
-
-    /*
-    if( InteractiveMode == "B" && argc > 4){   // another value is entered for mode1
-
-        G4cout << "New Source Data on All RanksOrThreads: \n InteractiveMode " << InteractiveMode << " argc " << argc << " MPISimulationNum " << MPISimulationNum <<G4endl;
-
-        G4String Indicator = "";
-        G4bool isIndicator = false;
-        G4int Inc = 4;
-
-
-        while(Inc != argc){
-
-            G4String word = argv[Inc];
-
-            std::cout << " Inc " << Inc << " argc " << argc  << " word " << word << " Indicator " << Indicator <<std::endl;
-            if(word == "Particles" || word == "Energies" || word == "Positions"){
-
-                isIndicator = true;
-                Indicator = word;
-
-                std::cout << " isIndicator " << isIndicator << " Indicator " << Indicator <<std::endl;
-
-                if(Indicator == "Particles"){
-                    VolCon->setInitializationSourceParticlesInputs();
-                    Inc++;
-                    continue;
-                }
-
-                if(Indicator == "Energies"){
-
-                    G4cout << " Indicator " << Indicator <<G4endl;
-
-                    VolCon->setInitializationSourceEnergiesInputs();
-                    Inc++; EnergyDistribution = argv[Inc];
-                    std::cout << " Indicator " << Indicator << " EnergyDistribution " << EnergyDistribution  <<std::endl;
-                    Inc++;
-                    continue;
-                }
-
-                if(Indicator == "Positions"){
-                    VolCon->setInitializationSourcePositionsInputs();
-                    Inc++; SourceType = argv[Inc];
-                    Inc++;
-                    continue;
-                }
-
-                if(Indicator == "MomDirs"){
-                    VolCon->setInitializationSourceMomDirsInputs();
-                    Inc++; MomDirDistribution = argv[Inc];
-                    Inc++;
-                    continue;
-                }
-            }else{
-                isIndicator = false;
-            }
-
-            if(Indicator == "Particles" && isIndicator == false){
-                VolCon->setSourceParticlesNamesValues(argv[Inc]);
-            }
-
-            if(Indicator == "Energies" && isIndicator == false){
-                VolCon->setSourceEnergiesValues(atof(argv[Inc]));
-                std::cout << " Energy " << atof(argv[Inc]) <<std::endl;
-            }
-
-            if(Indicator == "Positions" && isIndicator == false){
-                VolCon->setSourceRegionsNamesValues(argv[Inc]); Inc++ ;
-                if(SourceType == "Volume"){
-                    G4double XDim = atof(argv[Inc]); Inc++;
-                    G4double YDim = atof(argv[Inc]); Inc++;
-                    G4double ZDim = atof(argv[Inc]);
-                    VolCon->setSourceRegionsBoxDimValues(G4ThreeVector(XDim, YDim, ZDim));
-                    std::cout << " SrcType " << SourceType << " XDim " << XDim  << " YDim " << YDim  << " ZDim " << ZDim <<std::endl;
-                }
-            }
-            Inc++;
-        }
-    }
-
-        if( InteractiveMode == "B" && argc > 8 && MPISimulationNum == "o"){   // another value is entered for mode1
-
-        VolCon->setInitializationSourceForCommandSourceInputs();
-        VolCon->setSourceParticlesNamesValues(argv[4]);
-        VolCon->setSourceMomDirsValues(argv[5]);
-        VolCon->setSourceRegionsNamesValues(argv[6]);
-        EnergyDistribution = argv[7];
-        VolCon->setSourceEnergiesValues(atof(argv[8]));
-        G4cout << " Par " << argv[4] << " MomDir " << argv[5] << " RegName " << argv[6] << " EnerDist " <<argv[7] << " Energy Val " <<atof(argv[8]) <<G4endl;
-
-        if(argc == 13 ){
-            SourceType = argv[9];
-            if(SourceType == "Volume"){
-                VolCon->setSourceRegionsBoxDimValues(G4ThreeVector(atof(argv[10]), atof(argv[11]), atof(argv[12])));
-            }
-            G4cout << " SrcType " << argv[9] << " XDim " << atof(argv[10])  << " YDim " << atof(argv[11])  << " ZDim " << atof(argv[12]) <<G4endl;
-        }
-    }
-  */
 
     std::cout << "\n\n========= Geometry, physics and radiation source data initialization ======================= \n"<<std::endl;
 

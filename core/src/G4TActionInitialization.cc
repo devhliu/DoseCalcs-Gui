@@ -42,6 +42,7 @@
 #include "G4TDirectToFilesPrimaryGeneratorAction.hh"
 #include "G4TParamSteppingAction.hh"
 #include "G4TNestedParamSteppingAction.hh"
+#include "TETSteppingAction.hh"
 
 #ifdef G4MPI_USE
 //#include "G4TRunActionMaster.hh"
@@ -51,6 +52,7 @@
 //#include "G4TEventAction.hh"
 #include "G4TVolumeConstruction.hh"
 #include "G4RunManager.hh"
+#include "TETRunAction.hh"
 
 extern G4bool VOXTET_USE;
 extern G4int ParamType;
@@ -76,8 +78,12 @@ void G4TActionInitialization::BuildForMaster() const
     //G4TReadPrimaryGeneratorAction* Pri;
 
     if(SourceType=="Voxels" || SourceType=="TET"){VOXTET_USE = true;}
-    SetUserAction(new G4TRunAction());
 
+    if(SourceType == "TET"){
+        SetUserAction(new TETRunAction("MeshTypeResults"));
+    }else{
+        SetUserAction(new G4TRunAction());
+    }
 }
 
 void G4TActionInitialization::Build() const {
@@ -87,8 +93,14 @@ void G4TActionInitialization::Build() const {
     //G4TVolumeConstruction* Det;
     //G4TReadPrimaryGeneratorAction* Pri;
 
-    G4TRunAction* runAction = new G4TRunAction;
-    SetUserAction(runAction);
+    G4TRunAction* runAction;
+    if(SourceType == "TET"){
+        SetUserAction(new TETRunAction("MeshTypeResults"));
+    }else{
+        runAction = new G4TRunAction;
+        SetUserAction(runAction);
+    }
+
 
     //G4TEventAction* eventAction = new G4TEventAction(runAction);
     //SetUserAction(eventAction);
@@ -99,8 +111,6 @@ void G4TActionInitialization::Build() const {
     const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
     //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n  : " << TConstruction2->getUseGeneratedData()<< G4endl;
 
-    if(SourceType=="Voxels"){VOXTET_USE = true;}
-
     //std::cout << "\n\n\n\n\n\n\n\n\n\n VOXTET_USE " << VOXTET_USE << " SourceType "<< SourceType << " ParamType "<< ParamType << std::endl;
 
     //if( ParamType == 0){
@@ -110,6 +120,50 @@ void G4TActionInitialization::Build() const {
     //SetUserAction(new G4TSteppingAction(runAction));
     //SetUserAction(new G4TDirectPrimaryGeneratorAction);
     //return;
+
+    if(SourceType=="Voxels" || SourceType=="TET"){VOXTET_USE = true;}
+
+    if(SourceType=="TET"){
+        //SetUserAction(new G4TParamSteppingAction(runAction));
+        SetUserAction(new TETSteppingAction);
+    }
+    else if(SourceType=="Voxels"){
+        if( ParamType == 0){
+            //std::cout << "\n\n\n\n\n\n\n\n\n\n VOXTET_USE " << VOXTET_USE << " SourceType "<< SourceType << " ParamType "<< ParamType << std::endl;
+            SetUserAction(new G4TParamSteppingAction(runAction));
+        }else{
+            SetUserAction(new G4TNestedParamSteppingAction(runAction));
+        }
+    }
+    else{
+        SetUserAction(new G4TSteppingAction(runAction));
+    }    
+
+
+
+    if( TConstruction2->getUseGeneratedData() == "read"){
+        SetUserAction(new G4TReadPrimaryGeneratorAction);
+    }else if(TConstruction2->getUseGeneratedData() == "save"){
+        SetUserAction(new G4TDirectToFilesPrimaryGeneratorAction);
+    }
+    else{
+        if(SourceType=="Voxels"){
+            //std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n VOXTET_USE : " << VOXTET_USE << std::endl;
+            SetUserAction(new G4TDirectVoxelsPrimaryGeneratorAction);
+            //SetUserAction(new G4TDirectPrimaryGeneratorAction);
+        }
+        else if(SourceType=="TET"){
+            SetUserAction(new G4TDirectPrimaryGeneratorAction);
+        }
+        else {
+            SetUserAction(new G4TDirectPrimaryGeneratorAction);
+        }
+    }
+
+
+    /*
+
+    if(SourceType=="Voxels"){VOXTET_USE = true;}
 
     if(VOXTET_USE){
         if( ParamType == 0){
@@ -127,7 +181,6 @@ void G4TActionInitialization::Build() const {
         }
     }
 
-
     if( TConstruction2->getUseGeneratedData() == "read"){
         SetUserAction(new G4TReadPrimaryGeneratorAction);
     }else if(TConstruction2->getUseGeneratedData() == "save"){
@@ -142,4 +195,7 @@ void G4TActionInitialization::Build() const {
             SetUserAction(new G4TDirectPrimaryGeneratorAction);
         }
     }
+
+    */
+
 }

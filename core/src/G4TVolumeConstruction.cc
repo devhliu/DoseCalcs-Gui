@@ -33,6 +33,7 @@
 
 #include "globals.hh"
 
+#include "TETPSEnergyDeposit.hh"
 #include "G4TVolumeConstruction.hh"
 //#include "G4TSD.hh"
 
@@ -954,6 +955,25 @@ void G4TVolumeConstruction::CreateMaterialsGDMLTags(){
 // called after construct method, after the geometry is created, to set the SD to region of interest
 void G4TVolumeConstruction::ConstructSDandField()
 {
+
+    if(GeometryFileType == "TET"){
+
+        // Define detector (Phantom SD) and scorer (eDep)
+        //
+        G4SDManager* pSDman = G4SDManager::GetSDMpointer();
+        G4String phantomSDname = "PhantomSD";
+
+        // MultiFunctional detector
+        G4MultiFunctionalDetector* MFDet = new G4MultiFunctionalDetector(phantomSDname);
+        pSDman->AddNewDetector( MFDet );
+
+        // scorer for energy depositon in each organ
+        MFDet->RegisterPrimitive(new TETPSEnergyDeposit("eDep", tetData));
+
+        // attach the detector to logical volume for parameterised geometry (phantom geometry)
+        SetSensitiveDetector(tetLogic, MFDet);
+    }
+
 
     //G4cout  << "************** Set The SD to the Geometry Volume..." << G4endl;
     /*

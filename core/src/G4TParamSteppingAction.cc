@@ -42,7 +42,6 @@ extern G4String* CopyNumberRegionNameMap;
 
 G4TParamSteppingAction::G4TParamSteppingAction(G4TRunAction* ra):G4UserSteppingAction(),RunAction(ra){}
 
-
 G4TParamSteppingAction::~G4TParamSteppingAction(){}
 
 
@@ -50,9 +49,13 @@ void G4TParamSteppingAction::UserSteppingAction(const G4Step* step)
 {
 
     auto edep = step->GetTotalEnergyDeposit();
+    //if (edep == 0.) return;
+    G4int CN = step->GetPreStepPoint()->GetTouchable()->GetCopyNumber();
+    RunAction->FillRegionStepHits(CopyNumberRegionNameMap[CN], edep);
 
-    if (edep == 0.) return;
-    RunAction->FillRegionStepHits(CopyNumberRegionNameMap[step->GetPreStepPoint()->GetTouchable()->GetCopyNumber()], edep);
+    //else stepCounter=0;
+
+    //std::cout << " Energy(MeV): "<< edep << " CN: "<< CN << " CopyNumberRegionNameMap[CN]: "<< CopyNumberRegionNameMap[CN] << "  << std::endl;
 
     //std::cout << "---- ParticleName: " << step->GetTrack()->GetParticleDefinition()->GetParticleName() << " Energy(MeV): "<< edep << " ProcessName: "<< step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() << std::endl;
 

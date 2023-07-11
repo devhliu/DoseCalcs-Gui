@@ -158,9 +158,11 @@ endif()
 #----------------------------------Source and Header Files for simulate---------------------------------------------
 
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/G4T*)
+file(GLOB sources1 ${PROJECT_SOURCE_DIR}/src/TET*)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/G4T*)
+file(GLOB headers1 ${PROJECT_SOURCE_DIR}/include/TET*)
 
-add_executable(simulate simulate.cc ${sources} ${sourcesDicom} ${sourcesG4MPI} ${headers} ${headersDicom} ${headersG4MPI})
+add_executable(simulate simulate.cc ${sources} ${sources1} ${sourcesDicom} ${sourcesG4MPI} ${headers} ${headers1} ${headersDicom} ${headersG4MPI})
 
 #----------------------------------Libraries to link---------------------------------------------
 

@@ -32,8 +32,6 @@
 //
 
 #include "G4TDirectVoxelsPrimaryGeneratorAction.hh"
-#include "globals.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4TVolumeConstruction.hh"
@@ -41,7 +39,6 @@
 #include "G4RunManager.hh"
 //#include "G4ios.hh"
 #include <iostream>
-#include "G4PhysicalConstants.hh"
 
 G4TDirectVoxelsPrimaryGeneratorAction::G4TDirectVoxelsPrimaryGeneratorAction(){
     particleGun = new G4ParticleGun(1);
