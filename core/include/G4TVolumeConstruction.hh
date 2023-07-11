@@ -244,7 +244,7 @@ public:
     void makeVolumeVisualization();
     void CreateMaterialsGDMLTags();
 
-    void ConstructSDandField();
+    virtual void ConstructSDandField();
 
     void CreateVolumesData();
 

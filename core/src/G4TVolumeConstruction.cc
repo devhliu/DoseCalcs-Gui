@@ -440,7 +440,7 @@ G4VPhysicalVolume* G4TVolumeConstruction::ConstructTETGeometry(){
                                      G4ThreeVector(0,1.*cm,0),
                                      G4ThreeVector(0,0,1.*cm));
 
-    G4LogicalVolume* tetLogic = new G4LogicalVolume(tetraSolid, vacuum, "TetLogic");
+    tetLogic = new G4LogicalVolume(tetraSolid, vacuum, "TetLogic");
 
     G4TTETParameterisation* param2 =  new G4TTETParameterisation(tetData);
     if(UseVoxelsColour == true){ param2->setUseLogVolColour(true);}
@@ -958,14 +958,16 @@ void G4TVolumeConstruction::ConstructSDandField()
 
     if(GeometryFileType == "TET"){
 
+        std::cout  << "\n\n========= Set The SD to the Geometry Volume..." << std::endl;
+
         // Define detector (Phantom SD) and scorer (eDep)
         //
-        G4SDManager* pSDman = G4SDManager::GetSDMpointer();
         G4String phantomSDname = "PhantomSD";
 
         // MultiFunctional detector
         G4MultiFunctionalDetector* MFDet = new G4MultiFunctionalDetector(phantomSDname);
-        pSDman->AddNewDetector( MFDet );
+
+        G4SDManager::GetSDMpointer()->AddNewDetector( MFDet );
 
         // scorer for energy depositon in each organ
         MFDet->RegisterPrimitive(new TETPSEnergyDeposit("eDep", tetData));
@@ -973,8 +975,6 @@ void G4TVolumeConstruction::ConstructSDandField()
         // attach the detector to logical volume for parameterised geometry (phantom geometry)
         SetSensitiveDetector(tetLogic, MFDet);
     }
-
-
     //G4cout  << "************** Set The SD to the Geometry Volume..." << G4endl;
     /*
     G4TSD* SD = new G4TSD("SD", "TCollection");

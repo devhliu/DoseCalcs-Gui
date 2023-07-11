@@ -49,7 +49,7 @@ void G4TParamSteppingAction::UserSteppingAction(const G4Step* step)
 {
 
     auto edep = step->GetTotalEnergyDeposit();
-    //if (edep == 0.) return;
+    if (edep == 0.) return;
     G4int CN = step->GetPreStepPoint()->GetTouchable()->GetCopyNumber();
     RunAction->FillRegionStepHits(CopyNumberRegionNameMap[CN], edep);
 

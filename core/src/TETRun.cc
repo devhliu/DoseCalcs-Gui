@@ -41,8 +41,7 @@ TETRun::~TETRun()
 
 void TETRun::RecordEvent(const G4Event* event)
 {
-	auto  fCollID
-	= G4SDManager::GetSDMpointer()->GetCollectionID("PhantomSD/eDep");
+    auto  fCollID = G4SDManager::GetSDMpointer()->GetCollectionID("PhantomSD/eDep");
 
 	//Hits collections
 	//
