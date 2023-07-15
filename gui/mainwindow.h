@@ -291,7 +291,6 @@ private:
 
     // Physics
     QString PhysicsData_setPhysicsData;
-    QString PhysicsData_setCutsData;
 
     QString PhysicsData_setPhysicsName ;
     QString PhysicsData_setPhotoElectricEffectModel ;

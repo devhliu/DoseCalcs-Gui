@@ -1,4 +1,4 @@
-//
+﻿//
 // ********************************************************************
 // * License and Disclaimer                                           *
 // *                                                                  *
@@ -921,14 +921,41 @@ void G4TUserPhysicsList::SetCuts()
         SetCutsWithDefault();
     }else{
         std::istringstream LineString(CutInRangeData);
-        G4cout << CutInRangeData << G4endl;
+        //G4cout << CutInRangeData << G4endl;
 
         G4double Ene; G4String pn, Unit;
         while(LineString >> pn ){
             LineString >> Ene;
             LineString >> Unit;
-            G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
-            SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+            //G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+            if((pn == "e-" || pn == "e+" || pn == "gamma" || pn == "proton") && Ene*G4UnitDefinition::GetValueOf(Unit) != 0.){
+                SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+            }
+        }
+    }
+
+    //G4cout << EnergyThresholdsData << G4endl;
+
+    if(EnergyThresholdsData != ""){
+        std::istringstream LineString(EnergyThresholdsData);
+        //G4cout << EnergyThresholdsData << G4endl;
+        std::string ww; std::vector<std::string> sl;
+
+        while(LineString >> ww ){
+            sl.push_back(ww);
+        }
+
+        G4double lowLimit = 1*keV;
+        G4double highLimit = 100. * GeV;
+        if(sl.size()>1){
+            G4double lowLimit = std::stod(sl[0])*G4UnitDefinition::GetValueOf(sl[1]);
+            if(sl.size()>3){
+                highLimit = std::stod(sl[2])*G4UnitDefinition::GetValueOf(sl[3]);
+            }
+            //G4cout << CutInRangeData << " - lowLimit " << lowLimit << " highLimit " << highLimit << G4endl;
+            if(lowLimit != 0. && highLimit > lowLimit ){
+                G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+            }
         }
     }
 
@@ -997,9 +1024,8 @@ void G4TUserPhysicsList::ShowSourceParameters() {
         G4cout<<" >> New ParticlePysics " << RayleighScatteringModel <<G4endl;
         G4cout<<" >> New GammaConversionToMuonModel " << GammaConversionToMuonModel <<G4endl;
     }
-    G4cout<<" >> New CutsDistance: " << CutsDistance << " mm" << G4endl;
-    G4cout<<" >> New CutsEnergy: " << CutsEnergy << " MeV" << G4endl;
-    G4cout<<" >> CutInRangeData: " << CutInRangeData << G4endl;
+    G4cout<<" >> Cuts In Range: " << CutsDistance << " mm" << G4endl;
+    G4cout<<" >> Energy Range: " << CutInRangeData << G4endl;
 
     if(GenerateCrossSectionTableFlag){
         G4cout<<" >> GenerateCrossSectionTableFlag " << "yes" <<G4endl;

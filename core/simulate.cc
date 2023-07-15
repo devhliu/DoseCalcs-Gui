@@ -453,6 +453,28 @@ int main(int argc,char** argv){
                     physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
                 }
             }
+            if(EnergyThresholdsData != ""){
+                std::istringstream LineString(EnergyThresholdsData);
+                //G4cout << EnergyThresholdsData << G4endl;
+                std::string ww; std::vector<std::string> sl;
+
+                while(LineString >> ww ){
+                    sl.push_back(ww);
+                }
+
+                G4double lowLimit = 1*keV;
+                G4double highLimit = 100. * GeV;
+                if(sl.size()>1){
+                    G4double lowLimit = std::stod(sl[0])*G4UnitDefinition::GetValueOf(sl[1]);
+                    if(sl.size()>3){
+                        highLimit = std::stod(sl[2])*G4UnitDefinition::GetValueOf(sl[3]);
+                    }
+                    //G4cout << CutInRangeData << " - lowLimit " << lowLimit << " highLimit " << highLimit << G4endl;
+                    if(lowLimit != 0. && highLimit > lowLimit ){
+                        G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+                    }
+                }
+            }
             runManager->SetUserInitialization(physicsList);
         }else{
             runManager->SetUserInitialization(new G4TUserPhysicsList());
@@ -657,6 +679,28 @@ int main(int argc,char** argv){
                     physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
                 }
             }
+            if(EnergyThresholdsData != ""){
+                std::istringstream LineString(EnergyThresholdsData);
+                //G4cout << EnergyThresholdsData << G4endl;
+                std::string ww; std::vector<std::string> sl;
+
+                while(LineString >> ww ){
+                    sl.push_back(ww);
+                }
+
+                G4double lowLimit = 1*keV;
+                G4double highLimit = 100. * GeV;
+                if(sl.size()>1){
+                    G4double lowLimit = std::stod(sl[0])*G4UnitDefinition::GetValueOf(sl[1]);
+                    if(sl.size()>3){
+                        highLimit = std::stod(sl[2])*G4UnitDefinition::GetValueOf(sl[3]);
+                    }
+                    //G4cout << CutInRangeData << " - lowLimit " << lowLimit << " highLimit " << highLimit << G4endl;
+                    if(lowLimit != 0. && highLimit > lowLimit ){
+                        G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+                    }
+                }
+            }
             runManager->SetUserInitialization(physicsList);
         }else{
             runManager->SetUserInitialization(new G4TUserPhysicsList());
@@ -741,6 +785,28 @@ int main(int argc,char** argv){
                 physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
             }
         }
+        if(EnergyThresholdsData != ""){
+            std::istringstream LineString(EnergyThresholdsData);
+            //G4cout << EnergyThresholdsData << G4endl;
+            std::string ww; std::vector<std::string> sl;
+
+            while(LineString >> ww ){
+                sl.push_back(ww);
+            }
+
+            G4double lowLimit = 1*keV;
+            G4double highLimit = 100. * GeV;
+            if(sl.size()>1){
+                G4double lowLimit = std::stod(sl[0])*G4UnitDefinition::GetValueOf(sl[1]);
+                if(sl.size()>3){
+                    highLimit = std::stod(sl[2])*G4UnitDefinition::GetValueOf(sl[3]);
+                }
+                //G4cout << CutInRangeData << " - lowLimit " << lowLimit << " highLimit " << highLimit << G4endl;
+                if(lowLimit != 0. && highLimit > lowLimit ){
+                    G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+                }
+            }
+        }
         runManager->SetUserInitialization(physicsList);
     }else{
         runManager->SetUserInitialization(new G4TUserPhysicsList());
@@ -796,6 +862,29 @@ int main(int argc,char** argv){
                     physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
                 }
             }
+    if(EnergyThresholdsData != ""){
+        std::istringstream LineString(EnergyThresholdsData);
+        //G4cout << EnergyThresholdsData << G4endl;
+        std::string ww; std::vector<std::string> sl;
+
+        while(LineString >> ww ){
+            sl.push_back(ww);
+        }
+
+        G4double lowLimit = 1*keV;
+        G4double highLimit = 100. * GeV;
+        if(sl.size()>1){
+            G4double lowLimit = std::stod(sl[0])*G4UnitDefinition::GetValueOf(sl[1]);
+            if(sl.size()>3){
+                highLimit = std::stod(sl[2])*G4UnitDefinition::GetValueOf(sl[3]);
+            }
+            //G4cout << CutInRangeData << " - lowLimit " << lowLimit << " highLimit " << highLimit << G4endl;
+            if(lowLimit != 0. && highLimit > lowLimit ){
+                G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
+            }
+        }
+    }
+
             runManager->SetUserInitialization(physicsList);
         }else{
             ParticlePysics = "EMS3";

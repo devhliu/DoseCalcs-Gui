@@ -1009,9 +1009,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     highlighter2 = new Highlighter(ui->GeometryFileTextEdit->document());
     ui->frame_19->setVisible(false);
 
-    ui->SourceLineEditEnergyCut->setVisible(false);
-    ui->EnergyCutlabel->setVisible(false);
-
     FillCoomponentByDefaultData();
 
     ui->tabWidget->setCurrentIndex(1);
@@ -1129,7 +1126,7 @@ void MainWindow::initializeVariable(){
     PhysicsData_setElectronBremModel = "";
     PhysicsData_setHadronIonisationModel = "";
 
-    //PhysicsData_setCutsEnergy = "";
+    PhysicsData_setCutsEnergy = "";
     PhysicsData_setCutsDistance = "";
 
     //PhysicsData_setIonIonisationModel = "";
@@ -1255,6 +1252,7 @@ void MainWindow::CommandsInitialization(){
     PhysicsCommands.push_back("/PhysicsData/setPhysicsData");
     PhysicsCommands.push_back("/PhysicsData/setCutsData");
     PhysicsCommands.push_back("/PhysicsData/generateCrossSectionFor");
+    PhysicsCommands.push_back("/PhysicsData/setEnergyRange");
 
     // Source commands
 
@@ -1443,7 +1441,7 @@ void MainWindow::setCompleters(){
 
     //completer = new QCompleter(EnergyUnits, this);
     //completer->setCaseSensitivity(Qt::CaseInsensitive);
-    //ui->SourceLineEditEnergyCut->setCompleter(completer);
+    ui->SourceLineEditEnergyCut->setCompleter(completer);
 
     completer = new QCompleter(SizeUnits, this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -1674,7 +1672,7 @@ void MainWindow::FillCoomponentByDefaultData(){
 
     // Physics
 
-    //ui->SourceLineEditEnergyCut->setText("1 keV");
+    ui->SourceLineEditEnergyCut->setText("1 keV 100 GeV");
     ui->SourceLineEditDistanceCut->setText("1 mm");
 
     ui->lineEditParticleNamesForCrossSection->setText("gamma");
@@ -2692,7 +2690,7 @@ void MainWindow::SaveSourcePhysicsInputs(){
     PhysicsData_setElectronBremModel = ui->comboBoxElectronBremModels->currentText();
     PhysicsData_setHadronIonisationModel = ui->comboBoxHadronIonisationModels->currentText();
 
-    //PhysicsData_setCutsEnergy = ui->SourceLineEditEnergyCut->text();
+    PhysicsData_setCutsEnergy = ui->SourceLineEditEnergyCut->text();
     PhysicsData_setCutsDistance = ui->SourceLineEditDistanceCut->text();
 
     PhysicsData_ParticleForCrossSection = ui->lineEditParticleNamesForCrossSection->text() ;
@@ -2862,7 +2860,7 @@ void MainWindow::InitialiseSourcePhysicsInputs(){
     ui->comboBoxElectronBremModels->setCurrentIndex(0);
     ui->comboBoxHadronIonisationModels->setCurrentIndex(0);
 
-    //ui->SourceLineEditEnergyCut->setText("");
+    ui->SourceLineEditEnergyCut->setText("");
     ui->SourceLineEditDistanceCut->setText("");
 
     ui->lineEditParticleNamesForCrossSection->setText("");
@@ -2996,7 +2994,7 @@ void MainWindow::RefillSourcePhysicsInputs(){
     ui->comboBoxElectronBremModels->setCurrentText(PhysicsData_setElectronBremModel);
     ui->comboBoxHadronIonisationModels->setCurrentText(PhysicsData_setHadronIonisationModel);
 
-    //ui->SourceLineEditEnergyCut->setText(PhysicsData_setCutsEnergy);
+    ui->SourceLineEditEnergyCut->setText(PhysicsData_setCutsEnergy);
     ui->SourceLineEditDistanceCut->setText(PhysicsData_setCutsDistance);
 
     ui->lineEditParticleNamesForCrossSection->setText(PhysicsData_ParticleForCrossSection);
@@ -3354,7 +3352,8 @@ void MainWindow::on_actionVisualization_triggered()
             commandsText += "\n"+
 
                     PhysicsCommands[0] + " " + PhysicsData_setPhysicsData + "\n" +
-                    PhysicsCommands[1] + " " + PhysicsData_setCutsData+ "\n\n" +
+                    PhysicsCommands[1] + " " + PhysicsData_setCutsDistance+ "\n" +
+                    PhysicsCommands[3] + " " + PhysicsData_setCutsEnergy+ "\n\n" +
 
                     SourceCommands[0] + " " + SourceData_setParticleName + "\n" +
                     SourceCommands[1] + " " + SourceData_setSourcePosData + "\n" +
@@ -4104,13 +4103,8 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
         }
 
         ui->SourceLineEditDistanceCut->setText(lines[PhysicsCommands[1]]);
-        /*
-        InputsVals = lines[PhysicsCommands[1]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setCutsData"
-        if(InputsVals.size() == 4){
-            ui->SourceLineEditEnergyCut->setText(InputsVals[1] + " " + InputsVals[3]);
-            ui->SourceLineEditDistanceCut->setText(InputsVals[0] + " " + InputsVals[2]);
-        }
-        */
+        ui->SourceLineEditEnergyCut->setText(lines[PhysicsCommands[3]]);
+
         InputsVals = lines[PhysicsCommands[2]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setEventsInitialEneData"
         if(InputsVals.size() >= 2){
             ui->lineEditParticleNamesForCrossSection->setText(InputsVals[0]);
@@ -4358,16 +4352,8 @@ void MainWindow::CreateUserCommands(){
         PhysicsData_setPhysicsData = PhysicsData_setPhysicsName ;
     }
 
-    PhysicsData_setCutsData = PhysicsData_setCutsDistance;
-
-/*
-    QStringList InputsVals = PhysicsData_setCutsDistance.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
-    QStringList InputsVals2 = PhysicsData_setCutsEnergy.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
-
-    if(InputsVals.size() > 1 && InputsVals2.size() > 1){
-        PhysicsData_setCutsData = InputsVals[0] + " " + InputsVals2[0] + " " + InputsVals[1] + " " + InputsVals2[1];
-    }
-*/
+    PhysicsData_setCutsDistance = PhysicsData_setCutsDistance;
+    PhysicsData_setCutsEnergy = PhysicsData_setCutsEnergy;
 
     // Source
     SourceData_setSourcePosData = SourceData_setSourceSizeUnit + " " +
@@ -4431,7 +4417,7 @@ QString MainWindow::generateInputUserTextForinputFile(){
 
     // Physics
     PhysicsData = PhysicsCommands[0] + " " + PhysicsData_setPhysicsData + "\n" +
-            PhysicsCommands[1]+ " " + PhysicsData_setCutsData + "\n" ;
+            PhysicsCommands[1]+ " " + PhysicsData_setCutsDistance + "\n" ;
     if(ui->checkBoxGenerateCrossSection->isChecked()){
         if(ui->lineEditParticleNamesForCrossSection->text()!="" && ui->lineEditEnergiesForCrossSection->text()!=""){
             PhysicsData += PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
@@ -4439,6 +4425,9 @@ QString MainWindow::generateInputUserTextForinputFile(){
             PhysicsData += "# " + PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
         }
     }
+    PhysicsData += PhysicsCommands[3]+ " " + PhysicsData_setCutsEnergy + "\n" ;
+
+
     // Source
     SourceData = SourceCommands[0] + " " + SourceData_setParticleName + "\n" +
             SourceCommands[1] + " " + SourceData_setSourcePosData + "\n" +
@@ -4948,8 +4937,8 @@ bool MainWindow::ShowImportantSimulationData(){
 
     ImportantSimulationInputs +=
             "*** Physics : " + ui->SourceComboBoxPhysUsed->currentText() + "\n"+
-            "*** Cuts In Range: " + ui->SourceLineEditDistanceCut->text()+ "\n\n";
-            //+ ui->SourceLineEditEnergyCut->text() + "\n\n";
+            "*** Cuts In Range: " + ui->SourceLineEditDistanceCut->text()+ "\n"+
+            "*** Energy Range: " + ui->SourceLineEditDistanceCut->text()+ "\n\n";
     ImportantSimulationInputs +=
             "*** Initial Particles : "+ui->SourcelineEditParName->text() + "\n"+
             "*** Initial Position : "+ui->comboBoxTypeOfSources->currentText() +" : " + ui->lineEditChosenSourceTypeData->text() +"\n" +
@@ -7463,7 +7452,9 @@ void MainWindow::RunForMultiGeomeries()
 
         // Physics
         MacrosText += PhysicsCommands[0] + " " + PhysicsData_setPhysicsData + "\n" +
-                PhysicsCommands[1]+ " " + PhysicsData_setCutsData + "\n" ;
+                PhysicsCommands[1]+ " " + PhysicsData_setCutsDistance + "\n" +
+                PhysicsCommands[3]+ " " + PhysicsData_setCutsEnergy + "\n" ;
+
         if(ui->checkBoxGenerateCrossSection->isChecked()){
             if(PhysicsData_ParticleForCrossSection !="" && PhysicsData_EnergiesForCrossSection !=""){
                 MacrosText += PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;

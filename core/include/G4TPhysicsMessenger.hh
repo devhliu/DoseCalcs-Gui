@@ -77,6 +77,7 @@ private:
 
     G4UIcommand* PhysicsDataCMD;
     G4UIcommand* CutsDataCMD;
+    G4UIcommand* EnergyRangeDataCMD;
     G4UIcommand* SetEnergiesForCrossSectionCMD;
 
     G4UIcmdWithAString* PhotoElectricEffectModelCMD;

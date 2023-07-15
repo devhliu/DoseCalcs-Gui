@@ -585,7 +585,7 @@
                  <item row="9" column="0">
                   <widget class="QLabel" name="EnergyCutlabel">
                    <property name="text">
-                    <string>Energy Cuts</string>
+                    <string>Energy Range (Min Max)</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -630,7 +630,7 @@
                     <string/>
                    </property>
                    <property name="placeholderText">
-                    <string>0.01 keV or  1e-2 keV </string>
+                    <string>1 keV 100 GeV </string>
                    </property>
                   </widget>
                  </item>
