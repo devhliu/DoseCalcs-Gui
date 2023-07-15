@@ -639,8 +639,8 @@ ex : /PhysicsData/setPhysicsData EMS3
 
 ex : /PhysicsData/setPhysicsData Construct 1 2 1 2 1 1 1 1
 
-Setting Cuts Data
-+++++++++++++++++
+Setting Cuts in Range and Energy Range Data
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Electrons, positrons, gamma - ray, and protons all have cutoffs. To figure out what the cutoff values for the simulated particles should be. The energy cut value is set to the default minimal energy if the distance cut is not passed. If both cuts miss, the default range cut value for electrons and photons is 1 mm, which is translated to the energy threshold according to the material specification.
 
@@ -655,6 +655,14 @@ If all secondary particles are simulated and tracked, the performance of any Mon
 ex : /PhysicsData/setCutsData e- 1 mm e+ 1 mm gamma 2 mm proton 1 cm
 
 Four particles can be used (n_max = 4), e-, e+, gamma, proton(the proton cuts is used for all hadrons)
+
+To set the energy range use the command below: 
+
+ .. code-block::
+
+    /PhysicsData/setEnergyRange [Min Energy] [Energy Unit of Min] [Max Energy] [Energy Unit of Max]
+
+ex : /PhysicsData/setEnergyRange 4 keV 10 MeV
 
 Generating Cross Section Data
 +++++++++++++++++++++++++++++
