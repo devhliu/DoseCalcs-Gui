@@ -602,7 +602,7 @@ Setting Physics
 
  .. code-block::
 
-    /PhysicsData/setPhysicsData [Physics Constructor] [Constructor Parameters]
+    /PhysicsData/setPhysicsData [Physics Constructor or Factory] [Constructor Parameters]
 
 2. Electromagnetic Constructors
 
@@ -612,7 +612,8 @@ Setting Physics
 
 ex : /PhysicsData/setPhysicsData EMS3
 
-[Electromagnetic Constructor] parameter can be : EMS, EMS1, EMS2, EMS3, EMS4, Livermore, Penelope.
+[Electromagnetic Constructor] parameter can be : for EMS, EMS1, EMS2, EMS3, EMS4, Livermore, Penelope. For hadrons, HADRON_FTFP_BERT, HADRON_FTFP_BERT_ATL, HADRON_FTFP_BERT_TRV, HADRON_QGSP_FTFP_BERT, HADRON_QGSP_BERT, HADRON_QGSP_BERT_HP, HADRON_QGSP_BIC, HADRON_QGSP_BIC_AllHP, HADRON_INCLXX, HADRON_Shielding, HADRON_ShieldingLEND. The EMS3 is used with hadron physics. Or Factory, FACTORY_FTFP_BERT, FACTORY_FTFP_BERT_ATL, FACTORY_FTFP_BERT_TRV, FACTORY_QGSP_FTFP_BERT, FACTORY_QGSP_BERT, FACTORY_QGSP_BERT_HP, FACTORY_QGSP_BIC, FACTORY_QGSP_BIC_AllHP, FACTORY_INCLXX, FACTORY_Shielding, FACTORY_ShieldingLEND.
+
 
 2. Construct Electromagnetic Physics
 
@@ -649,9 +650,11 @@ If all secondary particles are simulated and tracked, the performance of any Mon
 
  .. code-block::
 
-    /PhysicsData/setCutsData [Cut in Range] [Energy Threshold] [Length Unit] [Energy Unit]
+    /PhysicsData/setCutsData [Particle 1] [Range in Cut 1] [Length Unit 1] ... [Particle n] [Range in Cut n] [Length Unit n]
 
-ex : /PhysicsData/setCutsData 0.1 1 mm keV
+ex : /PhysicsData/setCutsData e- 1 mm e+ 1 mm gamma 2 mm proton 1 cm
+
+Four particles can be used (n_max = 4), e-, e+, gamma, proton(the proton cuts is used for all hadrons)
 
 Generating Cross Section Data
 +++++++++++++++++++++++++++++
