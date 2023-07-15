@@ -1250,7 +1250,7 @@ void MainWindow::CommandsInitialization(){
     // Physics commands
 
     PhysicsCommands.push_back("/PhysicsData/setPhysicsData");
-    PhysicsCommands.push_back("/PhysicsData/setCutsData");
+    PhysicsCommands.push_back("/PhysicsData/setCutsInRange");
     PhysicsCommands.push_back("/PhysicsData/generateCrossSectionFor");
     PhysicsCommands.push_back("/PhysicsData/setEnergyRange");
 
@@ -1493,7 +1493,8 @@ void MainWindow::setCompleters(){
                       "createSolid" <<
                       "createVolume" <<
                       "setPhysicsData" <<
-                      "setCutsData" <<
+                      "setCutsInRange" <<
+                      "setEnergyRange" <<
                       "generateCrossSectionFor" <<
                       "setEventsParticleNameData" <<
                       "setEventsInitialPosData" <<
@@ -1672,8 +1673,8 @@ void MainWindow::FillCoomponentByDefaultData(){
 
     // Physics
 
-    ui->SourceLineEditEnergyCut->setText("1 keV 100 GeV");
-    ui->SourceLineEditDistanceCut->setText("1 mm");
+    ui->SourceLineEditEnergyCut->setText("1 keV 10 GeV");
+    ui->SourceLineEditDistanceCut->setText("e- 1 mm e+ 1 mm gamma 1 mm proton 1 mm");
 
     ui->lineEditParticleNamesForCrossSection->setText("gamma");
     ui->comboBoxEnergyUnitsForCrossSection->setCurrentText("MeV");

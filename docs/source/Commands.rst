@@ -650,9 +650,9 @@ If all secondary particles are simulated and tracked, the performance of any Mon
 
  .. code-block::
 
-    /PhysicsData/setCutsData [Particle 1] [Range in Cut 1] [Length Unit 1] ... [Particle n] [Range in Cut n] [Length Unit n]
+    /PhysicsData/setCutsInRange [Particle 1] [Range in Cut 1] [Length Unit 1] ... [Particle n] [Range in Cut n] [Length Unit n]
 
-ex : /PhysicsData/setCutsData e- 1 mm e+ 1 mm gamma 2 mm proton 1 cm
+ex : /PhysicsData/setCutsInRange e- 1 mm e+ 1 mm gamma 2 mm proton 1 cm
 
 Four particles can be used (n_max = 4), e-, e+, gamma, proton(the proton cuts is used for all hadrons)
 

@@ -71,7 +71,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <property name="usesScrollButtons">
              <bool>true</bool>
@@ -579,73 +579,8 @@
                  <string/>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_11">
-                 <item row="2" column="1">
-                  <widget class="QComboBox" name="comboBoxPEEModels"/>
-                 </item>
-                 <item row="9" column="0">
-                  <widget class="QLabel" name="EnergyCutlabel">
-                   <property name="text">
-                    <string>Energy Range (Min Max)</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="6" column="1">
                   <widget class="QComboBox" name="comboBoxElectronIonisationModels"/>
-                 </item>
-                 <item row="8" column="0">
-                  <widget class="QLabel" name="label_8">
-                   <property name="text">
-                    <string>Hadron Ionisation</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="0">
-                  <widget class="QLabel" name="label_7">
-                   <property name="text">
-                    <string>Electron Brem</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QComboBox" name="comboBoxComptonModels"/>
-                 </item>
-                 <item row="5" column="1">
-                  <widget class="QComboBox" name="comboBoxRayleighScatteringModels"/>
-                 </item>
-                 <item row="9" column="1">
-                  <widget class="QLineEdit" name="SourceLineEditEnergyCut">
-                   <property name="toolTip">
-                    <string>add energy threshold and unit for simulated particles</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="placeholderText">
-                    <string>1 keV 100 GeV </string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QComboBox" name="comboBoxGammaConversionModels"/>
-                 </item>
-                 <item row="10" column="0">
-                  <widget class="QLabel" name="CutDistancelabel">
-                   <property name="text">
-                    <string>Cuts In Range (Distance)</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
                  </item>
                  <item row="2" column="0">
                   <widget class="QLabel" name="labelPEE">
@@ -657,72 +592,43 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="EnergyCutlabel">
+                   <property name="text">
+                    <string>Energy Range (Min Max)</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="10" column="1">
-                  <widget class="QLineEdit" name="SourceLineEditDistanceCut">
+                  <widget class="QLineEdit" name="SourceLineEditEnergyCut">
                    <property name="toolTip">
-                    <string>add cut in range and unit for simulated particles</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add min and max energy threshold and unit for secondaries. in some cases, the cuts in range when converted to the energy of secondary can be small, then we should define the low energy threshold to not exceed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string/>
                    </property>
                    <property name="placeholderText">
-                    <string>e- 1 mm e+ 1 mm gamma 1 mm proton 1 mm </string>
+                    <string>1 keV 100 GeV </string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QComboBox" name="SourceComboBoxPhysUsed">
-                   <property name="acceptDrops">
-                    <bool>false</bool>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the physics to be used in simulation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="editable">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="label_3">
+                 <item row="8" column="0">
+                  <widget class="QLabel" name="label_8">
                    <property name="text">
-                    <string>Rayleigh Scattering Effect</string>
+                    <string>Hadron Ionisation</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
-                 </item>
-                 <item row="8" column="1">
-                  <widget class="QComboBox" name="comboBoxHadronIonisationModels"/>
                  </item>
                  <item row="3" column="0">
                   <widget class="QLabel" name="label_4">
                    <property name="text">
                     <string>Compton Effect</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_5">
-                   <property name="text">
-                    <string>Gamma Conversion Effect</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="1">
-                  <widget class="QComboBox" name="comboBoxElectronBremModels"/>
-                 </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_6">
-                   <property name="text">
-                    <string>Electron Ionisation</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -739,14 +645,62 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="11" column="0">
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Generate Cross Section For</string>
+                 <item row="8" column="1">
+                  <widget class="QComboBox" name="comboBoxHadronIonisationModels"/>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="SourceComboBoxPhysUsed">
+                   <property name="acceptDrops">
+                    <bool>false</bool>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the physics to be used for particle transport. if the source is e-, e+, and gamma, you can use the constructors EMS.., Livermore, and Penelope constructors. For hadrons, i.e. neutron, proton, and alpha with high energy, you can use physics Hadron_... Also, you can use the geant4 physics packages for all particles (FACTORY_...). In case you choose the &amp;quot;Construct&amp;quot; Option, You should choose the models of each process(interaction) to be used in the generation of the macroscopic cross-section of each couple particle-material.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="editable">
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
-                 <item row="11" column="1">
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>Electron Ionisation</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QComboBox" name="comboBoxGammaConversionModels"/>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Rayleigh Scattering Effect</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QComboBox" name="comboBoxElectronBremModels"/>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="comboBoxPEEModels"/>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Gamma Conversion Effect</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="1">
                   <widget class="QFrame" name="frame_10">
                    <property name="frameShape">
                     <enum>QFrame::NoFrame</enum>
@@ -805,6 +759,52 @@
                      </widget>
                     </item>
                    </layout>
+                  </widget>
+                 </item>
+                 <item row="12" column="0">
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Generate Cross Section For</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QComboBox" name="comboBoxComptonModels"/>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QComboBox" name="comboBoxRayleighScatteringModels"/>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Electron Brem</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0">
+                  <widget class="QLabel" name="CutDistancelabel">
+                   <property name="text">
+                    <string>Cuts In Range (Distance)</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="1">
+                  <widget class="QLineEdit" name="SourceLineEditDistanceCut">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add cuts in range and unit for simulated particles, add the particle name, the production cut, and the length unit, you can set the production cut to four particles, e-, e+, gamma, and proton (the proton production cut is used for all hadrons, i.e. neutron, alpha, ... ). if secondaries can travel more than that distance given, they are produced. Otherwise, it is considered energy loss.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>e- 1 mm e+ 1 mm gamma 1 mm proton 1 mm </string>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -869,6 +869,9 @@
                     </item>
                     <item>
                      <widget class="QLineEdit" name="lineEditChosenSourceTypeData">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add region names where the events will get initial position.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="placeholderText">
                        <string>RegionSrc1 RegionSrc2 RegionSrc3...</string>
                       </property>
@@ -909,7 +912,11 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QComboBox" name="SourceComboBoxAngleDist"/>
+                     <widget class="QComboBox" name="SourceComboBoxAngleDist">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose how initial direction of events will be generated. Directed option require the initial theta and phi angles.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBoxAngleUnit"/>
@@ -945,7 +952,11 @@
                      <widget class="QComboBox" name="comboBoxEnergyUnit"/>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEditSpecialEnergyDistributionParameter"/>
+                     <widget class="QLineEdit" name="lineEditSpecialEnergyDistributionParameter">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add initial energy value (or values) of events according to the chosen distribution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButton_2LoadICRPSpectrum">
@@ -970,7 +981,7 @@
                  <item row="8" column="1">
                   <widget class="QComboBox" name="UseDataFilesFor">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;generate&amp;quot; if you intend to use the [simulate] executable just for generating event data and storing it in binary files. &amp;quot;save&amp;quot; for the direct generation of event data, where binary files will be generated with this event data. &amp;quot;read&amp;quot; for reading data from binary files for simulating events. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;generate&amp;quot; if you intend to use the [simulate] executable just for generating event data and storing it in binary files. &amp;quot;save&amp;quot; for the direct generation of event data, where binary files will be generated with this event data. &amp;quot;read&amp;quot; for reading data from binary files for simulating events. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                   </widget>
                  </item>
@@ -987,7 +998,7 @@
                  <item row="0" column="1">
                   <widget class="QLineEdit" name="SourcelineEditParName">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the particle names to be simulated as primary particles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the particle names to be simulated as primary particles, six particles are available, e- e+, gamma, proton, alpha, neutron.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string/>
@@ -1195,7 +1206,7 @@
                     <item>
                      <widget class="QPushButton" name="pushButtonCalculateNumSimulation">
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculate the number of simulations according to the entered radiation source inputs. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculate the number of simulations according to the entered radiation source inputs (according to the number of particles, regions, initial energies, and momentum directions).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>&gt;</string>
@@ -1516,7 +1527,7 @@
                  <item row="0" column="1">
                   <widget class="QLineEdit" name="AnalysisLineEditVarToScore">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add quantities to score: AE (Absorbed Energy), AD (Absorbed Dose), AF(Absorbed Fraction), SAF(Specific Absorbed Fraction), S(S-Values), H(Equivalent Dose), E(Effective Dose), DR(Dose Ratio).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add quantities to score: AE (Absorbed Energy), AD (Absorbed Dose), AF(Absorbed Fraction), SAF(Specific Absorbed Fraction), S(S-Values), H(Equivalent Dose), E(Effective Dose), DR(Dose Ratio Percent).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="statusTip">
                     <string/>
@@ -1634,6 +1645,9 @@
                  </item>
                  <item row="6" column="1">
                   <widget class="QLineEdit" name="TissueFactorLineEdit">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In case you want to generate the effective dose for radiotracer data. you should add the tissue weighting factors of regions with values different from 0. The region names should be the same as in resulted DoseCalcs files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="placeholderText">
                     <string>Region1 WT1  Region2 WT2 ...</string>
                    </property>
@@ -1682,7 +1696,7 @@
                     <item>
                      <widget class="QPushButton" name="pushButtonMerge">
                       <property name="toolTip">
-                       <string>merge the resulted absorbed energy files in the results directory according to the simulation data provided by SimData file</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Merge the resulted in absorbed energy files in the results directory according to the configuration given by the user (&amp;quot;Quantities To Score&amp;quot; and &amp;quot;Volumes To Score&amp;quot;), and generate the ResultsData file using the merge executable, this file will be used by the analysis executable. Always make sure that region given in &amp;quot;Volumes To Score&amp;quot; exst in the absorbed energy files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>Merge Results</string>
@@ -1692,7 +1706,7 @@
                     <item>
                      <widget class="QPushButton" name="pushButtonOpenResultsFile">
                       <property name="toolTip">
-                       <string>open the file ResultsData from the results directory</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the file ResultsData from the results directory, to check the generated data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>View Results</string>
@@ -1973,6 +1987,9 @@
               </item>
               <item>
                <widget class="QGroupBox" name="groupBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This for root graphs visualization parameters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="title">
                  <string>Graphs Parameters</string>
                 </property>
@@ -2055,6 +2072,9 @@
                  </item>
                  <item row="2" column="4">
                   <widget class="QPushButton" name="RootAnalysispushButtonOpenROOTGUI">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In case you generate graphs in the root extension, you should open this ROOT browser to read, manipulate and save these manipulated graphs to the appropriate format. When you open this ROOT browser application, you should navigate to the results directory in the PlotsAndTables directory to find the generated .root files. if you regenerate the graphs by analysis executable, please remove first the files from PlotsAndTables and update the ROOT browser window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Open ROOT GUI</string>
                    </property>
@@ -2062,6 +2082,9 @@
                  </item>
                  <item row="2" column="0" colspan="2">
                   <widget class="QPushButton" name="AnalysisbtnGenerate">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click to run the analysis executable, the data will be created in tables of formats, latex, text, and CSV; and roof graphs will be generated in the chosen format. Also, the analysis executable uses &amp;quot;Quantities To Score&amp;quot; and &amp;quot;Volumes To Score&amp;quot;. Always make sure that regions given in &amp;quot;Volumes To Score&amp;quot; and values of quantities given in &amp;quot;Quantities To Score&amp;quot; exist in the ResultsData.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Generate</string>
                    </property>
@@ -2096,6 +2119,9 @@
                  </item>
                  <item row="0" column="0" colspan="2">
                   <widget class="QPushButton" name="btnAnalysiInputFileFile">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The analysis inputs will be filled by default values&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Load Default Inputs</string>
                    </property>
@@ -2134,6 +2160,9 @@
                  </property>
                  <item row="16" column="1">
                   <widget class="QPushButton" name="pushButtonReverseData">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the calculated values of radionuclides in the table (in Ascending or Descending modes)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Show in Table (Ascending)</string>
                    </property>
@@ -2141,6 +2170,9 @@
                  </item>
                  <item row="16" column="0">
                   <widget class="QPushButton" name="pushButtonGetResultsNucl">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculate the internal dosimetry quantity chosen for all radionuclides according to the region's configuration and filters of radionuclides.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Calculate for This Configuration</string>
                    </property>
@@ -2148,6 +2180,9 @@
                  </item>
                  <item row="19" column="1">
                   <widget class="QPushButton" name="pushButtonSaveTableInPDF">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the shown table to a pdf file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Save Table (PDF)</string>
                    </property>
@@ -2202,7 +2237,11 @@
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QComboBox" name="comboBoxPhantom"/>
+                        <widget class="QComboBox" name="comboBoxPhantom">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the phantom of which its SAFs will be used in radionuclides classification and internal dosimetry quantities calculation using biokinetics and administered activity.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <widget class="QComboBox" name="comboBoxTotalorSourceOrCombNucl"/>
@@ -2235,10 +2274,17 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QComboBox" name="comboBoxRedionuclidesRadEmmiterType"/>
+                     <widget class="QComboBox" name="comboBoxRedionuclidesRadEmmiterType">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Filter the radionuclides to be classified according to emitted particles.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QFrame" name="frame_22">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uncheck the particles that you won't include when calculating S-values and other internal dosimetry quantities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="frameShape">
                        <enum>QFrame::NoFrame</enum>
                       </property>
@@ -2349,6 +2395,9 @@
                        </property>
                        <item>
                         <widget class="QCheckBox" name="checkBoxHalflivesNucl">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Filter the radionuclides to be classified according to half-life min and max limits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Half-live limits</string>
                          </property>
@@ -2356,6 +2405,9 @@
                        </item>
                        <item>
                         <widget class="QDoubleSpinBox" name="doubleSpinBoxMinHalflives">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add min value of the half-life&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="decimals">
                           <number>5</number>
                          </property>
@@ -2366,6 +2418,9 @@
                        </item>
                        <item>
                         <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxHalflives">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add max value of the half-life&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="decimals">
                           <number>5</number>
                          </property>
@@ -2415,7 +2470,7 @@
                  <item row="0" column="1">
                   <widget class="QPushButton" name="pushButtonReadUSERData">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read DoseCalcs result file that contains SAFs of particles and organs (sources and targets) masses. These data will be used to calculate dosimetry quantities of radionuclides in order to classify according to the user parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read DoseCalcs result file (ResultsData) that contains SAFs of particles and organs (sources and targets) masses. These data will be used to calculate dosimetry quantities of radionuclides in order to classify according to the user parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string>Read User SAFs Data</string>
@@ -2466,6 +2521,9 @@
                        </property>
                        <item>
                         <widget class="QDoubleSpinBox" name="doubleSpinBoxAdministeredActivity">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the administered activity injected into the patient.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="maximum">
                           <double>1000000000.990000009536743</double>
                          </property>
@@ -2480,7 +2538,7 @@
                        <item>
                         <widget class="QPushButton" name="pushButtonGenerateQuantitiesWithBiokineticData">
                          <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will calculate the internal dosimetry quantity chosen for radiopharmaceutical chosen and administered activity given. First, make shir you read the SAFs data (ICRP or USER), and these SAFs are available for this configuration (radionuclide particles, source and target region, OtheTissues region)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will calculate the internal dosimetry quantity chosen for the radiopharmaceutical chosen and administered activity given. First, make sure you read the SAFs data (ICRP or USER), and these SAFs are available for this configuration (radionuclide particles, source and target region, OtheTissues region). Also, you should constate that the phantom chosen agrees with the radiopharmaceutical model data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="text">
                           <string>Generate</string>
@@ -2515,10 +2573,17 @@
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QComboBox" name="comboBoxRadioPharmaceutiques"/>
+                        <widget class="QComboBox" name="comboBoxRadioPharmaceutiques">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the radiopharmaceutical to be used in the biokinetics calculations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <widget class="QPushButton" name="pushButtonShowBiokineticData">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the model of the selected radiopharmaceutical in a table form of source regions and the corresponding residence time (h).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Show Model Data</string>
                          </property>
@@ -2526,6 +2591,9 @@
                        </item>
                        <item>
                         <widget class="QPushButton" name="pushButtonAddBiokineticModel">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add a new model of radiopharmaceutical. You should add the radionuclide of this radiopharmaceutical, source regions, and the corresponding residence time (h).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Add Model Data</string>
                          </property>
@@ -2533,6 +2601,9 @@
                        </item>
                        <item>
                         <widget class="QPushButton" name="pushButtonSaveBiokinetikModelData">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the model data of the current table to the currently selected radiopharmaceutical.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Save Model Data</string>
                          </property>
@@ -2569,10 +2640,18 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QComboBox" name="comboBoxTargets"/>
+                     <widget class="QComboBox" name="comboBoxTargets">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the target region in the selected phantom.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEdittargetsToUse"/>
+                     <widget class="QLineEdit" name="lineEdittargetsToUse">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select a new target region to be added to the list of target regions that will be considered as one target, for radionuclides' internal dosimetry quantities calculation, classification, and for biokinetics calculation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_12">
@@ -2585,10 +2664,18 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEditSourcesToUse"/>
+                     <widget class="QLineEdit" name="lineEditSourcesToUse">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select a new source region to be added to the list of source regions that will be considered as a source of radiation for radionuclides' internal dosimetry quantities calculation and classification.  For Biokinetics, the source region should be defined for radiopharmaceutical with a residence time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBoxSources"/>
+                     <widget class="QComboBox" name="comboBoxSources">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the source region in the selected phantom.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
@@ -2639,13 +2726,20 @@
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QComboBox" name="comboBoxQuantityNucl"/>
+                        <widget class="QComboBox" name="comboBoxQuantityNucl">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the internal dosimetry quantity to be calculated for all radionuclides, and also for biokinetics using the radiopharmaceutical model and administered activity.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <widget class="QComboBox" name="comboBoxEffDoseUnit"/>
                        </item>
                        <item>
                         <widget class="QCheckBox" name="checkBoxEffDoseLimNucl">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Filter the radionuclides to be classified according to the quantity min and max limits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Limits</string>
                          </property>
@@ -2653,6 +2747,9 @@
                        </item>
                        <item>
                         <widget class="QDoubleSpinBox" name="doubleSpinBoxMinEffDose">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add min value of the selected quantity&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="decimals">
                           <number>5</number>
                          </property>
@@ -2663,6 +2760,9 @@
                        </item>
                        <item>
                         <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxEffDose">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add max value of the selected quantity&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="decimals">
                           <number>5</number>
                          </property>
@@ -2679,6 +2779,9 @@
                  </item>
                  <item row="1" column="0">
                   <widget class="QPushButton" name="pushButtonChangeMasses">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click to show all regions' masses, you can alter these masses' values, then save the current masses, this will recalculate SAF values to correspond to the new mass values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Alter Masses</string>
                    </property>

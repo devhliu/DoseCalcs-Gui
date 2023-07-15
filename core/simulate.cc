@@ -443,7 +443,7 @@ int main(int argc,char** argv){
                 physicsList->SetCutsWithDefault();
             }else{
                 std::istringstream LineString(CutInRangeData);
-                G4cout << CutInRangeData << G4endl;
+                //G4cout << CutInRangeData << G4endl;
 
                 G4double Ene; G4String pn, Unit;
                 while(LineString >> pn ){
@@ -669,7 +669,7 @@ int main(int argc,char** argv){
                 physicsList->SetCutsWithDefault();
             }else{
                 std::istringstream LineString(CutInRangeData);
-                G4cout << CutInRangeData << G4endl;
+                //G4cout << CutInRangeData << G4endl;
 
                 G4double Ene; G4String pn, Unit;
                 while(LineString >> pn ){

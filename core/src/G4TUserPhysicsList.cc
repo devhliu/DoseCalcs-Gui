@@ -1024,8 +1024,8 @@ void G4TUserPhysicsList::ShowSourceParameters() {
         G4cout<<" >> New ParticlePysics " << RayleighScatteringModel <<G4endl;
         G4cout<<" >> New GammaConversionToMuonModel " << GammaConversionToMuonModel <<G4endl;
     }
-    G4cout<<" >> Cuts In Range: " << CutsDistance << " mm" << G4endl;
-    G4cout<<" >> Energy Range: " << CutInRangeData << G4endl;
+    G4cout<<" >> Cuts In Range: " << CutInRangeData << G4endl;
+    G4cout<<" >> Energy Range: " << EnergyThresholdsData << G4endl;
 
     if(GenerateCrossSectionTableFlag){
         G4cout<<" >> GenerateCrossSectionTableFlag " << "yes" <<G4endl;

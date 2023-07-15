@@ -127,6 +127,7 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
         QStringLiteral("\\beV\\b"),
         QStringLiteral("\\bkeV\\b"),
         QStringLiteral("\\bMeV\\b"),
+        QStringLiteral("\\bGeV\\b"),
         QStringLiteral("\\bBq\\b"),
         QStringLiteral("\\bkBq\\b"),
         QStringLiteral("\\bMBq\\b"),
@@ -134,7 +135,6 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
         QStringLiteral("\\bJ\\b"), QStringLiteral("\\bkg-1\\b"), QStringLiteral("\\bg-1\\b"),
         QStringLiteral("\\bMeV/kg\\b"), QStringLiteral("\\bGy\\b"), QStringLiteral("\\bmGy\\b"),
         QStringLiteral("\\bMGy\\b"), QStringLiteral("\\bmiGy\\b"), QStringLiteral("\\bnGy\\b"),
-        QStringLiteral("\\bMeV\\b"), QStringLiteral("\\bMeV\\b"), QStringLiteral("\\bMeV\\b"),
         QStringLiteral("\\bSv\\b"), QStringLiteral("\\bmSv\\b"),
     };
 
@@ -188,7 +188,8 @@ Highlighter::Highlighter(QTextDocument *parent) : QSyntaxHighlighter(parent) {
         QStringLiteral("\\bcreateSolid\\b"),
         QStringLiteral("\\bcreateVolume\\b"),
         QStringLiteral("\\bsetPhysicsData\\b"),
-        QStringLiteral("\\bsetCutsData\\b"),
+        QStringLiteral("\\bsetCutsInRange\\b"),
+        QStringLiteral("\\bsetEnergyRange\\b"),
         QStringLiteral("\\bgenerateCrossSectionFor\\b"),
         QStringLiteral("\\bsetEventsParticleNameData\\b"),
         QStringLiteral("\\bsetEventsInitialPosData\\b"),

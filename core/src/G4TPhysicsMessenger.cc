@@ -281,7 +281,7 @@ void  G4TPhysicsMessenger::CommandsForPhysics(){
     param = new G4UIparameter("HadronIonisationModel",'s', true);  PhysicsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
     param = new G4UIparameter("IonIonisationModel",'s', true);  PhysicsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
     
-    CutsDataCMD = new G4UIcommand("/PhysicsData/setCutsData" ,this);
+    CutsDataCMD = new G4UIcommand("/PhysicsData/setCutsInRange" ,this);
     param = new G4UIparameter("particle 1",'s', true);     CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
     param = new G4UIparameter("Cut in range 1",'s', true);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
     param = new G4UIparameter("Unit 1",'s', true);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
