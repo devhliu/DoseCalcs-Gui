@@ -221,8 +221,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->SourceComboBoxAngleDist->addItems(AngleDistlist);
 
     QStringList Physicslist=(QStringList()<<"EMS"<<"EMS1"<<"EMS2"<<"EMS3"<<"EMS4"<<"Penelope"<<"Livermore"<<"Construct"
-                             <<"FTFP_BERT"<<"FTFP_BERT_ATL"<<"FTFP_BERT_TRV"<<"QGSP_FTFP_BERT"<<"QGSP_BERT"
-                             <<"QGSP_BERT_HP"<<"QGSP_BIC"<<"QGSP_BIC_AllHP"<<"INCLXX"<<"Shielding"<<"ShieldingLEND");
+                             <<"HADRON_FTFP_BERT"<<"HADRON_FTFP_BERT_ATL"<<"HADRON_FTFP_BERT_TRV"<<"HADRON_QGSP_FTFP_BERT"<<"HADRON_QGSP_BERT"
+                             <<"HADRON_QGSP_BERT_HP"<<"HADRON_QGSP_BIC"<<"HADRON_QGSP_BIC_AllHP"<<"HADRON_INCLXX"<<"HADRON_Shielding"<<"HADRON_ShieldingLEND"
+                             <<"FACTORY_FTFP_BERT"<<"FACTORY_FTFP_BERT_ATL"<<"FACTORY_FTFP_BERT_TRV"<<"FACTORY_QGSP_FTFP_BERT"<<"FACTORY_QGSP_BERT"
+                             <<"FACTORY_QGSP_BERT_HP"<<"FACTORY_QGSP_BIC"<<"FACTORY_QGSP_BIC_AllHP"<<"FACTORY_INCLXX"<<"FACTORY_Shielding"<<"FACTORY_ShieldingLEND");
 
     ui->SourceComboBoxPhysUsed->addItems(Physicslist);
 
@@ -1007,6 +1009,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     highlighter2 = new Highlighter(ui->GeometryFileTextEdit->document());
     ui->frame_19->setVisible(false);
 
+    ui->SourceLineEditEnergyCut->setVisible(false);
+    ui->EnergyCutlabel->setVisible(false);
+
     FillCoomponentByDefaultData();
 
     ui->tabWidget->setCurrentIndex(1);
@@ -1124,7 +1129,7 @@ void MainWindow::initializeVariable(){
     PhysicsData_setElectronBremModel = "";
     PhysicsData_setHadronIonisationModel = "";
 
-    PhysicsData_setCutsEnergy = "";
+    //PhysicsData_setCutsEnergy = "";
     PhysicsData_setCutsDistance = "";
 
     //PhysicsData_setIonIonisationModel = "";
@@ -1436,9 +1441,9 @@ void MainWindow::setCompleters(){
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     //ui->radiationEnergyFactor->setCompleter(completer);
 
-    completer = new QCompleter(EnergyUnits, this);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    ui->SourceLineEditEnergyCut->setCompleter(completer);
+    //completer = new QCompleter(EnergyUnits, this);
+    //completer->setCaseSensitivity(Qt::CaseInsensitive);
+    //ui->SourceLineEditEnergyCut->setCompleter(completer);
 
     completer = new QCompleter(SizeUnits, this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -1669,7 +1674,7 @@ void MainWindow::FillCoomponentByDefaultData(){
 
     // Physics
 
-    ui->SourceLineEditEnergyCut->setText("1 keV");
+    //ui->SourceLineEditEnergyCut->setText("1 keV");
     ui->SourceLineEditDistanceCut->setText("1 mm");
 
     ui->lineEditParticleNamesForCrossSection->setText("gamma");
@@ -1751,7 +1756,7 @@ void MainWindow::on_pushButtonCalculateNumSimulation_clicked()
 
     tx = tx + "" + QString::number(num) + "*";
 
-    if(ui->comboBoxTypeOfSources->currentText() == "Voxels"){
+    if(ui->comboBoxTypeOfSources->currentText() == "Voxels" || ui->comboBoxTypeOfSources->currentText() == "TET"){
         InputsVals = ui->lineEditChosenSourceTypeData->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setSourceGenerationData"
 
         int mines = 0;
@@ -2687,7 +2692,7 @@ void MainWindow::SaveSourcePhysicsInputs(){
     PhysicsData_setElectronBremModel = ui->comboBoxElectronBremModels->currentText();
     PhysicsData_setHadronIonisationModel = ui->comboBoxHadronIonisationModels->currentText();
 
-    PhysicsData_setCutsEnergy = ui->SourceLineEditEnergyCut->text();
+    //PhysicsData_setCutsEnergy = ui->SourceLineEditEnergyCut->text();
     PhysicsData_setCutsDistance = ui->SourceLineEditDistanceCut->text();
 
     PhysicsData_ParticleForCrossSection = ui->lineEditParticleNamesForCrossSection->text() ;
@@ -2857,7 +2862,7 @@ void MainWindow::InitialiseSourcePhysicsInputs(){
     ui->comboBoxElectronBremModels->setCurrentIndex(0);
     ui->comboBoxHadronIonisationModels->setCurrentIndex(0);
 
-    ui->SourceLineEditEnergyCut->setText("");
+    //ui->SourceLineEditEnergyCut->setText("");
     ui->SourceLineEditDistanceCut->setText("");
 
     ui->lineEditParticleNamesForCrossSection->setText("");
@@ -2991,7 +2996,7 @@ void MainWindow::RefillSourcePhysicsInputs(){
     ui->comboBoxElectronBremModels->setCurrentText(PhysicsData_setElectronBremModel);
     ui->comboBoxHadronIonisationModels->setCurrentText(PhysicsData_setHadronIonisationModel);
 
-    ui->SourceLineEditEnergyCut->setText(PhysicsData_setCutsEnergy);
+    //ui->SourceLineEditEnergyCut->setText(PhysicsData_setCutsEnergy);
     ui->SourceLineEditDistanceCut->setText(PhysicsData_setCutsDistance);
 
     ui->lineEditParticleNamesForCrossSection->setText(PhysicsData_ParticleForCrossSection);
@@ -4098,11 +4103,14 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
             ui->comboBoxHadronIonisationModels->setCurrentIndex(InputsVals[7].toInt());
         }
 
+        ui->SourceLineEditDistanceCut->setText(lines[PhysicsCommands[1]]);
+        /*
         InputsVals = lines[PhysicsCommands[1]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setCutsData"
         if(InputsVals.size() == 4){
             ui->SourceLineEditEnergyCut->setText(InputsVals[1] + " " + InputsVals[3]);
             ui->SourceLineEditDistanceCut->setText(InputsVals[0] + " " + InputsVals[2]);
         }
+        */
         InputsVals = lines[PhysicsCommands[2]].split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setEventsInitialEneData"
         if(InputsVals.size() >= 2){
             ui->lineEditParticleNamesForCrossSection->setText(InputsVals[0]);
@@ -4350,11 +4358,16 @@ void MainWindow::CreateUserCommands(){
         PhysicsData_setPhysicsData = PhysicsData_setPhysicsName ;
     }
 
+    PhysicsData_setCutsData = PhysicsData_setCutsDistance;
+
+/*
     QStringList InputsVals = PhysicsData_setCutsDistance.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
     QStringList InputsVals2 = PhysicsData_setCutsEnergy.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
 
-    PhysicsData_setCutsData = InputsVals[0] + " " + InputsVals2[0] + " " + InputsVals[1] + " " + InputsVals2[1];
-
+    if(InputsVals.size() > 1 && InputsVals2.size() > 1){
+        PhysicsData_setCutsData = InputsVals[0] + " " + InputsVals2[0] + " " + InputsVals[1] + " " + InputsVals2[1];
+    }
+*/
 
     // Source
     SourceData_setSourcePosData = SourceData_setSourceSizeUnit + " " +
@@ -4419,10 +4432,12 @@ QString MainWindow::generateInputUserTextForinputFile(){
     // Physics
     PhysicsData = PhysicsCommands[0] + " " + PhysicsData_setPhysicsData + "\n" +
             PhysicsCommands[1]+ " " + PhysicsData_setCutsData + "\n" ;
-    if(ui->lineEditParticleNamesForCrossSection->text()!="" && ui->lineEditEnergiesForCrossSection->text()!=""){
-        PhysicsData += PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
-    }else{
-        PhysicsData += "# " + PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
+    if(ui->checkBoxGenerateCrossSection->isChecked()){
+        if(ui->lineEditParticleNamesForCrossSection->text()!="" && ui->lineEditEnergiesForCrossSection->text()!=""){
+            PhysicsData += PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
+        }else{
+            PhysicsData += "# " + PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
+        }
     }
     // Source
     SourceData = SourceCommands[0] + " " + SourceData_setParticleName + "\n" +
@@ -4687,22 +4702,22 @@ bool MainWindow::TestSimulateExecutableInputsToRun(){
         }
     }
     if(ui->radioButtonGDML->isChecked() || ui->radioButtonTEXT->isChecked() || ui->radioButtonCpp->isChecked() || ui->radioButtonSTL->isChecked() || ui->radioButtonConstruct->isChecked()){
-        if(ui->comboBoxTypeOfSources->currentText()=="Voxels"){
+        if(ui->comboBoxTypeOfSources->currentText()=="Voxels" || ui->comboBoxTypeOfSources->currentText()=="TET"){
             ui->Tab->setCurrentIndex(1);
-            QMessageBox::information(this, tr(""), "You can't use Voxels source with standart volumes geometry");
+            QMessageBox::information(this, tr(""), "You can't use Voxels or TET source with standart volumes geometry, use Volume or other source types with standart volumes geometry");
             return false;
         }
     }else if(ui->radioButtonDICOM->isChecked() || ui->radioButtonVoxIDs->isChecked() || ui->radioButtonVoxel->isChecked() ){
-        if(ui->comboBoxTypeOfSources->currentText()!="Voxels"){
+        if(ui->comboBoxTypeOfSources->currentText() == "Volume" || ui->comboBoxTypeOfSources->currentText() == "TET"){
             ui->Tab->setCurrentIndex(1);
-            QMessageBox::information(this, tr(""), "Use Voxels source with Voxelized geometry");
+            QMessageBox::information(this, tr(""), "You can't use Volume or TET source, use Voxels or other source types with Voxelized geometry");
             return false;
         }
     }
     else if(ui->radioButtonTET->isChecked() ){
-        if(ui->comboBoxTypeOfSources->currentText()!="TET"){
+        if(ui->comboBoxTypeOfSources->currentText()=="Volume" || ui->comboBoxTypeOfSources->currentText()=="Voxels" ){
             ui->Tab->setCurrentIndex(1);
-            QMessageBox::information(this, tr(""), "Use TET source with Tetrahedral geometry");
+            QMessageBox::information(this, tr(""), "You can't use Volume or Voxels source, use TET or other source types with Voxelized geometry");
             return false;
         }
     }
@@ -4933,7 +4948,8 @@ bool MainWindow::ShowImportantSimulationData(){
 
     ImportantSimulationInputs +=
             "*** Physics : " + ui->SourceComboBoxPhysUsed->currentText() + "\n"+
-            "*** Cuts : " + ui->SourceLineEditDistanceCut->text()+ " " + ui->SourceLineEditEnergyCut->text() + "\n\n";
+            "*** Cuts In Range: " + ui->SourceLineEditDistanceCut->text()+ "\n\n";
+            //+ ui->SourceLineEditEnergyCut->text() + "\n\n";
     ImportantSimulationInputs +=
             "*** Initial Particles : "+ui->SourcelineEditParName->text() + "\n"+
             "*** Initial Position : "+ui->comboBoxTypeOfSources->currentText() +" : " + ui->lineEditChosenSourceTypeData->text() +"\n" +
@@ -7448,10 +7464,12 @@ void MainWindow::RunForMultiGeomeries()
         // Physics
         MacrosText += PhysicsCommands[0] + " " + PhysicsData_setPhysicsData + "\n" +
                 PhysicsCommands[1]+ " " + PhysicsData_setCutsData + "\n" ;
-        if(PhysicsData_ParticleForCrossSection !="" && PhysicsData_EnergiesForCrossSection !=""){
-            MacrosText += PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
-        }else{
-            MacrosText += "# " + PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
+        if(ui->checkBoxGenerateCrossSection->isChecked()){
+            if(PhysicsData_ParticleForCrossSection !="" && PhysicsData_EnergiesForCrossSection !=""){
+                MacrosText += PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
+            }else{
+                MacrosText += "# " + PhysicsCommands[2]+ " " + PhysicsData_ParticleForCrossSection + " " + PhysicsData_EUnitForCrossSection + " " + PhysicsData_EnergiesForCrossSection ;
+            }
         }
         MacrosText += "\n\n";
 

@@ -131,7 +131,6 @@ G4TVolumeConstruction::G4TVolumeConstruction()
 
     UseDicomCumAct = false;
     GenerateVoxelsResuls = "no";
-    UseVoxelsColour = false;
     //VOXTET_USE = false;
 
     CPPLogVolAreBuilt = false;
@@ -414,11 +413,6 @@ G4VPhysicalVolume* G4TVolumeConstruction::ConstructTETGeometry(){
     // Define the phantom container (10 cm-margins from the bounding box of phantom)
     //
 
-    phantomSize     = tetData -> GetPhantomSize();
-    phantomBoxMin   = tetData -> GetPhantomBoxMin();
-    phantomBoxMax   = tetData -> GetPhantomBoxMax();
-    nOfTetrahedrons = tetData -> GetNumTetrahedron();
-
     G4Material* vacuum = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
 
     ContSolidVoll = new G4Box("TETVoxelContainer", phantomSize.x() * 0.5 + 10.*cm, phantomSize.y() * 0.5 + 10.*cm,phantomSize.z() * 0.5 + 10.*cm);
@@ -428,7 +422,6 @@ G4VPhysicalVolume* G4TVolumeConstruction::ConstructTETGeometry(){
     //ContPhysicalVoll = new G4PVPlacement(rm, G4ThreeVector(), ContLogicalVoll, "TETVoxelContainer", WorldPhysicalVolume->GetLogicalVolume(), false, 0);
     ContLogicalVoll->SetOptimisation(TRUE);
     ContLogicalVoll->SetSmartless( 0.5 ); // for optimization (default=2)
-
 
     // Define the tetrahedral mesh phantom as a parameterised geometry
     //
@@ -441,20 +434,29 @@ G4VPhysicalVolume* G4TVolumeConstruction::ConstructTETGeometry(){
                                      G4ThreeVector(0,0,1.*cm));
 
     tetLogic = new G4LogicalVolume(tetraSolid, vacuum, "TetLogic");
-
+/*
     G4TTETParameterisation* param2 =  new G4TTETParameterisation(tetData);
     if(UseVoxelsColour == true){ param2->setUseLogVolColour(true);}
 
-    // physical volume (phantom) constructed as parameterised geometry
+    physical volume (phantom) constructed as parameterised geometry
     new G4PVParameterised("wholePhantom",tetLogic,ContLogicalVoll,
                           kUndefined,
                           tetData->GetNumTetrahedron(),
                           param2);
+*/
+    // physical volume (phantom) constructed as parameterised geometry
+    new G4PVParameterised("wholePhantom",tetLogic,ContLogicalVoll,
+                          kUndefined,tetData->GetNumTetrahedron(),
+                          new TETParameterisation(tetData));
 
     return WorldPhysicalVolume;
+
 }
 void G4TVolumeConstruction::GenerateDataFromTETPhantomFiles()
 {
+
+    // for tetrahedral always = true because we use materials ID in Stepping and HitMap for estimating edep
+    MaterialNameAsRegionName = true;
 
     tetData = new G4TTETModelImport();
 
@@ -475,6 +477,11 @@ void G4TVolumeConstruction::GenerateDataFromTETPhantomFiles()
     OrganNameMassMap = tetData->GetOrganNameMassMap();
     OrganNameDensityMap = tetData->GetOrganNameDensityMap();
     OrganNameVolumeMap = tetData->GetOrganNameVolumeMap();
+
+    phantomBoxMin   = tetData -> GetPhantomBoxMin();
+    phantomBoxMax   = tetData -> GetPhantomBoxMax();
+    nOfTetrahedrons = tetData -> GetNumTetrahedron();
+    phantomSize     = tetData -> GetPhantomSize();
 
 #if VERBOSE_USE
     tetData->PrintMaterialInfomation();
@@ -958,7 +965,7 @@ void G4TVolumeConstruction::ConstructSDandField()
 
     if(GeometryFileType == "TET"){
 
-        std::cout  << "\n\n========= Set The SD to the Geometry Volume..." << std::endl;
+        //std::cout  << "\n\n========= Set The SD to the Geometry Volume..." << std::endl;
 
         // Define detector (Phantom SD) and scorer (eDep)
         //
@@ -975,6 +982,7 @@ void G4TVolumeConstruction::ConstructSDandField()
         // attach the detector to logical volume for parameterised geometry (phantom geometry)
         SetSensitiveDetector(tetLogic, MFDet);
     }
+
     //G4cout  << "************** Set The SD to the Geometry Volume..." << G4endl;
     /*
     G4TSD* SD = new G4TSD("SD", "TCollection");
@@ -1339,7 +1347,7 @@ void G4TVolumeConstruction::placeVolume(G4String n, G4String MotherVolumeName, G
         WorldPhysicalVolume->SetName("World");
         WorldPhysicalVolume->GetLogicalVolume()->SetName("World");
 #if VERBOSE_USE
-        G4cout << "\n\n - Volume " << WorldPhysicalVolume->GetLogicalVolume()->GetName() << " - mother : " << WorldPhysicalVolume->GetName() << G4endl;
+        //G4cout << "\n\n - Volume " << WorldPhysicalVolume->GetLogicalVolume()->GetName() << " - mother : " << WorldPhysicalVolume->GetName() << G4endl;
 #endif
         //G4cout << __FUNCTION__ << " --------------- "  << G4endl;
 
@@ -2605,7 +2613,6 @@ G4VPhysicalVolume* G4TVolumeConstruction::ConstructVoxeDcmGeometry(){
         voxel_solid = new G4Box( "Voxel", VoxXHalfSize, VoxYHalfSize, VoxZHalfSize);
         voxel_logic = new G4LogicalVolume(voxel_solid,defaultMat,"VoxelLogical", 0,0,0);
 
-
         if( ParamType == 0 ) {
 
 #if VERBOSE_USE
@@ -3643,7 +3650,6 @@ void G4TVolumeConstruction::setRankDataForMPIMode(){
                                     else if (vertex.getZ() > zMax) zMax = vertex.getZ();
                                 }
                                 internalTetVec.push_back(tetData->GetTetrahedron(n));
-
                             }
                         }
 

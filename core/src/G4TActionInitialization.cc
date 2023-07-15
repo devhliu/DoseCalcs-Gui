@@ -79,55 +79,21 @@ void G4TActionInitialization::BuildForMaster() const
 
     if(SourceType=="Voxels" || SourceType=="TET"){VOXTET_USE = true;}
 
-    if(SourceType == "TET"){
-        SetUserAction(new TETRunAction("MeshTypeResults"));
-    }else{
         SetUserAction(new G4TRunAction());
     }
-}
 
 void G4TActionInitialization::Build() const {
 
     //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
 
-    //G4TVolumeConstruction* Det;
-    //G4TReadPrimaryGeneratorAction* Pri;
-
-    G4TRunAction* runAction;
-    if(SourceType == "TET"){
-        SetUserAction(new TETRunAction("MeshTypeResults"));
-    }else{
-        runAction = new G4TRunAction;
-        SetUserAction(runAction);
-    }
-
-
-    //G4TEventAction* eventAction = new G4TEventAction(runAction);
-    //SetUserAction(eventAction);
-
-    //SetUserAction(new G4TTrackingAction);
-    //SetUserAction(new G4TEventAction);
+    G4TRunAction* runAction = new G4TRunAction;
+    SetUserAction(runAction);
 
     const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n  : " << TConstruction2->getUseGeneratedData()<< G4endl;
 
-    //std::cout << "\n\n\n\n\n\n\n\n\n\n VOXTET_USE " << VOXTET_USE << " SourceType "<< SourceType << " ParamType "<< ParamType << std::endl;
+    if(SourceType=="Voxels"){VOXTET_USE = true;}
 
-    //if( ParamType == 0){
-
-    //}
-
-    //SetUserAction(new G4TSteppingAction(runAction));
-    //SetUserAction(new G4TDirectPrimaryGeneratorAction);
-    //return;
-
-    if(SourceType=="Voxels" || SourceType=="TET"){VOXTET_USE = true;}
-
-    if(SourceType=="TET"){
-        //SetUserAction(new G4TParamSteppingAction(runAction));
-        SetUserAction(new TETSteppingAction);
-    }
-    else if(SourceType=="Voxels"){
+    if(SourceType=="Voxels"){
         if( ParamType == 0){
             //std::cout << "\n\n\n\n\n\n\n\n\n\n VOXTET_USE " << VOXTET_USE << " SourceType "<< SourceType << " ParamType "<< ParamType << std::endl;
             SetUserAction(new G4TParamSteppingAction(runAction));
@@ -138,7 +104,6 @@ void G4TActionInitialization::Build() const {
     else{
         SetUserAction(new G4TSteppingAction(runAction));
     }    
-
 
 
     if( TConstruction2->getUseGeneratedData() == "read"){

@@ -23,48 +23,42 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// TETRun.hh
-// \file   MRCP_GEANT4/Internal/include/TETRun.hh
+// TETActionInitialization.hh
+// \file   MRCP_GEANT4/Internal/include/TETActionInitialization.hh
 // \author Haegin Han
 //
 
-#ifndef TETRun_h
-#define TETRun_h 1
+#ifndef TETActionInitialization_h
+#define TETActionInitialization_h 1
 
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4THitsMap.hh"
-#include "G4SDManager.hh"
-
-typedef std::map<G4int, std::pair<G4double, G4double>> EDEPMAP;
-typedef std::map<G4int,unsigned long long int> NumStepMAP;
+#include "G4VUserActionInitialization.hh"
+#include "G4String.hh"
+#include "TETRunAction.hh"
+#include "TETSteppingAction.hh"
+#include "G4TDirectPrimaryGeneratorAction.hh"
+#include "G4TReadPrimaryGeneratorAction.hh"
+#include "G4TDirectToFilesPrimaryGeneratorAction.hh"
 
 // *********************************************************************
-// This is G4Run class that sums up energy deposition from each event.
-// The sum of the square of energy deposition was also calculated to
-// produce the relative error of the dose.
-// -- RecordEvent: Sum up the energy deposition and the square of it.
-//                 The sums for each organ were saved as the form of
-//                 std::map.
-// -- Merge: Merge the data calculated in each thread.
+// This UserActionInitialization class initializes UserAction classes
+// -- BuildForMaster: instantiate UserRunAction class to be used by
+//                    G4MTRunManager. This method is not invoked in
+//                    the sequential mode.
+// -- Build: instantiate UserPrimaryGeneratorAction, UserRunAction, and
+//           UserSteppingAction classes.
 // *********************************************************************
 
-class TETRun : public G4Run 
+class TETActionInitialization : public G4VUserActionInitialization
 {
-public:
-	TETRun();
-	virtual ~TETRun();
+  public:
+    TETActionInitialization();
+	virtual ~TETActionInitialization();
 
-	virtual void RecordEvent(const G4Event*);
-	void ConstructMFD(const G4String& mfdName);
-    virtual void Merge(const G4Run*);
+	virtual void BuildForMaster() const;
+	virtual void Build() const;
 
-    EDEPMAP* GetEdepMap() {return &edepMap;};
-    NumStepMAP* GetnumstepsMap() {return &numstepsMap;};
-
-private:
-    EDEPMAP edepMap;
-    NumStepMAP numstepsMap;
 };
 
 #endif
+
+    

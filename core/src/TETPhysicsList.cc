@@ -23,48 +23,34 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// TETRun.hh
-// \file   MRCP_GEANT4/Internal/include/TETRun.hh
+// TETPhysicsList.cc
+// \file   MRCP_GEANT4/Internal/src/TETPhysicsList.cc
 // \author Haegin Han
 //
 
-#ifndef TETRun_h
-#define TETRun_h 1
+#include "TETPhysicsList.hh"
 
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4THitsMap.hh"
-#include "G4SDManager.hh"
-
-typedef std::map<G4int, std::pair<G4double, G4double>> EDEPMAP;
-typedef std::map<G4int,unsigned long long int> NumStepMAP;
-
-// *********************************************************************
-// This is G4Run class that sums up energy deposition from each event.
-// The sum of the square of energy deposition was also calculated to
-// produce the relative error of the dose.
-// -- RecordEvent: Sum up the energy deposition and the square of it.
-//                 The sums for each organ were saved as the form of
-//                 std::map.
-// -- Merge: Merge the data calculated in each thread.
-// *********************************************************************
-
-class TETRun : public G4Run 
+TETPhysicsList::TETPhysicsList()
+:G4VModularPhysicsList()
 {
-public:
-	TETRun();
-	virtual ~TETRun();
+	G4int verb=0;
+	SetVerboseLevel(verb);
 
-	virtual void RecordEvent(const G4Event*);
-	void ConstructMFD(const G4String& mfdName);
-    virtual void Merge(const G4Run*);
+	// EM physics
+	RegisterPhysics(new G4EmLivermorePhysics());
 
-    EDEPMAP* GetEdepMap() {return &edepMap;};
-    NumStepMAP* GetnumstepsMap() {return &numstepsMap;};
+	// Decay
+	RegisterPhysics(new G4DecayPhysics());
 
-private:
-    EDEPMAP edepMap;
-    NumStepMAP numstepsMap;
-};
+	// Radioactive decay
+	RegisterPhysics(new G4RadioactiveDecayPhysics());
+}
 
-#endif
+TETPhysicsList::~TETPhysicsList()
+{}
+
+void TETPhysicsList::SetCuts()
+{
+	SetCutsWithDefault();
+}
+

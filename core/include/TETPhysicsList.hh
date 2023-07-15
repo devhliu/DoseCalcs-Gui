@@ -23,48 +23,39 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// TETRun.hh
-// \file   MRCP_GEANT4/Internal/include/TETRun.hh
+// TETPhysicsList.hh
+// \file   MRCP_GEANT4/Internal/include/TETPhysicsList.hh
 // \author Haegin Han
 //
 
-#ifndef TETRun_h
-#define TETRun_h 1
+#ifndef TETPhysicsList_h
+#define TETPhysicsList_h 1
 
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4THitsMap.hh"
-#include "G4SDManager.hh"
+#include "G4VModularPhysicsList.hh"
+#include "globals.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
+#include "G4EmLivermorePhysics.hh"
+#include "G4DecayPhysics.hh"
+#include "G4RadioactiveDecayPhysics.hh"
 
-typedef std::map<G4int, std::pair<G4double, G4double>> EDEPMAP;
-typedef std::map<G4int,unsigned long long int> NumStepMAP;
+class G4VPhysicsConstructor;
 
 // *********************************************************************
-// This is G4Run class that sums up energy deposition from each event.
-// The sum of the square of energy deposition was also calculated to
-// produce the relative error of the dose.
-// -- RecordEvent: Sum up the energy deposition and the square of it.
-//                 The sums for each organ were saved as the form of
-//                 std::map.
-// -- Merge: Merge the data calculated in each thread.
+// Please note that only basic physics were registered in this
+// ModularPhysicsList, and rather precise models were used for the
+// production of dose coefficients provided in the ICRP Publication.
+// -- SetCuts: cut values were set as default values. This can be
+//             modified according to specific purposes or applications.
 // *********************************************************************
 
-class TETRun : public G4Run 
+class TETPhysicsList: public G4VModularPhysicsList
 {
 public:
-	TETRun();
-	virtual ~TETRun();
+	TETPhysicsList();
+	virtual ~TETPhysicsList();
 
-	virtual void RecordEvent(const G4Event*);
-	void ConstructMFD(const G4String& mfdName);
-    virtual void Merge(const G4Run*);
-
-    EDEPMAP* GetEdepMap() {return &edepMap;};
-    NumStepMAP* GetnumstepsMap() {return &numstepsMap;};
-
-private:
-    EDEPMAP edepMap;
-    NumStepMAP numstepsMap;
+	virtual void SetCuts();
 };
 
 #endif

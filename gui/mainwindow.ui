@@ -71,7 +71,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>true</bool>
@@ -640,7 +640,7 @@
                  <item row="10" column="0">
                   <widget class="QLabel" name="CutDistancelabel">
                    <property name="text">
-                    <string>Distance Cuts</string>
+                    <string>Cuts In Range (Distance)</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -666,7 +666,7 @@
                     <string/>
                    </property>
                    <property name="placeholderText">
-                    <string>0.1 mm or 1e-1 mm</string>
+                    <string>e- 1 mm e+ 1 mm gamma 1 mm proton 1 mm </string>
                    </property>
                   </widget>
                  </item>
@@ -755,19 +755,35 @@
                     <enum>QFrame::Raised</enum>
                    </property>
                    <layout class="QHBoxLayout" name="horizontalLayout_10">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
                     <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
                      <number>0</number>
                     </property>
                     <property name="rightMargin">
                      <number>0</number>
                     </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxGenerateCrossSection">
+                      <property name="text">
+                       <string>Generate</string>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QLineEdit" name="lineEditParticleNamesForCrossSection">
                       <property name="toolTip">
                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add particle for which we will save the generated macroscopic cross section data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="placeholderText">
-                       <string>gamma e-  e+ proton</string>
+                       <string>gamma (or e-,  e+, proton, alpha, neutron)</string>
                       </property>
                      </widget>
                     </item>

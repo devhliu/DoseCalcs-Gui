@@ -30,13 +30,17 @@
 
 #include "TETRun.hh"
 
+
 TETRun::TETRun()
 :G4Run()
-{}
+{
+
+}
 
 TETRun::~TETRun()
 {
-	edepMap.clear();
+    edepMap.clear();
+    numstepsMap.clear();
 }
 
 void TETRun::RecordEvent(const G4Event* event)
@@ -48,27 +52,28 @@ void TETRun::RecordEvent(const G4Event* event)
 	G4HCofThisEvent* HCE = event->GetHCofThisEvent();
 	if(!HCE) return;
 
-	G4THitsMap<G4double>* evtMap =
-			static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID));
+    G4THitsMap<G4double>* evtMap = static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID));
 
 	// sum up the energy deposition and the square of it
 	for (auto itr : *evtMap->GetMap()) {
 		edepMap[itr.first].first  += *itr.second;                   //sum
-		edepMap[itr.first].second += (*itr.second) * (*itr.second); //sum square
-	}
+        edepMap[itr.first].second += (*itr.second) * (*itr.second); //sum square
+        numstepsMap[itr.first]++; //numberOfHits square
+    }
+
 }
 
 void TETRun::Merge(const G4Run* run)
 {
+    /*
 	// merge the data from each thread
 	EDEPMAP localMap = static_cast<const TETRun*>(run)->edepMap;
-
 	for(auto itr : localMap){
 		edepMap[itr.first].first  += itr.second.first;
 		edepMap[itr.first].second += itr.second.second;
 	}
-
-	G4Run::Merge(run);
+    G4Run::Merge(run);
+    */
 }
 
 

@@ -23,48 +23,54 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// TETRun.hh
-// \file   MRCP_GEANT4/Internal/include/TETRun.hh
+// TETParameterisation.hh
+// \file   MRCP_GEANT4/Internal/include/TETParameterisation.hh
 // \author Haegin Han
 //
 
-#ifndef TETRun_h
-#define TETRun_h 1
+#ifndef TETParameterisation_h
+#define TETParameterisation_h 1
 
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4THitsMap.hh"
-#include "G4SDManager.hh"
+#include "G4TTETModelImport.hh"
 
-typedef std::map<G4int, std::pair<G4double, G4double>> EDEPMAP;
-typedef std::map<G4int,unsigned long long int> NumStepMAP;
+#include "globals.hh"
+#include "G4VPVParameterisation.hh"
+#include "G4VSolid.hh"
+#include "G4Material.hh"
+#include "G4VisAttributes.hh"
+
+#include <map>
+
+class G4VPhysicalVolume;
 
 // *********************************************************************
-// This is G4Run class that sums up energy deposition from each event.
-// The sum of the square of energy deposition was also calculated to
-// produce the relative error of the dose.
-// -- RecordEvent: Sum up the energy deposition and the square of it.
-//                 The sums for each organ were saved as the form of
-//                 std::map.
-// -- Merge: Merge the data calculated in each thread.
+// This class defines the phantom geometry by using G4PVParameterisation
+// class.
+// -- ComputeSolid: return the G4Tet* for each element
+// -- ComputeMaterial: return the G4Material* corresponding to each organ,
+//                     and set the colours for visualization purposes
 // *********************************************************************
 
-class TETRun : public G4Run 
+class TETParameterisation : public G4VPVParameterisation
 {
-public:
-	TETRun();
-	virtual ~TETRun();
+  public:
+    TETParameterisation(G4TTETModelImport* tetData);
+    virtual ~TETParameterisation();
+    
+    virtual G4VSolid* ComputeSolid(
+    		       const G4int copyNo, G4VPhysicalVolume* );
+    
+    virtual void ComputeTransformation(
+                   const G4int,G4VPhysicalVolume*) const;
 
-	virtual void RecordEvent(const G4Event*);
-	void ConstructMFD(const G4String& mfdName);
-    virtual void Merge(const G4Run*);
+    virtual G4Material* ComputeMaterial(const G4int copyNo,
+                                        G4VPhysicalVolume* phy,
+                                        const G4VTouchable*);
 
-    EDEPMAP* GetEdepMap() {return &edepMap;};
-    NumStepMAP* GetnumstepsMap() {return &numstepsMap;};
-
-private:
-    EDEPMAP edepMap;
-    NumStepMAP numstepsMap;
+  private:
+    G4TTETModelImport* tetData;
+    std::map<G4int, G4VisAttributes*>  visAttMap;
+    G4bool                             isforVis;
 };
 
 #endif

@@ -69,71 +69,21 @@ extern  G4float* CopyNumberYPos;
 extern  G4float* CopyNumberZPos;
 extern  G4float* CopyNumberMassSize;
 
-extern G4String appBuildDir;
-
 // Source Data
 
 extern G4String ParticleName;
 extern G4String GeometrySymbol;
-
 extern G4String SourceType;
-extern G4String SourceRegionName;
-extern G4int NumberOfGenPointsToSave;
-extern G4ThreeVector BoxDimGene;
-extern G4ThreeVector newOrgPos3Vector;
-extern G4ThreeVector SourcePosition;
-extern G4ThreeVector SourceRotation;
-extern G4String SourceSolid;
-extern G4String SourceSurface;
-extern G4String SourcePlane;
-extern G4String SourceAxis;
-extern G4double Radius;
-extern G4double RadiusIn;
-extern G4double BeamSDev;
-extern G4double HalfX, HalfY, HalfZ;
-extern G4double ThetaMin;
-extern G4double ThetaMax;
-extern G4double PhiMin;
-extern G4double PhiMax;
-extern G4ThreeVector SourceRotVector1;
-extern G4ThreeVector SourceRotVector2;
-
 extern G4String EnergyDistribution;
-extern G4double GaussSDev;
-extern G4double GaussMean;
-extern G4double UniformEmin;
-extern G4double UniformEmax;
-extern G4double RayleighEmax;
-extern G4double MonoEnergy;
-extern G4double SpectrumMaxEnergy;
-extern G4double FileEnergyCharacterizer;
-
-extern G4String MomDirDistribution;
-extern G4double Theta;
-extern G4double Phi;
-
-extern G4String GeneratePosFlag ;
-extern G4String GenerateEneFlag ;
-extern G4String GenerateMomDirFlag ;
 extern G4String UseGeneratedData ;
-extern G4String ShowBox ;
-extern G4String TestPointsPositions ;
 extern G4String ResultDirectoryPath ;
-
-extern G4bool VOXTET_USE;
 extern G4String GenerateVoxelsResuls;
-extern G4String PositionDataFile, EnergyDataFile, MomDirDataFile;
-extern G4String ScriptsDirectoryPath, DataDirectoryPath;
+extern G4String DataDirectoryPath;
 
 extern std::vector<G4String> NewRankSourceParticlesNamesValues;
 extern std::vector<G4String> NewRankSourceRegionsNamesValues;
-extern std::vector<G4ThreeVector> NewRankSourceRegionsBoxDimValues;
-extern std::vector<G4ThreeVector> NewRankSourceRegionsPosValues;
-extern std::vector<std::vector<unsigned int>> NewRankVoxelsIDsOfSourceRegion;
 extern std::vector<G4double> NewRankSourceEnergiesValues;
 extern std::vector<G4String> NewRankSourceMomDirsValues;
-extern std::vector<G4double> NewRankSourceMomDirsDirectedThetaValues;
-extern std::vector<G4double> NewRankSourceMomDirsDirectedPhiValues;
 
 #ifdef G4MULTITHREADED
 G4ThreadLocal std::map<G4int,std::map<unsigned int,G4double>> G4TRunAction::VoxelsED_Total ;
@@ -156,7 +106,6 @@ G4TRunAction::G4TRunAction()
     // get the name of the working directory
     //G4String appBuildDir(getenv("PWD"));
     //ResultDirectoryPath = appBuildDir+"/Results";
-    VOXTET_USE = false;
 }
 G4TRunAction::~G4TRunAction(){
     //G4cout << "\n\n\n\n\n\n from function : " << "G4TRunAction::~G4TRunAction()"<< G4endl;
@@ -499,6 +448,7 @@ void G4TRunAction::BeginOfRunAction(const G4Run* aRun) {
 
     //G4int run_number = aRun->GetRunID();
     TotalEventNumber = aRun->GetNumberOfEventToBeProcessed(); // for worker thread(number of event in worker thread), for master thread (number of event in all worker thread)
+    //TotalEventNumber = aRun->GetNumberOfEvent();
 
     //std::ostringstream sd; sd << NewRankSourceParticlesNamesValues[DataID] << " " << SourceType << " " << NewRankSourceRegionsNamesValues[DataID] << " " << NewRankSourceEnergiesValues[DataID] << " " <<NewRankSourceMomDirsValues[DataID] ;
     //G4String srcdata = sd.str();
@@ -535,6 +485,7 @@ void G4TRunAction::BeginOfRunAction(const G4Run* aRun) {
         ExecutionMode = "MT";
         NumberOfRanksThreads = G4Threading::GetNumberOfRunningWorkerThreads() ;
         TotalEventNumber = TotalEventNumber/G4Threading::GetNumberOfRunningWorkerThreads();
+        //TotalEventNumber = aRun->GetNumberOfEvent();
 
         if(G4Threading::IsWorkerThread()){
             std::cout <<  "\n " << Time << " ========= MT mode : "<<__FUNCTION__<<" from Worker Thread " << G4Threading::G4GetThreadId() << "/" <<G4Threading::GetNumberOfRunningWorkerThreads() << ". Start of " << TotalEventNumber << " events simulation loop using " << GeometrySymbol <<" geometry -Source Data: " << NewRankSourceParticlesNamesValues[DataID] << ", " << SourceType << ", " << NewRankSourceRegionsNamesValues[DataID] << ", "  << EnergyDistribution << " " << NewRankSourceEnergiesValues[DataID] << ", " << NewRankSourceMomDirsValues[DataID] << std::endl ;
@@ -557,9 +508,7 @@ void G4TRunAction::BeginOfRunAction(const G4Run* aRun) {
     // we need to define it in a function and not in the constructor, because always the constructors are called in the first for all classes then it's data its not the updated(values of messenger by default ) then when we use it in function , all the data are apdated ( from messenger by user cmd) and we can use the updated
     const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
     OneOrMultiSimulations = TConstruction2->getMPISimulationNum();
-    if(SourceType == "Voxels" || SourceType == "TET"){
-        VOXTET_USE = true;
-    }
+
 
     // to initialize the arrays ED_Total ;
     OrgansNameVector = TConstruction2->GetOrganNamesVector();
@@ -580,7 +529,7 @@ void G4TRunAction::BeginOfRunAction(const G4Run* aRun) {
 
 // called in the end of a run for each thread and for the master for seq and master in the MPI mode
 // it call analysisMan->save(); G4TRunAction::CreateResultFileFor_Seq_MT()
-void G4TRunAction::EndOfRunAction(const G4Run*)
+void G4TRunAction::EndOfRunAction(const G4Run* aRun)
 {
 
     G4Timer* t; G4String Time = t->GetClockTime();
@@ -597,7 +546,7 @@ void G4TRunAction::EndOfRunAction(const G4Run*)
         EnergyEmittedPerThread = primaryGeneratorAction->getEmittedEnergy();
     }
     else{
-        if(VOXTET_USE){
+        if(SourceType == "Voxels"){
             const G4TDirectVoxelsPrimaryGeneratorAction* primaryGeneratorAction = static_cast<const G4TDirectVoxelsPrimaryGeneratorAction*> (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
             EnergyEmittedPerThread = primaryGeneratorAction->getEmittedEnergy();
         }else{
@@ -635,62 +584,13 @@ void G4TRunAction::EndOfRunAction(const G4Run*)
 #endif
 
     CreateThreadRegionResultFile();
-    if(VOXTET_USE){
+/*
+    if(SourceType == "Voxels"){
         if(GenerateVoxelsResuls == "yes"){
             CreateThreadVoxelsResultsFiles();
         }
     }
-}
-
-void G4TRunAction::MPILastRunsResultsMerging(){
-
-#ifdef G4MPI_USE
-
-    std::ostringstream fname, stringToUse;
-    fname << "TerminatedRanks" ;
-    G4String XX = ""; G4int RankInc = 1;
-
-    std::ifstream file(fname.str().c_str() , std::ios_base::binary);
-
-    if(file.is_open()){
-        while (file >> XX ) {
-            stringToUse << XX << " ";
-            RankInc++;
-        }
-        file.close();
-    }
-
-    //G4cout << " Terminated Ranks: " << stringToUse.str() << G4MPImanager::GetManager()->GetRank() << " (" << RankInc << "/" << G4MPImanager::GetManager()->GetTotalSize() << ")"<< " The Active Size " << G4MPImanager::GetManager()->GetActiveSize() << G4endl;
-
-    //G4String SimMergingType = "MultiSimPerRanks"; //OneSimPerRanks
-    //if(RankInc == G4MPImanager::GetManager()->GetTotalSize()){
-    if(RankInc == NumberOfRanksThreads){
-
-        G4cout << " Merging Results of all Threads in all Ranks " << G4endl;
-
-        merger = new G4TResultCalculation();
-        merger->ReadSimulationData();
-        merger->setExeFromMerge(false);
-        merger->Initialization();
-        merger->MergeSimulationsData();
-
-        std::ofstream file1(fname.str().c_str(), std::ios_base::binary);
-        if(file1.is_open()){
-            file1 << "";
-            file1.close();
-            std::remove(fname.str().c_str()); // to remove the file when mergin results
-        }
-    }
-    else {
-        std::ofstream file1(fname.str().c_str(), std::ios_base::app);
-        if(file1.is_open()){
-            //file1 << " " << G4MPImanager::GetManager()->GetRank() ;
-            file1 << " " << DataID ;
-            file1.close();
-        }
-    }
-#endif
-
+*/
 }
 
 // for step and event accuracy calculation
@@ -803,7 +703,7 @@ void G4TRunAction::CreateThreadRegionResultFile(){
     SZ++;
 
     file << "\n";
-    file << std::setw(SZ) << std::left << "TotalEventNumber " << TotalEventNumber << "\n" ;
+    file << std::setw(SZ) << std::left << "TotalEventNumber " << TotalEventNumber <<  "\n" ;
     file << std::setw(SZ) << std::left << "EnergyEmittedPerThread " << EnergyEmittedPerThread << "\n" ;
     file << std::setw(SZ) << std::left << "ExecutionTimeInMin " << ExecutionTimeInMin << "\n" ;
     OneEventExecutionTimeInMs = (double)(ExecutionTimeInMin/TotalEventNumber)*(1000./60.);
@@ -946,7 +846,7 @@ void G4TRunAction::CreateSimulationDataFile(){
         file1 << "AddErrorBarInGraphs              " << TConstruction2->getAddErrorBarInGraphs() <<  "\n" ;
         file1 << "GraphsExt                        " << TConstruction2->getgraphs_Ext() <<  "\n\n" ;
 
-        if(VOXTET_USE){
+        if(SourceType == "Voxels"){
             file1 << "VoxXNumber                       " << TConstruction2->getVoxXNumber() <<  "\n" ;
             file1 << "VoxYNumber                       " << TConstruction2->getVoxYNumber() <<  "\n" ;
             file1 << "VoxZNumber                       " << TConstruction2->getVoxZNumber() <<  "\n" ;

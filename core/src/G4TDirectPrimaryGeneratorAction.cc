@@ -94,19 +94,6 @@ void G4TDirectPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
     particleGun->GeneratePrimaryVertex(anEvent);
 
-/*  try {
-    } catch (std::bad_alloc const&) {
-        std::cout << " @@@@@@@@@@@@@@@@@@@@@@@@@@ std::bad_alloc @@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-        GenerateEventsParticle();
-        GenerateEventsEnergy();
-        GenerateEventsPosition();
-        GenerateEventsMomentumDirection();
-        particleGun->GeneratePrimaryVertex(anEvent);
-        std::cout << " @@@@@@@@@@@@@@@@@@@@@@@@@@ New Events data are generated @@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-    }
-*/
-    //std::cout << particleGun->GetParticleDefinition()->GetParticleName() << " " << EnergyListInc << " ENERGY " << ENERGY<< " POS " << G4ThreeVector(X, Y, Z) << " MOMDIR " << G4ParticleMomentum(XMOMD, YMOMD, ZMOMD) << std::endl;
-
 }
 
 void G4TDirectPrimaryGeneratorAction::GenerateEventsPosition(){

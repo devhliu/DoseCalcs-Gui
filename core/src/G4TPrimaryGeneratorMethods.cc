@@ -911,31 +911,6 @@ void G4TPrimaryGeneratorMethods::SourceInitialization(){
                 }
             }
         }
-        
-        
-        /*for(int m = 0; m < RadioNuclideProbVec.size() ;m++ ){
-          
-            int eventswithene = (RadioNuclideProbVec[m]/TotalProbability)*EventsNumPerThreadRank;
-            
-            std::cout << m << " eventswithene " << eventswithene << " RadioNuclideProbVec[m] " << RadioNuclideProbVec[m] << " TotalProbability " << TotalProbability << " EneMin " << RadioNuclideEneVec[m][0] << std::endl;
-            
-            for(int f = 0; f < eventswithene ;f++ ){
-                if(RadioNuclideSpectrumOrDiscreteVec[m] == 0){
-                
-                    double RandomEne = RadioNuclideEneVec[m][0] + (RadioNuclideEneVec[m][1]-RadioNuclideEneVec[m][0])*(double)G4UniformRand();
-                    EnergyList[f] = RandomEne;
-                    //std::cout << f << " Particle "<< RadioNuclidePartNameVec[m] << " TotalProbability "<< TotalProbability << " RandomProb " << RV << " Prob "<< RadioNuclideProbVec[m] << " EnergyCumulatedProbability " << EnergyCumulatedProbability  << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " Min " << RadioNuclideEneVec[m][0]   << " RandomEne " << EnergyList[f] << " Max " << RadioNuclideEneVec[m][1] << std::endl;
-                    
-                }else{
-                
-                    EnergyList[f] = RadioNuclideEneVec[m][0];
-                    //std::cout << f << " Particle "<< RadioNuclidePartNameVec[m] << " TotalProbability "<< TotalProbability << " RandomProb " << RV << " Prob "<< RadioNuclideProbVec[m] << " EnergyCumulatedProbability " << EnergyCumulatedProbability  << " SpectrumOrDiscreteVec " << RadioNuclideSpectrumOrDiscreteVec[m] << " selected Energy " << EnergyList[f] << std::endl;
-                }
-                ParNameList[f]=RadioNuclidePartNameVec[m];
-                break;
-            }
-        }
-        */
     }
     
     WriteSourceDataToFiles = 0;

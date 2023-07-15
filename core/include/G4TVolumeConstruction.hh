@@ -51,7 +51,9 @@
 #include "G4TPointDataGeneration.hh"
 #include "G4TStlToGdml.hh"
 #include "G4TTETModelImport.hh"
-#include "G4TTETParameterisation.hh"
+//#include "G4TTETParameterisation.hh"
+#include "TETParameterisation.hh"
+
 //#include "G4Navigator.hh"
 
 #include "G4VIStore.hh"
@@ -80,6 +82,7 @@ extern  G4double AllGeometryMass;
 extern double* CumulativeActivities;
 
 // Source Data
+extern G4String GeometryFileType;
 
 extern G4String DataFilesExtension;
 
@@ -153,6 +156,7 @@ extern G4String organs_to_score ;
 extern G4String variable_To_Score ;
 extern G4String PlanesToVisualize;
 extern bool ForceSolid;
+extern bool UseVoxelsColour;
 extern G4int MinPlaneID;
 extern G4int MaxPlaneID;
 
@@ -203,6 +207,8 @@ extern bool MaterialNameAsRegionName;
 
 
 // Physics
+extern G4String CutInRangeData;
+extern G4String EnergyThresholdsData;
 extern G4bool IsEcutsSet;
 extern G4bool IsDcutsSet;
 extern G4double CutsEnergy;
@@ -276,7 +282,6 @@ private:
     G4ThreeVector WorldHalfSize ;
     G4String WorldMaterialName ;
 
-    G4String GeometryFileType;
     G4String GeometryPath;
     G4String GeometryFileOrDir;
     G4String RegionsMassDataPath;
@@ -716,6 +721,7 @@ private:
     std::map<G4int,G4String> MaterialIDName;
 
 public:
+    std::map<G4int,G4String> getMaterialIDName  ()const {return MaterialIDName;}
 
     void createElement(G4String, G4double, G4double);
     void createNistMaterial(G4String, G4int);
@@ -837,8 +843,6 @@ public:
     G4VPhysicalVolume* ContPhysicalVoll;
 
     // for Voxelized geometry
-
-    G4bool UseVoxelsColour; void setUseVoxelsColour(G4bool n ){UseVoxelsColour = n;}
 
     G4String  VoxRegionMaterialName ;
     G4String  VoxDefaultMaterialName ;
@@ -1033,6 +1037,8 @@ public:
 
 public:
 
+    G4TTETModelImport* gettetData() const {return tetData;}
+
     void setTETPhantomLimits(G4double a, G4double b){
         MinTETPhantom = a ;
         MaxTETPhantom = b ;
@@ -1066,6 +1072,18 @@ public:
 
 
     //////////////////////////////////////////// begin Physics Commands
+
+    void setCutInRangeData(G4String newVal){
+        CutInRangeData= newVal;
+        IsDcutsSet = true ;
+        //G4cout<<" >> New CutsEnergy " << CutsEnergy <<G4endl;
+    }
+
+    void setEnergyThresholdsData(G4String newVal){
+        EnergyThresholdsData= newVal;
+        IsEcutsSet = true ;
+        //G4cout<<" >> New CutsEnergy " << CutsEnergy <<G4endl;
+    }
 
     void setCutsEnergy(G4double newVal){
         CutsEnergy= newVal*MeV;

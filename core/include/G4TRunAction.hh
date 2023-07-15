@@ -55,27 +55,14 @@ class G4TRunAction : public G4UserRunAction
 {
 public:
 
-    //G4TRunAction();
     G4TRunAction();
     ~G4TRunAction();
 
 private:
 
-    G4String GenerateCrossSectionGraph, ExecutionMode, OneOrMultiSimulations;
-
-    //G4int rank, thread, DataID, EventIndex, NumberOfRanksThreads, TotalEventNumber;
-    //G4double EnergyEmittedPerThread,ParticleSourceEnergy, ExecutionTimeInMin, OneEventExecutionTimeInMs;
-    //std::chrono::steady_clock::time_point start, end ;
-
     void BeginOfRunAction(const G4Run*);
     void EndOfRunAction(const G4Run*);
 
-    void useTime(G4int);
-    void setExecutionMode(G4String ss){ExecutionMode = ss;}
-    void WriteMacroscopicCrossSection();
-    // for batch accuracy calculation
-    // for step and event accuracy calculation
-    void CreateThreadRegionResultFile();
     void CreateThreadVoxelsResultsFiles();
 
     void CreateSimulationDataFile();
@@ -83,19 +70,7 @@ private:
 
     // for GDML, Text, Construct geometry
 
-private:
-
-    G4String QuantitiesToScore;
-
-    std::vector<G4String>       OrgansNameVector;
-    std::map<G4String,G4double> OrganNameMassMap;
-    std::map<G4String,G4double> OrganNameDensityMap;
-
 public:
-
-    void MPILastRunsResultsMerging();
-
-    //void pushVolumeEnergyForEventLevel(std::map<G4String,G4double>);
 
     //void pushEventAbsEnergy(std::map<G4String,G4double>);
     void pushVolumeEnergy(std::map<G4String,G4double>);
@@ -112,6 +87,16 @@ public:
     void FillVoxelStepHits(unsigned int, G4double);
 
 private:
+
+    G4String GenerateCrossSectionGraph, ExecutionMode, OneOrMultiSimulations;
+
+    void useTime(G4int);
+    void WriteMacroscopicCrossSection();
+    void CreateThreadRegionResultFile();
+
+    std::vector<G4String>       OrgansNameVector;
+    std::map<G4String,G4double> OrganNameMassMap;
+    std::map<G4String,G4double> OrganNameDensityMap;
 
 #ifdef G4MULTITHREADED
     G4ThreadLocal static std::map<G4int,std::map<unsigned int,G4double>>   VoxelsED_Total ;
@@ -156,7 +141,6 @@ protected:
     //G4MPImanager* g4MPI1 ;
 #endif
 
-    G4TResultCalculation* merger;
 
 };
 #endif

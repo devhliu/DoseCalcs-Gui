@@ -23,48 +23,55 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// TETRun.hh
-// \file   MRCP_GEANT4/Internal/include/TETRun.hh
+// TETParameterisation.cc
+// \file   MRCP_GEANT4/Internal/src/TETParameterisation.cc
 // \author Haegin Han
 //
 
-#ifndef TETRun_h
-#define TETRun_h 1
+#include "TETParameterisation.hh"
+#include "G4LogicalVolume.hh"
+#include "G4VisExecutive.hh"
+#include "G4RunManager.hh"
 
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4THitsMap.hh"
-#include "G4SDManager.hh"
-
-typedef std::map<G4int, std::pair<G4double, G4double>> EDEPMAP;
-typedef std::map<G4int,unsigned long long int> NumStepMAP;
-
-// *********************************************************************
-// This is G4Run class that sums up energy deposition from each event.
-// The sum of the square of energy deposition was also calculated to
-// produce the relative error of the dose.
-// -- RecordEvent: Sum up the energy deposition and the square of it.
-//                 The sums for each organ were saved as the form of
-//                 std::map.
-// -- Merge: Merge the data calculated in each thread.
-// *********************************************************************
-
-class TETRun : public G4Run 
+TETParameterisation::TETParameterisation(G4TTETModelImport* _tetData)
+: G4VPVParameterisation(), tetData(_tetData)
 {
-public:
-	TETRun();
-	virtual ~TETRun();
+	// initialise visAttMap which contains G4VisAttributes* for each organ
+	auto colourMap =  tetData->GetColourMap();
+	for(auto colour : colourMap){
+		visAttMap[colour.first] = new G4VisAttributes(colour.second);
+	}
 
-	virtual void RecordEvent(const G4Event*);
-	void ConstructMFD(const G4String& mfdName);
-    virtual void Merge(const G4Run*);
+	if(colourMap.size()) isforVis = true;
+	else                 isforVis = false;
+}
 
-    EDEPMAP* GetEdepMap() {return &edepMap;};
-    NumStepMAP* GetnumstepsMap() {return &numstepsMap;};
+TETParameterisation::~TETParameterisation()
+{}
 
-private:
-    EDEPMAP edepMap;
-    NumStepMAP numstepsMap;
-};
+G4VSolid* TETParameterisation::ComputeSolid(
+    		       const G4int copyNo, G4VPhysicalVolume* )
+{
+	// return G4Tet*
+	return tetData->GetTetrahedron(copyNo);
+}
 
-#endif
+void TETParameterisation::ComputeTransformation(
+                   const G4int,G4VPhysicalVolume*) const
+{}
+
+G4Material* TETParameterisation::ComputeMaterial(const G4int copyNo,
+		G4VPhysicalVolume* phy,
+		const G4VTouchable*)
+{
+	// set the colour for each organ if visualization is required
+	if(isforVis){
+		G4int idx = tetData->GetMaterialIndex(copyNo);
+		phy->GetLogicalVolume()->SetVisAttributes(visAttMap[idx]);
+	}
+
+	// return the material data for each material index
+	return tetData->GetMaterial(tetData->GetMaterialIndex(copyNo));
+}
+
+

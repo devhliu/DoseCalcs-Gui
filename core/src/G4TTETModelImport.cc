@@ -43,6 +43,8 @@ extern std::map<G4String, G4Colour> RegionNameColour;
 
 extern bool MaterialNameAsRegionName;
 
+extern bool UseVoxelsColour;
+
 G4TTETModelImport::G4TTETModelImport()
 {
 
@@ -208,10 +210,11 @@ void G4TTETModelImport::GenerateDataforTET(){
         for ( auto it = MatIDNameMap.begin(); it != MatIDNameMap.end(); ++it  ){
             materialMap[it->first] = NameMatMap[it->second];
             densityMap[it->first] = materialMap[it->first]->GetDensity()/(g/cm3); //for each mat id the correcpondent material density
-            colourMap[it->first] = G4Colour( (G4double) G4UniformRand(),(G4double)G4UniformRand(),(G4double)G4UniformRand(), 1.);
 
-            RegionNameColour[it->second] = colourMap[it->first];
-
+            if(UseVoxelsColour == true){
+                colourMap[it->first] = G4Colour( (G4double) G4UniformRand(),(G4double)G4UniformRand(),(G4double)G4UniformRand(), 1.);
+                RegionNameColour[it->second] = colourMap[it->first];
+            }
             OrganNamesVector.push_back(it->second);
             OrganNameVolumeMap[it->second] = volumeMap[it->first]; // should be in cm3
             OrganNameDensityMap[it->second] = materialMap[it->first]->GetDensity()/(g/cm3); // should be in g/cm3
@@ -243,7 +246,9 @@ void G4TTETModelImport::GenerateDataforTET(){
         for ( auto it = MatIDNameMap.begin(); it != MatIDNameMap.end(); ++it  ){
             materialMap[it->first] = NameMatMap[it->second];
             densityMap[it->first] = materialMap[it->first]->GetDensity()/(g/cm3); //for each mat id the correcpondent material density
-            colourMap[it->first] = G4Colour( (G4double) G4UniformRand(),(G4double)G4UniformRand(),(G4double)G4UniformRand(), 1.);
+            if(UseVoxelsColour == true){
+                colourMap[it->first] = G4Colour( (G4double) G4UniformRand(),(G4double)G4UniformRand(),(G4double)G4UniformRand(), 1.);
+            }
         }
 
 #if VERBOSE_USE
@@ -359,9 +364,9 @@ void G4TTETModelImport::PrintMaterialInfomation()
 
         G4cout << std::setw(20) << std::left << idx                         // organ ID
                << std::setw(33) << std::left << MatIDNameMap[idx] << " "
-                  << std::setw(15) << std::left << densityMap[idx]
-                     << std::setw(15) << std::left << numTetMap[idx]
-                        << std::left << numTetMap[idx]<< "/"<< tetVector.size() <<G4endl;
+               << std::setw(15) << std::left << densityMap[idx]
+                  << std::setw(15) << std::left << numTetMap[idx]
+                     << std::left << numTetMap[idx]<< "/"<< tetVector.size() <<G4endl;
     }
 
     G4cout << "---------------------------------------------------------------------------------------------"<<G4endl;
@@ -379,7 +384,7 @@ void G4TTETModelImport::PrintMaterialInfomation()
                << std::setw(15) << std::left << "Volume(cm3) "
                << std::setw(15) << std::left << "Density(g/cm3) "<<G4endl;
 
-                  G4cout << "--------------------------------------------------------------------------------------------"<<G4endl;
+        G4cout << "--------------------------------------------------------------------------------------------"<<G4endl;
 
         G4cout<<std::setiosflags(std::ios::fixed);
         G4cout.precision(3);
@@ -397,7 +402,6 @@ void G4TTETModelImport::PrintMaterialInfomation()
 
 void G4TTETModelImport::MaterialRead(G4String materialFile)
 {
-
 
     // Read material file (*.material)
     //
@@ -433,8 +437,9 @@ void G4TTETModelImport::MaterialRead(G4String materialFile)
 
         MatIDNameMap[matID] = MaterialName; //for each mat id the correcpondent material name
         densityMap[matID] = density*g/cm3; //for each mat id the correcpondent material density
-        colourMap[matID] = G4Colour( (G4double) G4UniformRand(),(G4double)G4UniformRand(),(G4double)G4UniformRand(), 1.);
-
+        if(UseVoxelsColour == true){
+            colourMap[matID] = G4Colour( (G4double) G4UniformRand(),(G4double)G4UniformRand(),(G4double)G4UniformRand(), 1.);
+        }
 
         for(G4int i=0 ;  ; i++)
         {
@@ -468,7 +473,6 @@ void G4TTETModelImport::MaterialRead(G4String materialFile)
         massMap[idx]=densityMap[idx]*volumeMap[idx];
     }
 
-
 }
 void G4TTETModelImport::ColourRead()
 {
@@ -486,9 +490,11 @@ void G4TTETModelImport::ColourRead()
 
     G4int organID;
     G4double red, green, blue, alpha;
-    while( ifpColour >> organID >> red >> green >> blue >> alpha )
-        colourMap[organID] = G4Colour(red, green, blue, alpha);
-
+    while( ifpColour >> organID >> red >> green >> blue >> alpha ){
+        if(UseVoxelsColour == true){
+            colourMap[organID] = G4Colour(red, green, blue, alpha);
+        }
+    }
     ifpColour.close();
 
 }

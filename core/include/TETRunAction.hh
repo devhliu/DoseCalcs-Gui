@@ -37,7 +37,7 @@
 
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
-#include "G4UserRunAction.hh"
+#include "G4UserRunAction.hh""
 #include "G4SystemOfUnits.hh"
 
 #include "TETRun.hh"
@@ -56,7 +56,7 @@
 class TETRunAction : public G4UserRunAction
 {
 public:
-    TETRunAction(G4String output);
+    TETRunAction();
 	virtual ~TETRunAction();
 
 public:
@@ -64,13 +64,63 @@ public:
 	virtual void BeginOfRunAction(const G4Run*);
 	virtual void EndOfRunAction(const G4Run*);
 
-	void PrintResult(std::ostream &out);
+    void PrintResult();
   
 private:
-	TETRun*         fRun;
-	G4int           numOfEvent;
-	G4int           runID;
-	G4String        outputFile;
+
+    G4String GenerateCrossSectionGraph, ExecutionMode, OneOrMultiSimulations;
+
+    void useTime(G4int);
+    void WriteMacroscopicCrossSection();
+    void CreateThreadRegionResultFile();
+
+    std::vector<G4String>       OrgansNameVector;
+    std::map<G4String,G4double> OrganNameMassMap;
+    std::map<G4String,G4double> OrganNameDensityMap;
+
+#ifdef G4MULTITHREADED
+    G4ThreadLocal static std::map<G4int,std::map<unsigned int,G4double>>   VoxelsED_Total ;
+    G4ThreadLocal static std::map<G4int,std::map<unsigned int,G4double>>   VoxelsED2_Total ;
+    G4ThreadLocal static std::map<G4int,std::map<unsigned int,unsigned long long int>>     VoxelsNOfValues ;
+
+    G4ThreadLocal static std::map<G4int,std::map<G4String,unsigned long long int>> NOfValues;
+    G4ThreadLocal static std::map<G4int,std::map<G4String,G4double>> ED_Total ;
+    G4ThreadLocal static std::map<G4int,std::map<G4String,G4double>> ED2_Total ;
+    G4ThreadLocal static G4int rank;
+    G4ThreadLocal static G4int thread;
+    G4ThreadLocal static G4int DataID;
+    G4ThreadLocal static G4int EventIndex;
+    G4ThreadLocal static G4int NumberOfRanksThreads;
+    G4ThreadLocal static G4int TotalEventNumber;
+    G4ThreadLocal static G4double EnergyEmittedPerThread;
+    G4ThreadLocal static G4double ParticleSourceEnergy;
+    G4ThreadLocal static G4double ExecutionTimeInMin;
+    G4ThreadLocal static G4double OneEventExecutionTimeInMs;
+    G4ThreadLocal static std::chrono::steady_clock::time_point start;
+    G4ThreadLocal static std::chrono::steady_clock::time_point end ;
+    G4ThreadLocal static TETRun* fRun;
+
+#else
+    std::map<G4int,std::map<unsigned int,G4double>>   VoxelsED_Total ;
+    std::map<G4int,std::map<unsigned int,G4double>>   VoxelsED2_Total ;
+    std::map<G4int,std::map<unsigned int,unsigned long long int>>     VoxelsNOfValues ;
+
+    std::map<G4int,std::map<G4String,unsigned long long int>> NOfValues;
+    std::map<G4int,std::map<G4String,G4double>> ED_Total ;
+    std::map<G4int,std::map<G4String,G4double>> ED2_Total ;
+
+    G4int rank, thread, DataID, EventIndex, NumberOfRanksThreads, TotalEventNumber;
+    G4double EnergyEmittedPerThread,ParticleSourceEnergy, ExecutionTimeInMin, OneEventExecutionTimeInMs;
+    std::chrono::steady_clock::time_point start, end ;
+    TETRun* fRun;
+
+#endif
+    //G4ThreadLocal static unsigned int StepCN;
+    //G4ThreadLocal static G4double StepEnergy;
+    //G4ThreadLocal static G4String StepRegion;
+
+    std::map<G4int, G4String> MatIDNameMap;
+
 };
 
 #endif

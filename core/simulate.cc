@@ -64,6 +64,9 @@
 #include "G4UIterminal.hh"
 //#endif
 
+#include "TETPhysicsList.hh"
+#include "TETActionInitialization.hh"
+
 #ifdef G4MPI_USE
 #include "mpi.h"
 #include "G4UImanager.hh"
@@ -96,6 +99,8 @@ double* CumulativeActivities;
 
 G4double AllGeometryVolume;
 G4double AllGeometryMass;
+
+G4String GeometryFileType;
 
 G4String ParticleName;
 G4String SourceType;
@@ -138,6 +143,7 @@ std::vector<unsigned int> RadioNuclidePartNameVec;
 std::vector<double*> RadioNuclideEneVec;
 std::vector<unsigned int> RadioNuclideSpectrumOrDiscreteVec;
 
+bool UseVoxelsColour;
 bool ForceSolid;
 
 
@@ -204,7 +210,8 @@ double* SourcePositions;
 double* SourceMomDirs;
 
 
-
+G4String CutInRangeData;
+G4String EnergyThresholdsData;
 G4bool IsEcutsSet;
 G4bool IsDcutsSet;
 G4double CutsEnergy;
@@ -402,7 +409,7 @@ int main(int argc,char** argv){
         auto* runManager = G4RunManagerFactory::CreateRunManager();
 
         G4TVolumeConstruction* VolCon = new G4TVolumeConstruction;
-        VolCon->setUseVoxelsColour(true);
+        UseVoxelsColour = true;
 
         runManager->SetUserInitialization(VolCon);
 
@@ -411,34 +418,44 @@ int main(int argc,char** argv){
         UImanager->SetVerboseLevel(0);
         UImanager->ExecuteMacroFile(MacrosStartingFile.c_str());
 
-        if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
-            if(ParticleName == "neutron"){
-                runManager->SetUserInitialization(new G4TNeutronPhysicsList("NeutronHP"));
+        if(ParticlePysics.contains("FACTORY")){
+        //if(ParticleName == "neutron" && ParticlePysics.contains("FACTORY")){
+            std::vector<std::string> RefPhyLists;
+            RefPhyLists.push_back("FACTORY_FTFP_BERT"); RefPhyLists.push_back("FACTORY_FTFP_BERT_ATL"); RefPhyLists.push_back("FACTORY_FTFP_BERT_TRV"); RefPhyLists.push_back("FACTORY_QGSP_FTFP_BERT"); RefPhyLists.push_back("FACTORY_QGSP_BERT"); RefPhyLists.push_back("FACTORY_QGSP_BERT_HP"); RefPhyLists.push_back("FACTORY_QGSP_BIC"); RefPhyLists.push_back("FACTORY_QGSP_BIC_AllHP"); RefPhyLists.push_back("FACTORY_INCLXX"); RefPhyLists.push_back("FACTORY_Shielding"); RefPhyLists.push_back("FACTORY_ShieldingLEND");
+            bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
 
-            }else{
-                runManager->SetUserInitialization(new G4TUserPhysicsList());
+            if(isIn == false ){
+                ParticlePysics = "FACTORY_QGSP_BERT_HP";
+                G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
             }
-        }else{
 
-            if(ParticleName == "neutron"){
-                std::vector<std::string> RefPhyLists;
-                RefPhyLists.push_back("FTFP_BERT"); RefPhyLists.push_back("FTFP_BERT_ATL"); RefPhyLists.push_back("FTFP_BERT_TRV"); RefPhyLists.push_back("QGSP_FTFP_BERT"); RefPhyLists.push_back("QGSP_BERT"); RefPhyLists.push_back("QGSP_BERT_HP"); RefPhyLists.push_back("QGSP_BIC"); RefPhyLists.push_back("QGSP_BIC_AllHP"); RefPhyLists.push_back("INCLXX"); RefPhyLists.push_back("Shielding"); RefPhyLists.push_back("ShieldingLEND");
-                bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
+            G4String PhyyName = ParticlePysics;
+            std::string s = "FACTORY_";
+            std::string::size_type i = PhyyName.find(s);
+            if (i != std::string::npos){PhyyName.erase(i, s.length());}
 
-                if(isIn == false ){
-                    ParticlePysics = "QGSP_BERT_HP";
-                    G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
-                }
+            //std::cout << " ParticlePysics " << ParticlePysics << " PhyyName " << PhyyName << std::endl;
 
-                G4PhysListFactory* physFactory = new G4PhysListFactory();
-                G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(ParticlePysics);
+            G4PhysListFactory* physFactory = new G4PhysListFactory();
+            G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(PhyyName);
 
+            if(CutInRangeData == ""){
                 physicsList->SetCutsWithDefault();
-                runManager->SetUserInitialization(physicsList);
             }else{
-                ParticlePysics = "EMS3";
-                runManager->SetUserInitialization(new G4TUserPhysicsList());
+                std::istringstream LineString(CutInRangeData);
+                G4cout << CutInRangeData << G4endl;
+
+                G4double Ene; G4String pn, Unit;
+                while(LineString >> pn ){
+                    LineString >> Ene;
+                    LineString >> Unit;
+                    //G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+                    physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+                }
             }
+            runManager->SetUserInitialization(physicsList);
+        }else{
+            runManager->SetUserInitialization(new G4TUserPhysicsList());
         }
 
         // depend on the input to the VolumeConstructor then it called after ExecuteMacroFile(MacrosStartingFile.c_str());
@@ -584,7 +601,6 @@ int main(int argc,char** argv){
 #endif
         return 0;
     }
-
     if(InteractiveMode == "Gen"){
 
         // or make it run Of seq for all modes
@@ -606,35 +622,44 @@ int main(int argc,char** argv){
         G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
         UImanager->ExecuteMacroFile(MacrosStartingFile.c_str());
+        if(ParticlePysics.contains("FACTORY")){
+        //if(ParticleName == "neutron" && ParticlePysics.contains("FACTORY")){
+            std::vector<std::string> RefPhyLists;
+            RefPhyLists.push_back("FACTORY_FTFP_BERT"); RefPhyLists.push_back("FACTORY_FTFP_BERT_ATL"); RefPhyLists.push_back("FACTORY_FTFP_BERT_TRV"); RefPhyLists.push_back("FACTORY_QGSP_FTFP_BERT"); RefPhyLists.push_back("FACTORY_QGSP_BERT"); RefPhyLists.push_back("FACTORY_QGSP_BERT_HP"); RefPhyLists.push_back("FACTORY_QGSP_BIC"); RefPhyLists.push_back("FACTORY_QGSP_BIC_AllHP"); RefPhyLists.push_back("FACTORY_INCLXX"); RefPhyLists.push_back("FACTORY_Shielding"); RefPhyLists.push_back("FACTORY_ShieldingLEND");
+            bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
 
-        if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
-            if(ParticleName == "neutron"){
-                runManager->SetUserInitialization(new G4TNeutronPhysicsList("NeutronHP"));
-
-            }else{
-                runManager->SetUserInitialization(new G4TUserPhysicsList());
+            if(isIn == false ){
+                ParticlePysics = "FACTORY_QGSP_BERT_HP";
+                G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
             }
-        }else{
 
-            if(ParticleName == "neutron"){
-                std::vector<std::string> RefPhyLists;
-                RefPhyLists.push_back("FTFP_BERT"); RefPhyLists.push_back("FTFP_BERT_ATL"); RefPhyLists.push_back("FTFP_BERT_TRV"); RefPhyLists.push_back("QGSP_FTFP_BERT"); RefPhyLists.push_back("QGSP_BERT"); RefPhyLists.push_back("QGSP_BERT_HP"); RefPhyLists.push_back("QGSP_BIC"); RefPhyLists.push_back("QGSP_BIC_AllHP"); RefPhyLists.push_back("INCLXX"); RefPhyLists.push_back("Shielding"); RefPhyLists.push_back("ShieldingLEND");
-                bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
+            G4String PhyyName = ParticlePysics;
+            std::string s = "FACTORY_";
+            std::string::size_type i = PhyyName.find(s);
+            if (i != std::string::npos){PhyyName.erase(i, s.length());}
 
-                if(isIn == false ){
-                    ParticlePysics = "QGSP_BERT_HP";
-                    G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
-                }
+            //std::cout << " ParticlePysics " << ParticlePysics << " PhyyName " << PhyyName << std::endl;
 
-                G4PhysListFactory* physFactory = new G4PhysListFactory();
-                G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(ParticlePysics);
+            G4PhysListFactory* physFactory = new G4PhysListFactory();
+            G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(PhyyName);
 
+            if(CutInRangeData == ""){
                 physicsList->SetCutsWithDefault();
-                runManager->SetUserInitialization(physicsList);
             }else{
-                ParticlePysics = "EMS3";
-                runManager->SetUserInitialization(new G4TUserPhysicsList());
+                std::istringstream LineString(CutInRangeData);
+                G4cout << CutInRangeData << G4endl;
+
+                G4double Ene; G4String pn, Unit;
+                while(LineString >> pn ){
+                    LineString >> Ene;
+                    LineString >> Unit;
+                    //G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+                    physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+                }
             }
+            runManager->SetUserInitialization(physicsList);
+        }else{
+            runManager->SetUserInitialization(new G4TUserPhysicsList());
         }
 
 
@@ -654,6 +679,7 @@ int main(int argc,char** argv){
         return 0;
     }
 
+
 #ifdef G4MPI_USE
     //MPI_Init(&argc,&argv);
     int provided;
@@ -665,6 +691,8 @@ int main(int argc,char** argv){
     //G4MPImanager* g4MPI = new G4MPImanager(/*argc,argv*/); // if we use the parameter passed from terminal (argv) then the constructor must be empty
     //G4MPIsession* session = g4MPI-> GetMPIsession();
 #endif
+
+    UseVoxelsColour = false;
 
     //G4RunManager* runManager = new G4RunManager;
     //auto* runManager = G4RunManagerFactory::CreateRunManager();
@@ -678,15 +706,69 @@ int main(int argc,char** argv){
     UImanager->SetVerboseLevel(0);
     UImanager->ExecuteMacroFile(MacrosStartingFile.c_str());
 
+    if(ParticlePysics.contains("FACTORY")){
+    //if(ParticleName == "neutron" && ParticlePysics.contains("FACTORY")){
+        std::vector<std::string> RefPhyLists;
+        RefPhyLists.push_back("FACTORY_FTFP_BERT"); RefPhyLists.push_back("FACTORY_FTFP_BERT_ATL"); RefPhyLists.push_back("FACTORY_FTFP_BERT_TRV"); RefPhyLists.push_back("FACTORY_QGSP_FTFP_BERT"); RefPhyLists.push_back("FACTORY_QGSP_BERT"); RefPhyLists.push_back("FACTORY_QGSP_BERT_HP"); RefPhyLists.push_back("FACTORY_QGSP_BIC"); RefPhyLists.push_back("FACTORY_QGSP_BIC_AllHP"); RefPhyLists.push_back("FACTORY_INCLXX"); RefPhyLists.push_back("FACTORY_Shielding"); RefPhyLists.push_back("FACTORY_ShieldingLEND");
+        bool isIn = false; for ( int df = 0 ; df < RefPhyLists.size(); df++  ){ if(ParticlePysics == RefPhyLists[df] ){ isIn = true; }}
+
+        if(isIn == false ){
+            ParticlePysics = "FACTORY_QGSP_BERT_HP";
+            G4Exception("Reference Physics List", "InvalidSetup", JustWarning, "Invalid reference physics choice, the QGSP_BERT_HP will be used.");
+        }
+
+        G4String PhyyName = ParticlePysics;
+        std::string s = "FACTORY_";
+        std::string::size_type i = PhyyName.find(s);
+        if (i != std::string::npos){PhyyName.erase(i, s.length());}
+
+        //std::cout << " ParticlePysics " << ParticlePysics << " PhyyName " << PhyyName << std::endl;
+
+        G4PhysListFactory* physFactory = new G4PhysListFactory();
+        G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(PhyyName);
+
+        if(CutInRangeData == ""){
+            physicsList->SetCutsWithDefault();
+        }else{
+            std::istringstream LineString(CutInRangeData);
+            G4cout << CutInRangeData << G4endl;
+
+            G4double Ene; G4String pn, Unit;
+            while(LineString >> pn ){
+                LineString >> Ene;
+                LineString >> Unit;
+                //G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+                physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+            }
+        }
+        runManager->SetUserInitialization(physicsList);
+    }else{
+        runManager->SetUserInitialization(new G4TUserPhysicsList());
+    }
+
+/*
     if(ParticlePysics == "EMS" || ParticlePysics == "EMS1" || ParticlePysics == "EMS2" || ParticlePysics == "EMS3"|| ParticlePysics == "EMS4"|| ParticlePysics == "Livermore"|| ParticlePysics == "Penelope"){
         if(ParticleName == "neutron"){
-            runManager->SetUserInitialization(new G4TNeutronPhysicsList("NeutronHP"));
+            G4VModularPhysicsList* physicsList = new G4TNeutronPhysicsList("NeutronHP");
+            runManager->SetUserInitialization(physicsList);
+            if(CutInRangeData == ""){
+                physicsList->SetCutsWithDefault();
+            }else{
+                std::istringstream LineString(CutInRangeData);
+                G4cout << CutInRangeData << G4endl;
 
+                G4double Ene; G4String pn, Unit;
+                while(LineString >> pn ){
+                    LineString >> Ene;
+                    LineString >> Unit;
+                    //G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+                    physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+                }
+            }
         }else{
             runManager->SetUserInitialization(new G4TUserPhysicsList());
         }
     }else{
-
         if(ParticleName == "neutron"){
             std::vector<std::string> RefPhyLists;
             RefPhyLists.push_back("FTFP_BERT"); RefPhyLists.push_back("FTFP_BERT_ATL"); RefPhyLists.push_back("FTFP_BERT_TRV"); RefPhyLists.push_back("QGSP_FTFP_BERT"); RefPhyLists.push_back("QGSP_BERT"); RefPhyLists.push_back("QGSP_BERT_HP"); RefPhyLists.push_back("QGSP_BIC"); RefPhyLists.push_back("QGSP_BIC_AllHP"); RefPhyLists.push_back("INCLXX"); RefPhyLists.push_back("Shielding"); RefPhyLists.push_back("ShieldingLEND");
@@ -700,30 +782,45 @@ int main(int argc,char** argv){
             G4PhysListFactory* physFactory = new G4PhysListFactory();
             G4VModularPhysicsList* physicsList = physFactory->GetReferencePhysList(ParticlePysics);
 
-            physicsList->SetCutsWithDefault();
+            if(CutInRangeData == ""){
+                physicsList->SetCutsWithDefault();
+            }else{
+                std::istringstream LineString(CutInRangeData);
+                G4cout << CutInRangeData << G4endl;
+
+                G4double Ene; G4String pn, Unit;
+                while(LineString >> pn ){
+                    LineString >> Ene;
+                    LineString >> Unit;
+                    //G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+                    physicsList->SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+                }
+            }
             runManager->SetUserInitialization(physicsList);
         }else{
             ParticlePysics = "EMS3";
             runManager->SetUserInitialization(new G4TUserPhysicsList());
         }
     }
+*/
 
     G4int par = ParamType ; // because ParamType is unset accidentally !!
     VolCon->setParamType(par);  // because ParamType is unset accidentally !!
 
-
-    runManager->SetUserInitialization(new G4TActionInitialization());
-
+    if( GeometryFileType == "TET"){
+        runManager->SetUserInitialization(new TETActionInitialization());
+    }else {
+        runManager->SetUserInitialization(new G4TActionInitialization());
+    }
 
     runManager->SetNumberOfThreads(VolCon->getNumberOfThreads());
     runManager->SetNumberOfEventsToBeProcessed(VolCon->getNumberOfThreads()*EventsNumPerThreadRank);
-    //static_cast<G4MTRunManager*>(runManager)->SetEventModulo(EventsNumPerThreadRank);
+    static_cast<G4MTRunManager*>(runManager)->SetEventModulo(EventsNumPerThreadRank);
 
     VolCon->setShowBox("no");
     VolCon->setTestPointsPositions("no");
-
     if(VolCon->getGeometryFileType() != "TET"){ // because we TET require a high computational materials, then in all cases we will simulate just
-                                                // a part by setting the command "/GeometryData/setTETPhantomLimits xy -15 15"
+        // a part by setting the command "/GeometryData/setTETPhantomLimits xy -15 15"
         PlanesToVisualize = "all";
     }
 
@@ -732,7 +829,6 @@ int main(int argc,char** argv){
     std::cout << "\n\n========= Geometry, physics and radiation source data initialization ======================= \n"<<std::endl;
 
     runManager->Initialize();
-
 
     if(InteractiveMode == "B" || InteractiveMode == ""){
 

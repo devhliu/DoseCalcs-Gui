@@ -398,79 +398,6 @@ void G4TMessenger::SetNewValue(G4UIcommand* command,G4String newValue){
         VolumeConst->setGenerateVoxelsResuls("yes");
     }
 
-    /*
-
-    // score commands
-    if( command == Organs_to_scoreCMD )
-    {
-        VolumeConst->setOrgans_to_score(newValue);
-    }
-    if( command == Variable_To_ScoreCMD )
-    {
-        VolumeConst->setVariable_To_Score(newValue);
-    }
-
-    if( command == number_events_per_threadCMD )
-    {
-        VolumeConst->setNumberOfEventsPerThread(number_events_per_threadCMD->GetNewIntValue(newValue));
-    }
-    if( command == number_of_batchsCMD )
-    {
-        VolumeConst->setNumberOfBatch(number_of_batchsCMD->GetNewIntValue(newValue));
-    }
-
-
-    // analysis commands
-    if( command == Graphs_DataCMD )
-    {
-        VolumeConst->setGraphs_Data(newValue);
-    }
-    if( command == Compare_typeCMD )
-    {
-        VolumeConst->setCompare_type(newValue);
-    }
-    if( command == Graphs_ExtCMD )
-    {
-        VolumeConst->setGraphs_Ext(newValue);
-    }
-    if( command == Ref_File_PathCMD )
-    {
-        VolumeConst->setRef_File_Path(newValue);
-    }
-    if( command == Ref_NameCMD )
-    {
-        VolumeConst->setRef_Name(newValue);
-    }
-
-    if( command == EventsPositionHistogramCMD )
-    {
-        VolumeConst->setEventsPositionHistogram(newValue);
-    }
-    if( command == EventsEnergyHistogramCMD )
-    {
-        VolumeConst->setEventsEnergyHistogram(newValue);
-    }
-    if( command == EventsMomDirHistogramCMD )
-    {
-        VolumeConst->setEventsMomDirHistogram(newValue);
-    }
-
-
-    if( command == SliceFor2DGraphCMD )
-    {
-        VolumeConst->setSliceFor2DGraph(newValue);
-    }
-    if( command == SliceIDCMD )
-    {
-        VolumeConst->setSliceID(SliceIDCMD->GetNewIntValue(newValue));
-    }
-    if( command == BeamAxisCMD )
-    {
-        VolumeConst->setBeamAxis(newValue);
-    }
-
-*/
-
 }
 
 
@@ -499,33 +426,6 @@ void G4TMessenger::CommandsForRunAndScore(){
         G4String f = "the physical quantities tha will be scored" + std::to_string(ds);
         param = new G4UIparameter(f,'s', true);      QuantitiesToScoreCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
     }
-    /*
-    Organs_to_scoreCMD = new G4UIcmdWithAString("/RunAndScoreData/setRegionsToScore",this);
-    Organs_to_scoreCMD->SetGuidance("Set organs name list to score. the organs entered have to be separated by '_' , for example Liver_Pancreas_Heart");
-    Organs_to_scoreCMD->SetParameterName("OrgansToScore",true);
-    Organs_to_scoreCMD->SetDefaultValue("Liver");
-    //Organs_to_scoreCMD->SetCandidates("Head Skull Thyroid UpperSpine Brain LeftLeg RightLeg LeftLegBone RightLegBone Trunk UpperLargeIntestine LowerLargeIntestine	RightArmBone LeftArmBone LeftKidney RightKidney	LeftLung RightLung LeftOvary RightOvary LeftTeste RightTeste LeftBreast RightBreast	LeftAdrenal	RightAdrenal LeftClavicle RightClavicle	LeftScapula	RightScapula Heart UrinaryBladder MiddleLowerSpine Pelvis	Stomach Pancreas SmallIntestine Uterus RibCage Thymus MaleGenitalia Legs LegBone ArmBone Breast Ovary Liver Pancreas Kidney Lung Adrenal Spleen");
-    Organs_to_scoreCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-    Variable_To_ScoreCMD = new G4UIcmdWithAString("/RunAndScoreData/setVariableToScore",this);
-    Variable_To_ScoreCMD->SetGuidance("Set variable to score : MIRD ,ORNL");
-    Variable_To_ScoreCMD->SetParameterName("VariableToScore",true);
-    Variable_To_ScoreCMD->SetDefaultValue("SAF");
-    //Variable_To_ScoreCMD->SetCandidates("AE AD AF SAF S H E All all");
-    Variable_To_ScoreCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-    number_of_batchsCMD = new G4UIcmdWithAnInteger("/RunAndScoreData/setNumberOfBatchs",this);
-    number_of_batchsCMD->SetGuidance("Set number of Batchs in a simulation to calculate the quantity mean value ");
-    number_of_batchsCMD->SetParameterName("number_of_batchsCMD",true);
-    number_of_batchsCMD->SetDefaultValue(10);
-    number_of_batchsCMD->AvailableForStates(G4State_PreInit , G4State_Idle);
-
-    number_events_per_threadCMD = new G4UIcmdWithAnInteger("/RunAndScoreData/setEventNumberPerThread",this);
-    number_events_per_threadCMD->SetGuidance("Set number of events in each thread)");
-    number_events_per_threadCMD->SetParameterName("number_events_per_threadCMD",true);
-    number_events_per_threadCMD->SetDefaultValue(1000);
-    number_events_per_threadCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
-*/
 
     number_of_threadsCMD = new G4UIcmdWithAnInteger("/RunAndScoreData/setNumberOfThreads",this);
     number_of_threadsCMD->SetGuidance("Set number of workers threads)");
@@ -599,8 +499,8 @@ void  G4TMessenger::CommandsForAnalysis(){
     GenerateSelfCrossGraphs = new G4UIcommand("/AnalysisData/generateSelfCrossGraphs" ,this);
     param = new G4UIparameter("Graph Data",'s', false);   GenerateSelfCrossGraphs->SetParameter(param);
     param = new G4UIparameter("Compare Data",'s', false);   GenerateSelfCrossGraphs->SetParameter(param);
-    param = new G4UIparameter("Ref Name",'s', false);   GenerateSelfCrossGraphs->SetParameter(param);
-    param = new G4UIparameter("Ref File Path",'s', false);   GenerateSelfCrossGraphs->SetParameter(param);
+    param = new G4UIparameter("Ref Name",'s', true);   GenerateSelfCrossGraphs->SetParameter(param);
+    param = new G4UIparameter("Ref File Path",'s', true);   GenerateSelfCrossGraphs->SetParameter(param);
 
     GenerateRegionsVariableGraph = new G4UIcommand("/AnalysisData/generateVariableRegionGraph" ,this);
     param = new G4UIparameter("Variable Name",'s', false);   GenerateRegionsVariableGraph->SetParameter(param);

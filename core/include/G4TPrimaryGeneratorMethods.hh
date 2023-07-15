@@ -54,6 +54,7 @@ public:
     ~G4TPrimaryGeneratorMethods();
 
     G4double getEmittedEnergy() const { return TotalEmittedEnergy;}
+    G4int getEvInc() const { return EvInc;}
 
 protected:
 

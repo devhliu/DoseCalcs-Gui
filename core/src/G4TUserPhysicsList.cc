@@ -271,12 +271,15 @@
 
 #include "G4RegionStore.hh"
 
+#include "G4RadioactiveDecayPhysics.hh"
+
 G4TUserPhysicsList::G4TUserPhysicsList():  G4VUserPhysicsList()
 {
 
     G4VEmPhysicsConstructorObj = nullptr;
     G4VHadromPhysicsConstructorObj = nullptr;
     decPhysicsList = new G4DecayPhysics(0);
+    RadioactivedecPhysicsList = new G4RadioactiveDecayPhysics(0);
 
     int verbose = 0 ;
 
@@ -313,37 +316,48 @@ G4TUserPhysicsList::G4TUserPhysicsList():  G4VUserPhysicsList()
 
         G4VEmPhysicsConstructorObj = new G4EmPenelopePhysics(verbose);
     }
-    else if(ParticlePysics == "FTFP_BERT"){
+    else if(ParticlePysics == "HADRON_FTFP_BERT"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT();
     }
-    else if(ParticlePysics == "FTFP_BERT_ATL"){
+    else if(ParticlePysics == "HADRON_FTFP_BERT_ATL"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_ATL();
     }
-    else if(ParticlePysics == "FTFP_BERT_TRV"){
+    else if(ParticlePysics == "HADRON_FTFP_BERT_TRV"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_TRV();
     }
-    else if(ParticlePysics == "QGSP_FTFP_BERT"){
+    else if(ParticlePysics == "HADRON_QGSP_FTFP_BERT"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_FTFP_BERT();
     }
-    else if(ParticlePysics == "QGSP_BERT"){
+    else if(ParticlePysics == "HADRON_QGSP_BERT"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT();
     }
-    else if(ParticlePysics == "QGSP_BERT_HP"){
+    else if(ParticlePysics == "HADRON_QGSP_BERT_HP"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT_HP();
     }
-    else if(ParticlePysics == "QGSP_BIC"){
+    else if(ParticlePysics == "HADRON_QGSP_BIC"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC();
     }
-    else if(ParticlePysics == "QGSP_BIC_AllHP"){
+    else if(ParticlePysics == "HADRON_QGSP_BIC_AllHP"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC_AllHP();
     }
-    else if(ParticlePysics == "INCLXX"){
+    else if(ParticlePysics == "HADRON_INCLXX"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsINCLXX();
     }
-    else if(ParticlePysics == "Shielding"){
+    else if(ParticlePysics == "HADRON_Shielding"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsShielding();
     }
-    else if(ParticlePysics == "ShieldingLEND"){
+    else if(ParticlePysics == "HADRON_ShieldingLEND"){
+        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
         G4VHadromPhysicsConstructorObj = new G4HadronPhysicsShieldingLEND();
     }
     else {
@@ -368,7 +382,6 @@ G4TUserPhysicsList::~G4TUserPhysicsList()
     else{
         delete G4VHadromPhysicsConstructorObj;
     }
-
 
 }
 
@@ -879,121 +892,22 @@ void G4TUserPhysicsList::ConstructProcess()
         G4LossTableManager::Instance()->SetAtomDeexcitation(de);
 
     }
-    else{
+    else if(ParticlePysics == "HADRON_FTFP_BERT" || ParticlePysics == "HADRON_FTFP_BERT_ATL" || ParticlePysics == "HADRON_FTFP_BERT_TRV"  || ParticlePysics == "HADRON_QGSP_FTFP_BERT" || ParticlePysics == "HADRON_QGSP_BERT" || ParticlePysics == "HADRON_QGSP_BERT_HP" || ParticlePysics == "HADRON_QGSP_BIC" || ParticlePysics == "HADRON_QGSP_BIC_AllHP" || ParticlePysics == "HADRON_INCLXX" || ParticlePysics == "HADRON_Shielding" || ParticlePysics == "HADRON_ShieldingLEND"){
         G4VEmPhysicsConstructorObj->ConstructProcess();
+        G4VHadromPhysicsConstructorObj->ConstructProcess();
     }
-
-
-/*
-    if(ParticlePysics == "EMS"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-
+    else {
+        G4Exception("MyPhysicsList::MyPhysicsList", "InvalidSetup", FatalException, "Invalid physics choice");
     }
-    else if(ParticlePysics == "EMS1"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS1 Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option1(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-    }
-    else if(ParticlePysics == "EMS2"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS2 Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option2(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-    }
-    else if(ParticlePysics == "EMS3"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS3 Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option3(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-    }
-    else if(ParticlePysics == "EMS4"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n EMS4 Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmStandardPhysics_option4(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-    }
-    else if(ParticlePysics == "Livermore"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Livermore Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmLivermorePhysics(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-    }
-    else if(ParticlePysics == "Penelope"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n penelope Physics " << G4endl;
-
-        G4VEmPhysicsConstructorObj = new G4EmPenelopePhysics(verbose);
-        G4VEmPhysicsConstructorObj->ConstructProcess();
-    }
-    else if(ParticlePysics == "FTFP_BERT"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT();
-
-    }
-    else if(ParticlePysics == "FTFP_BERT_ATL"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_ATL();
-
-    }
-    else if(ParticlePysics == "FTFP_BERT_TRV"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsFTFP_BERT_TRV();
-
-    }
-    else if(ParticlePysics == "QGSP_FTFP_BERT"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_FTFP_BERT();
-
-    }
-    else if(ParticlePysics == "QGSP_BERT"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT();
-
-    }
-    else if(ParticlePysics == "QGSP_BERT_HP"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BERT_HP();
-
-    }
-    else if(ParticlePysics == "QGSP_BIC"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC();
-
-    }
-    else if(ParticlePysics == "QGSP_BIC_AllHP"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsQGSP_BIC_AllHP();
-
-    }
-    else if(ParticlePysics == "INCLXX"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsINCLXX();
-
-    }
-    else if(ParticlePysics == "Shielding"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsShielding();
-
-    }
-    else if(ParticlePysics == "ShieldingLEND"){
-        G4VEmPhysicsConstructorObj = new G4HadronPhysicsShieldingLEND();
-
-    }
-    */
-
-    //G4ProcessManager* pmanager = G4Gamma::Gamma()->GetProcessManager();
-    //G4BiasingHelper::ActivatePhysicsBiasing(pmanager, "compt");
-    //G4BiasingHelper::ActivateNonPhysicsBiasing(pmanager);
-
-    //G4RunManager::GetRunManager()->PhysicsHasBeenModified();
-
-    //if (verboseLevel>0)  DumpList();
 
     if(TestPointsPositions == "yes"){
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n No Transportation() " << G4endl;
 
     }else{
-        //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n AddTransportation() " << G4endl;
 
         AddTransportation();
         decPhysicsList->ConstructProcess();
+        RadioactivedecPhysicsList->ConstructProcess();
     }
-
-
-
 }
 
 void G4TUserPhysicsList::SetCuts()
@@ -1003,9 +917,27 @@ void G4TUserPhysicsList::SetCuts()
 
     //G4cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n from function : " << __FUNCTION__<< G4endl;
 
+    if(CutInRangeData == ""){
+        SetCutsWithDefault();
+    }else{
+        std::istringstream LineString(CutInRangeData);
+        G4cout << CutInRangeData << G4endl;
+
+        G4double Ene; G4String pn, Unit;
+        while(LineString >> pn ){
+            LineString >> Ene;
+            LineString >> Unit;
+            G4cout << " pn " << pn << " Ene " << Ene << " Unit " << Unit << G4endl;
+            SetCutValue(Ene*G4UnitDefinition::GetValueOf(Unit), pn);
+        }
+    }
+
+/*
     defaultCutValue = CutsDistance;
 
     // set distance cuts for secondary production
+
+    //QString InputsVals = CutsEnergy.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setSourceGenerationData"
 
     if(IsDcutsSet == true && CutsDistance > 0.){
         defaultCutValue = CutsDistance;
@@ -1027,19 +959,18 @@ void G4TUserPhysicsList::SetCuts()
     // SetCutsWithDefault();
     // Set the secondary production cut lower than 990. eV,  Very important for high precision of lowenergy processes at low energies
 
-
     G4double lowLimit = CutsEnergy ;
     G4double highLimit = 100. * GeV;
     G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowLimit, highLimit);
 
-
-     // Set the tracking cut for neutrons
-     G4double neutronCut = 0.5 * mm;
-     SetCutValue(neutronCut, "neutron");
-     G4Region* region = G4RegionStore::GetInstance()->GetRegion("DefaultRegionForTheWorld");
-     G4ProductionCuts* cuts = new G4ProductionCuts;
-     cuts->SetProductionCut(neutronCut);
-     region->SetProductionCuts(cuts);
+    // Set the tracking cut for neutrons
+    G4double neutronCut = 0.5 * mm;
+    SetCutValue(neutronCut, "neutron");
+    G4Region* region = G4RegionStore::GetInstance()->GetRegion("DefaultRegionForTheWorld");
+    G4ProductionCuts* cuts = new G4ProductionCuts;
+    cuts->SetProductionCut(neutronCut);
+    region->SetProductionCuts(cuts);
+*/
 
     ShowSourceParameters();
 
@@ -1068,6 +999,8 @@ void G4TUserPhysicsList::ShowSourceParameters() {
     }
     G4cout<<" >> New CutsDistance: " << CutsDistance << " mm" << G4endl;
     G4cout<<" >> New CutsEnergy: " << CutsEnergy << " MeV" << G4endl;
+    G4cout<<" >> CutInRangeData: " << CutInRangeData << G4endl;
+
     if(GenerateCrossSectionTableFlag){
         G4cout<<" >> GenerateCrossSectionTableFlag " << "yes" <<G4endl;
     }

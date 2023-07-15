@@ -383,12 +383,12 @@ void G4TPrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String new
 
                     G4int ExceptNum = StoI(next());
 
-                    std::cout<< " RegionName " << stLower << " ExceptNum " << ExceptNum <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
+                    //std::cout<< " RegionName " << stLower << " ExceptNum " << ExceptNum <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
 
                     for(G4int ds = 0 ; ds < ExceptNum ; ds++){
 
                         G4String Org = next();
-                        std::cout<< " Org " << Org <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
+                        //std::cout<< " Org " << Org <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
 
                         GeoConst->setSourceRegionsNamesToBeIgnoredValues(Org);
                     }
@@ -404,9 +404,9 @@ void G4TPrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String new
                 if(stLower!="allregions"){
                     GeoConst->setSourceRegionsNamesValues(SN);
 
-                    std::cout<< " RegionName " << SN << " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
+                    //std::cout<< " RegionName " << SN << " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
                     A = StoD(next()); B = StoD(next()); C = StoD(next()) ; //Un1 = next();
-                    std::cout<< " A " << A <<  " B " << B << " C " << C << " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
+                    //std::cout<< " A " << A <<  " B " << B << " C " << C << " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
                     GeoConst->setSourceRegionsBoxDimValues(G4ThreeVector(A*UseG4Units(Un1), B*UseG4Units(Un1), C*UseG4Units(Un1)));
                     GeoConst->setXYZOfBox(                 G4ThreeVector(A*UseG4Units(Un1), B*UseG4Units(Un1), C*UseG4Units(Un1)), true);
                 }
@@ -559,7 +559,7 @@ void G4TPrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String new
                 G4String S = next();
                 G4int NumberOfVal = StoI(next());
 
-                std::cout <<" S= " << S << " NumberOfVal = " << NumberOfVal << std::endl;
+                //std::cout <<" S= " << S << " NumberOfVal = " << NumberOfVal << std::endl;
 
                 unsigned int SpectrumOrDiscrete;
                 unsigned int ParticleIndex;
@@ -579,11 +579,11 @@ void G4TPrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command,G4String new
                         MinMax = new double [2];
                         MinMax[0] = Min;
                         MinMax[1] = EVal;
-                        std::cout << NumberOfVal << " Pval = " << Pval << " RPar = "<< RPar <<  " SpectrumOrDiscrete = "<< SpectrumOrDiscrete <<  " MinMax[0] = "<< MinMax[0]  <<  " MinMax[1] = "<< MinMax[1] <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
+                        //std::cout << NumberOfVal << " Pval = " << Pval << " RPar = "<< RPar <<  " SpectrumOrDiscrete = "<< SpectrumOrDiscrete <<  " MinMax[0] = "<< MinMax[0]  <<  " MinMax[1] = "<< MinMax[1] <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
                     } else {
                         MinMax = new double [1];
                         MinMax[0] = EVal;
-                        std::cout << NumberOfVal << " Pval = " << Pval << " RPar = "<< RPar <<  " SpectrumOrDiscrete = "<< SpectrumOrDiscrete <<  " EVal = "<< EVal <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
+                        //std::cout << NumberOfVal << " Pval = " << Pval << " RPar = "<< RPar <<  " SpectrumOrDiscrete = "<< SpectrumOrDiscrete <<  " EVal = "<< EVal <<  " @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< std::endl;
                     }
 
                     if(RPar=="gamma"){ParticleIndex = 0;}

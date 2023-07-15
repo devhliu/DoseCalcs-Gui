@@ -84,6 +84,7 @@ public:
 	G4ThreeVector GetPhantomBoxMax()         { return boundingBox_Max; }
 
     void setIdNameMap(std::map<G4int, G4String> IdName) { MatIDNameMap = IdName; }
+
     void setNameMatMap(std::map<G4String, G4Material*> NameMat) { NameMatMap = NameMat; }
 
     void GenerateDataforTET();

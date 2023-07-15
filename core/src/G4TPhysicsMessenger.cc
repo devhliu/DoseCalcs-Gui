@@ -139,15 +139,28 @@ void G4TPhysicsMessenger::SetNewValue(G4UIcommand* command,G4String newValue){
     
     if( command == CutsDataCMD )
     {
+        /*
         G4Tokenizer next(newValue);
         G4String car1 = next(), car2 = next() ,Un1 = next() , Un3 = next() ;
-        
+
         if(car1 == "null"){myUserPhysics->setCutsDistance(0);}
         else {myUserPhysics->setCutsDistance(StoD(car1)*UseG4Units(Un1));}
         
         if(car2 == "null"){myUserPhysics->setCutsEnergy(0);}
         else {myUserPhysics->setCutsEnergy(StoD(car2)*UseG4Units(Un3));}
-        
+        */
+
+        G4Tokenizer next(newValue);
+
+        G4String Data = "", dd = next();
+        while (!dd.empty()) {
+
+            Data += dd;Data += " ";
+            dd = next();
+        }
+
+        myUserPhysics->setCutInRangeData(Data);
+
     }
 
     if( command == SetEnergiesForCrossSectionCMD)
@@ -252,10 +265,10 @@ void  G4TPhysicsMessenger::CommandsForPhysics(){
     param = new G4UIparameter("IonIonisationModel",'s', true);  PhysicsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
     
     CutsDataCMD = new G4UIcommand("/PhysicsData/setCutsData" ,this);
-    param = new G4UIparameter("Range cuts",'s', false);     CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
-    param = new G4UIparameter("Energy thresholds",'s', false);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
-    param = new G4UIparameter("Range unit Cuts",'s', false);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
-    param = new G4UIparameter("Energy thresholds unit",'s', false);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
+    param = new G4UIparameter("Range cuts",'s', true);     CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
+    param = new G4UIparameter("Energy thresholds",'s', true);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
+    param = new G4UIparameter("Range unit Cuts",'s', true);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
+    param = new G4UIparameter("Energy thresholds unit",'s', true);  CutsDataCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error
 
     SetEnergiesForCrossSectionCMD = new G4UIcommand("/PhysicsData/generateCrossSectionFor" ,this);
     param = new G4UIparameter("Particle name",'s', true);      SetEnergiesForCrossSectionCMD->SetParameter(param); // true because if we sent just 11 fpr ex it will not throw an error

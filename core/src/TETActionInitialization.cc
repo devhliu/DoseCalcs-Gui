@@ -23,48 +23,39 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// TETRun.hh
-// \file   MRCP_GEANT4/Internal/include/TETRun.hh
+// TETActionInitialization.cc
+// \file   MRCP_GEANT4/Internal/src/TETActionInitialization.cc
 // \author Haegin Han
 //
 
-#ifndef TETRun_h
-#define TETRun_h 1
+#include "G4TVolumeConstruction.hh"
+#include "TETActionInitialization.hh"
 
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4THitsMap.hh"
-#include "G4SDManager.hh"
+TETActionInitialization::TETActionInitialization()
+ : G4VUserActionInitialization()
+{}
 
-typedef std::map<G4int, std::pair<G4double, G4double>> EDEPMAP;
-typedef std::map<G4int,unsigned long long int> NumStepMAP;
+TETActionInitialization::~TETActionInitialization()
+{}
 
-// *********************************************************************
-// This is G4Run class that sums up energy deposition from each event.
-// The sum of the square of energy deposition was also calculated to
-// produce the relative error of the dose.
-// -- RecordEvent: Sum up the energy deposition and the square of it.
-//                 The sums for each organ were saved as the form of
-//                 std::map.
-// -- Merge: Merge the data calculated in each thread.
-// *********************************************************************
-
-class TETRun : public G4Run 
+void TETActionInitialization::BuildForMaster() const
 {
-public:
-	TETRun();
-	virtual ~TETRun();
+    SetUserAction(new TETRunAction());
+}
 
-	virtual void RecordEvent(const G4Event*);
-	void ConstructMFD(const G4String& mfdName);
-    virtual void Merge(const G4Run*);
+void TETActionInitialization::Build() const
+{
+	// initialise UserAction classes
+    SetUserAction(new TETRunAction());
+	SetUserAction(new TETSteppingAction);
 
-    EDEPMAP* GetEdepMap() {return &edepMap;};
-    NumStepMAP* GetnumstepsMap() {return &numstepsMap;};
+    const G4TVolumeConstruction* TConstruction2 = static_cast<const G4TVolumeConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    if( TConstruction2->getUseGeneratedData() == "read"){
+        SetUserAction(new G4TReadPrimaryGeneratorAction);
+    }else if(TConstruction2->getUseGeneratedData() == "save"){
+        SetUserAction(new G4TDirectToFilesPrimaryGeneratorAction);
+    }else{
+        SetUserAction(new G4TDirectPrimaryGeneratorAction);
+    }
 
-private:
-    EDEPMAP edepMap;
-    NumStepMAP numstepsMap;
-};
-
-#endif
+}  

@@ -42,6 +42,8 @@
 #include "G4TComptonProcess.hh"
 
 // Physics
+extern G4String CutInRangeData;
+extern G4String EnergyThresholdsData;
 extern G4bool IsEcutsSet;
 extern G4bool IsDcutsSet;
 extern G4double CutsEnergy;
@@ -122,6 +124,7 @@ private:
     G4VPhysicsConstructor* G4VEmPhysicsConstructorObj;
     G4VPhysicsConstructor* G4VHadromPhysicsConstructorObj;
     G4VPhysicsConstructor* decPhysicsList;
+    G4VPhysicsConstructor* RadioactivedecPhysicsList;
 
 };
 #endif
