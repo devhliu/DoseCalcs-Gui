@@ -602,13 +602,13 @@ Setting Physics
 
  .. code-block::
 
-    /PhysicsData/setPhysicsData [Physics Constructor or Factory] [Constructor Parameters]
+    /PhysicsData/setPhysicsData [Physics] [Parameters (for "Construct physics")]
 
-2. Electromagnetic Constructors
+2. Electromagnetic constructors, hadron constructors, or general factory
 
  .. code-block::
 
-    /PhysicsData/setPhysicsData [Electromagnetic Constructor]
+    /PhysicsData/setPhysicsData [Physics]
 
 ex : /PhysicsData/setPhysicsData EMS3
 
