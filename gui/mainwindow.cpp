@@ -1944,6 +1944,27 @@ void MainWindow::on_RunButton_clicked()
     }
 
     ui->RunButton->setText("Run("+QString::number(macrosfileinc)+")");macrosfileinc++;
+    if (ui->checkBoxnohup->isChecked()){
+        ui->comboBoxNohupFiles->addItem(LastRunOutputFile);
+        ui->comboBoxNohupFiles->setCurrentText(LastRunOutputFile);
+    }
+}
+void MainWindow::on_checkBoxnohup_clicked()
+{
+    if (ui->checkBoxnohup->isChecked()){
+        ui->comboBoxNohupFiles->setVisible(true);
+        ui->pushButtonShowOutputs->setVisible(true);
+        QDir dir(DoseCalcsCore_build_dir_path);
+        ui->comboBoxNohupFiles->clear();
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "nohup_DoseCalcs*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            ui->comboBoxNohupFiles->addItem(entry.fileName());
+        }
+    }else{
+        ui->comboBoxNohupFiles->setVisible(false);
+        ui->pushButtonShowOutputs->setVisible(false);
+        QDir dir(DoseCalcsCore_build_dir_path);
+        ui->comboBoxNohupFiles->clear();
+    }
 }
 void MainWindow::on_pushButtonShowOutputs_clicked()
 {
@@ -7098,23 +7119,6 @@ void MainWindow::on_AnalysisComboBoxGraphData_currentIndexChanged(const QString 
         //ui->AnalysisComboBoxGraphsType->setEnabled(true);
         //ui->btnReferenceFile->setEnabled(true);
 
-    }
-}
-void MainWindow::on_checkBoxnohup_clicked()
-{
-    if (ui->checkBoxnohup->isChecked()){
-        ui->comboBoxNohupFiles->setVisible(true);
-        ui->pushButtonShowOutputs->setVisible(true);
-        QDir dir(DoseCalcsCore_build_dir_path);
-        ui->comboBoxNohupFiles->clear();
-        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "nohup_DoseCalcs*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
-            ui->comboBoxNohupFiles->addItem(entry.fileName());
-        }
-    }else{
-        ui->comboBoxNohupFiles->setVisible(false);
-        ui->pushButtonShowOutputs->setVisible(false);
-        QDir dir(DoseCalcsCore_build_dir_path);
-        ui->comboBoxNohupFiles->clear();
     }
 }
 
