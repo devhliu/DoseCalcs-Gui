@@ -304,6 +304,7 @@ private:
     QString PhysicsData_setCutsEnergy ;
     QString PhysicsData_setCutsDistance ;
 
+    QString LastRunOutputFile ;
 
     // Source
 
@@ -631,6 +632,14 @@ private slots:
     void on_comboBoxTotalorSourceOrCombNucl_currentTextChanged(const QString &arg1);
 
     void on_comboBoxSourceOrTargetsForBiokinetics_currentTextChanged(const QString &arg1);
+
+    void on_pushButtonShowOutputs_clicked();
+
+    void on_checkBoxnohup_clicked();
+
+    void on_pushButtonShowOutputsAndMacros_clicked();
+
+    void on_pushButtonStopCurrentProcess_clicked();
 
 private:
 

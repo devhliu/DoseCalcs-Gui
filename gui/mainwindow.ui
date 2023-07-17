@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1890</width>
-    <height>1052</height>
+    <height>1325</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -47,7 +47,7 @@
          <x>0</x>
          <y>0</y>
          <width>1872</width>
-         <height>951</height>
+         <height>1224</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_17">
@@ -71,7 +71,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>true</bool>
@@ -1158,16 +1158,16 @@
                    </property>
                    <layout class="QHBoxLayout" name="horizontalLayout_17">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>10</number>
                     </property>
                     <property name="leftMargin">
-                     <number>303</number>
+                     <number>0</number>
                     </property>
                     <property name="topMargin">
                      <number>0</number>
                     </property>
                     <property name="rightMargin">
-                     <number>303</number>
+                     <number>0</number>
                     </property>
                     <property name="bottomMargin">
                      <number>0</number>
@@ -1175,10 +1175,61 @@
                     <item>
                      <widget class="QPushButton" name="RunButton">
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run the DoseCalcs simulation. Note that DoseCalcs should be built, and principal simulation inputs should be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run the DoseCalcs simulation. Note that DoseCalcs should be built, and principal simulation inputs should be set. The simulation output file and macros file are generated automatically in the [core_build] directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>Run</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="frame_32">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_34">
+                       <property name="spacing">
+                        <number>4</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QComboBox" name="comboBoxNohupFiles"/>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButtonShowOutputs">
+                         <property name="text">
+                          <string>Show Output</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonStopCurrentProcess">
+                      <property name="text">
+                       <string>Stop Current Simulation(s)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonShowOutputsAndMacros">
+                      <property name="text">
+                       <string>Remove Simulations Outputs and Macros</string>
                       </property>
                      </widget>
                     </item>
@@ -1328,6 +1379,35 @@
                   </widget>
                  </item>
                 </layout>
+               </widget>
+              </item>
+              <item row="7" column="0" colspan="2">
+               <widget class="QScrollArea" name="scrollArea_2">
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>-257</y>
+                   <width>1003</width>
+                   <height>567</height>
+                  </rect>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_33">
+                  <item>
+                   <widget class="QLabel" name="label_16">
+                    <property name="text">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:700; font-style:italic; text-decoration: underline;&quot;&gt;How to follow the simulation's progress&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The outputs and progress of a simulation can be either on Terminal, or an output file in the [core_build] directory, &lt;/p&gt;&lt;p&gt;depending on the run method:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#252525;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Run In Background&lt;/span&gt;: At each run, an output file beginning with nohup_DoseCalcs_RunID_... is created, and all the &lt;/p&gt;&lt;p&gt;background DoseCalcs simulation outputs are written to this file. then to follow the simulation, just select the nohup&lt;/p&gt;&lt;p&gt;output file of the current simulation in the list of files next to the &amp;quot;Run&amp;quot; button and click on &amp;quot;Show Outputs&amp;quot;. Or&lt;/p&gt;&lt;p&gt;manually on terminal, in the [core_build] directory, type &amp;quot;cat nohup_DoseCalcs_RunID_... &amp;quot; or &amp;quot;tail -f &lt;/p&gt;&lt;p&gt;nohup_DoseCalcs_RunID_... &amp;quot; to read and progress a simulation. You can stop the simulation either by clicking on&lt;/p&gt;&lt;p&gt; &amp;quot;Stop Current Simulation(s)&amp;quot; (for all simulations) or by typing &amp;quot;top&amp;quot; in the terminal to get the process_ID, then &amp;quot;kill process_ID&amp;quot;.&lt;span style=&quot; color:#252525;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Use on Rocks&lt;/span&gt;: At each run, an output file beginning with DoseCalcs_RunID_... is created, and all the background &lt;/p&gt;&lt;p&gt;DoseCalcs simulation outputs are written to this file. In the [core_build] directory, type &amp;quot;cat DoseCalcs_RunID_... &amp;quot; &lt;/p&gt;&lt;p&gt;or &amp;quot;tail -f DoseCalcs_RunID_... &amp;quot; to read and progress a simulation. You can stop the simulation by typing &amp;quot;qstat&amp;quot; &lt;/p&gt;&lt;p&gt;in the terminal to get the job_ID, then type &amp;quot;qdel job_ID&amp;quot;, or use the button &amp;quot;Stop Job&amp;quot;.&lt;span style=&quot; color:#252525;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Run without Background and Rocks&lt;/span&gt;: A run output is shown directly on the terminal, to stop the simulation, just &lt;/p&gt;&lt;p&gt;reopen the terminal, or type &amp;quot;Ctrl+c&amp;quot; in the terminal, or take any action that renews the terminal.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Simulation macros of a run&lt;/span&gt;: In addition to the simulation output file, the macros file of each run is generated in &lt;/p&gt;&lt;p&gt;the [core_build] and it can viewed by typing &amp;quot;cat Macros_RunID_...&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="textFormat">
+                     <enum>Qt::AutoText</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                </widget>
               </item>
              </layout>

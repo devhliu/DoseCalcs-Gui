@@ -98,12 +98,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QStringList ICRPPhantoms=(QStringList()<<"ICRPAdultMale"<<"ICRPAdultFemale");
     ui->comboBoxPhantom->addItems(ICRPPhantoms);
 
-    QStringList PreDefinedGeom=(QStringList()<<"ICRP110 Voxel-based Adult Male"<<"ICRP110 Voxel-based Adult Female"
-                                <<"ICRP143 Voxel-based Male 15-years-old"<<"ICRP143 Voxel-based Female 15-years-old"
-                                <<"ICRP143 Voxel-based Male 10-years-old"<<"ICRP143 Voxel-based Female 10-years-old"
-                                <<"ICRP143 Voxel-based Male 05-years-old"<<"ICRP143 Voxel-based Female 05-years-old"
-                                <<"ICRP143 Voxel-based Male 01-years-old"<<"ICRP143 Voxel-based Female 01-years-old"
-                                <<"ICRP143 Voxel-based Male Newborn"<<"ICRP143 Voxel-based Female Newborn"
+    QStringList PreDefinedGeom=(QStringList()<<"ICRP110 Voxel-Type Adult Male"<<"ICRP110 Voxel-Type Adult Female"
+                                <<"ICRP143 Voxel-Type Male 15-years-old"<<"ICRP143 Voxel-Type Female 15-years-old"
+                                <<"ICRP143 Voxel-Type Male 10-years-old"<<"ICRP143 Voxel-Type Female 10-years-old"
+                                <<"ICRP143 Voxel-Type Male 05-years-old"<<"ICRP143 Voxel-Type Female 05-years-old"
+                                <<"ICRP143 Voxel-Type Male 01-years-old"<<"ICRP143 Voxel-Type Female 01-years-old"
+                                <<"ICRP143 Voxel-Type Male Newborn"<<"ICRP143 Voxel-Type Female Newborn"
                                 <<"ICRP145 Mesh-Type Adult Male"<<"ICRP145 Mesh-Type Adult Female"
                                 <<"Phantom Constructed using DICOM/CT Files"<<"Simple Voxelized Geometry Using DoseCalcs Commands"
                                 <<"Stylized MIRD Adult Female Phantom using CPP (../DoseCalcs/core/src/G4TCPPGeometryFormat.cc) Geometry Method"<<"Stylized MIRD Adult Female Phantom using GDML (.gdml) Geometry Method"
@@ -1015,6 +1015,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     FillComponentsFromInputsFile(MacroFilePath); // this is called here after making and filling combobox lists
 
 
+    ui->comboBoxNohupFiles->setVisible(false);
+    ui->pushButtonShowOutputs->setVisible(false);
 
     setCompleters();
 
@@ -1871,12 +1873,14 @@ void MainWindow::on_RunButton_clicked()
                 QString nohup = "";
                 QString andd = "";
                 if(ui->checkBoxnohup->isChecked()){
+                    LastRunOutputFile = "nohup_"+ConstructDoseCalcsJobName();
+
                     if(!QFile::exists("/usr/bin/nohup")){
                         QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                         return;
                     }
                     nohup = "/usr/bin/nohup ";
-                    andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
+                    andd = "  > " + LastRunOutputFile + " & ";
                 }
 
                 BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n"
@@ -1894,12 +1898,16 @@ void MainWindow::on_RunButton_clicked()
                 QString nohup = "";
                 QString andd = "";
                 if(ui->checkBoxnohup->isChecked()){
+                    ui->RunButton->setText("Run("+QString::number(macrosfileinc)+")");macrosfileinc++;
+
+                    LastRunOutputFile = "nohup_"+ConstructDoseCalcsJobName();
+
                     if(!QFile::exists("/usr/bin/nohup")){
                         QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                         return;
                     }
                     nohup = "/usr/bin/nohup ";
-                    andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
+                    andd = "  > " + LastRunOutputFile + " & ";
                 }
 
                 BashCommandsForExecuting = "#! /bin/bash \n" +f
@@ -1930,16 +1938,65 @@ void MainWindow::on_RunButton_clicked()
 
             isInexec = true;
 
-            //process->close();
-
         }else{
             showResultsOutput("Verify that the simulate binary and the inputs.mac are existed in " + QsubSeparatedMacroFilePath, 0);
         }
     }
 
-    macrosfileinc++;
+    ui->RunButton->setText("Run("+QString::number(macrosfileinc)+")");macrosfileinc++;
+}
+void MainWindow::on_pushButtonShowOutputs_clicked()
+{
 
+    BashCommandsForExecuting = "#! /bin/bash \n cd " + DoseCalcsCore_build_dir_path+ "\n tail -f "+ ui->comboBoxNohupFiles->currentText() +" -n +0";
+    BashCommandsForExecuting += "\n bash \n";
 
+    showResultsOutput("Writing Check Commands : \n", 0);
+    showResultsOutput(BashCommandsForExecuting , 0);
+    showResultsOutput("to --> " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , 4);
+    fileManagerObject->WriteTextToFile( DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName , BashCommandsForExecuting);
+    showResultsOutput("Checking DoseCalcs simulation output file" , 1);
+    ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
+}
+void MainWindow::on_pushButtonShowOutputsAndMacros_clicked()
+{
+    QDir dir(DoseCalcsCore_build_dir_path);
+    QString filesnames = "\n";
+    foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "DoseCalcs_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+        filesnames += entry.fileName() + "\n";
+    }
+    foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "nohup_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+        filesnames += entry.fileName() + "\n";
+    }
+    foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "Macros_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+        filesnames += entry.fileName() + "\n";
+    }
+
+    if (QMessageBox::Yes == QMessageBox::question(this, "Warning!", "Do you want to remove this files: \n"+filesnames , QMessageBox::Yes | QMessageBox::No))
+    {
+
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "DoseCalcs_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            dir.remove(entry.fileName());
+        }
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "nohup_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            dir.remove(entry.fileName());
+        }
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "Macros_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            dir.remove(entry.fileName());
+        }
+    }
+
+}
+void MainWindow::on_pushButtonStopCurrentProcess_clicked()
+{
+    if (QMessageBox::Yes == QMessageBox::question(this, "Warning!", "Do you want to stop all DoseCalcs simulations in progress (\"simulate\" processes)? in case there is more than one simulation, you should verify the current simulations in progress \n1) Type \"top\" in terminal;\n"
+                                                  "2) Then take the process_ID of the \"simulate\" process to be killed;\n3) execute \"kill process_ID\" on terminal.\n\n"
+                                                  "If you click on \"yes\", all \"simulate\" process will be killed" , QMessageBox::Yes | QMessageBox::No))
+    {
+        QProcess p;
+        p.start("pkill simulate");
+        p.waitForFinished();
+    }
 }
 void MainWindow::on_openResultsDirButton_clicked()
 {
@@ -2092,7 +2149,28 @@ void MainWindow::on_pushButton_clicked()
 }
 void MainWindow::on_checkBoxRocks_clicked(bool checked)
 {
+    if (ui->checkBoxRocks->isChecked()){
+        ui->comboBoxNohupFiles->setVisible(true);
+        ui->pushButtonShowOutputs->setVisible(true);
+        QDir dir(DoseCalcsCore_build_dir_path);
+        ui->comboBoxNohupFiles->clear();
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "DoseCalcs_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            ui->comboBoxNohupFiles->addItem(entry.fileName());
+        }
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "nohup_*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            ui->comboBoxNohupFiles->addItem(entry.fileName());
+        }
+    }else{
+        ui->comboBoxNohupFiles->setVisible(false);
+        ui->pushButtonShowOutputs->setVisible(false);
+        QDir dir(DoseCalcsCore_build_dir_path);
+        ui->comboBoxNohupFiles->clear();
+    }
+
+
     if(ui->checkBoxRocks->isChecked()){
+        ui->checkBoxnohup->setEnabled(false);
+        ui->checkBoxnohup->setChecked(false);
         ui->pushButtonLoadExe->setEnabled(true);
         ui->MPIOrMTOnRockscomboBox->setEnabled(true);
         ui->pushButtonGenerateExe->setEnabled(true);
@@ -2107,6 +2185,7 @@ void MainWindow::on_checkBoxRocks_clicked(bool checked)
         }
         timer.singleShot(60000, this,SLOT(removeHugFiles_slot())); // check in 3 minutes
     }else{
+        ui->checkBoxnohup->setEnabled(true);
         ui->pushButtonLoadExe->setEnabled(false);
         ui->MPIOrMTOnRockscomboBox->setEnabled(false);
         ui->pushButtonGenerateExe->setEnabled(false);
@@ -2230,12 +2309,10 @@ void MainWindow::openqsubMacros_slot(){
                 DoseCalcsCore_build_dir_path, //pathBuildApp,
                 "All files (*.*);;Text files (*.txt)"
                 );
-
 }
 
 void MainWindow::getRockcsDoseCalcsJobs()
 {
-
     // all the list of job files
     QDir dir(DoseCalcsCore_build_dir_path);
     QStringList listOfFile ;
@@ -2512,7 +2589,6 @@ QString MainWindow::ConstructDoseCalcsJobName(){
 
     InputsVals0 = ui->SourcelineEditParName->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setSourceGenerationData"
     NumberOfSourceParticle = InputsVals0.size();
-
 
     if(ui->comboBoxTypeOfSources->currentText() == "Voxels"){
         InputsVals1 = ui->lineEditChosenSourceTypeData->text().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts); // "/SourceData/setSourceGenerationData"
@@ -3772,7 +3848,6 @@ void MainWindow::btnChooseADir2_slot(){
 
     }
 }
-
 
 
 int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
@@ -7025,6 +7100,24 @@ void MainWindow::on_AnalysisComboBoxGraphData_currentIndexChanged(const QString 
 
     }
 }
+void MainWindow::on_checkBoxnohup_clicked()
+{
+    if (ui->checkBoxnohup->isChecked()){
+        ui->comboBoxNohupFiles->setVisible(true);
+        ui->pushButtonShowOutputs->setVisible(true);
+        QDir dir(DoseCalcsCore_build_dir_path);
+        ui->comboBoxNohupFiles->clear();
+        foreach( const QFileInfo& entry, dir.entryInfoList( QStringList() << "nohup_DoseCalcs*", QDir::Files | QDir::Hidden | QDir::NoSymLinks ) ) {
+            ui->comboBoxNohupFiles->addItem(entry.fileName());
+        }
+    }else{
+        ui->comboBoxNohupFiles->setVisible(false);
+        ui->pushButtonShowOutputs->setVisible(false);
+        QDir dir(DoseCalcsCore_build_dir_path);
+        ui->comboBoxNohupFiles->clear();
+    }
+}
+
 
 void MainWindow::on_pushButtonEditGeomFile_clicked()
 {
@@ -7483,7 +7576,17 @@ void MainWindow::RunForMultiGeomeries()
                 RunAndScoreCommands[5] + " " + ValuesOfInputs[Score_setSimNumOnRanksLineEdit]+ "\n"+
                 RunAndScoreCommands[10] + " " + UserCurrentResultsDirPath + "\n\n";
 
-        QsubSeparatedMacroFilePath = DoseCalcsCore_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac"; macrosfileinc++;
+        QsubSeparatedMacroFilePath = DoseCalcsCore_build_dir_path+"/Macros"+ConstructDoseCalcsJobName().remove("DoseCalcs")+".mac";
+        ui->RunButton->setText("Run("+QString::number(macrosfileinc)+")");macrosfileinc++;
+        if(ui->checkBoxnohup->isChecked()){
+            ui->comboBoxNohupFiles->setVisible(true);
+            ui->pushButtonShowOutputs->setVisible(true);
+            ui->comboBoxNohupFiles->addItem(LastRunOutputFile);
+            ui->comboBoxNohupFiles->setCurrentText(LastRunOutputFile);
+        }else{
+            ui->comboBoxNohupFiles->setVisible(false);
+            ui->pushButtonShowOutputs->setVisible(false);
+        }
 
         fileManagerObject->WriteTextToFile(QsubSeparatedMacroFilePath , MacrosText);
         FillComponentsFromInputsFile(QsubSeparatedMacroFilePath);
@@ -7528,12 +7631,14 @@ void MainWindow::RunForMultiGeomeries()
                     QString nohup = "";
                     QString andd = "";
                     if(ui->checkBoxnohup->isChecked()){
+                        LastRunOutputFile = "nohup_"+ConstructDoseCalcsJobName();
+
                         if(!QFile::exists("/usr/bin/nohup")){
                             QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                             return;
                         }
                         nohup = "/usr/bin/nohup ";
-                        andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
+                        andd = "  > " + LastRunOutputFile + " & ";
                     }
 
                     BashCommandsForExecuting = "#! /bin/bash \ncd " + DoseCalcsCore_build_dir_path + "\n"
@@ -7551,12 +7656,14 @@ void MainWindow::RunForMultiGeomeries()
                     QString nohup = "";
                     QString andd = "";
                     if(ui->checkBoxnohup->isChecked()){
+                        LastRunOutputFile = "nohup_"+ConstructDoseCalcsJobName();
+
                         if(!QFile::exists("/usr/bin/nohup")){
                             QMessageBox::information(this, tr(""), "/usr/bin/nohup Not Found, Please install nohup and check the /usr/bin/nohup path.");
                             return;
                         }
                         nohup = "/usr/bin/nohup ";
-                        andd = "  > nohup_" + ConstructDoseCalcsJobName() + " & ";
+                        andd = "  > " + LastRunOutputFile + " & ";
                     }
 
                     BashCommandsForExecuting = "#! /bin/bash \n" +f
@@ -10129,3 +10236,5 @@ void MainWindow::Read_final_result_file(QString FilePath){
         ui->pushButtonReadUSERData->setText("Read User SAFs Data");
     }
 }
+
+
