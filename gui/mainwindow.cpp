@@ -2012,7 +2012,7 @@ void MainWindow::on_pushButtonStopCurrentProcess_clicked()
 {
     if (QMessageBox::Yes == QMessageBox::question(this, "Warning!", "Do you want to stop all DoseCalcs simulations in progress (\"simulate\" processes)? in case there is more than one simulation, you should verify the current simulations in progress \n1) Type \"top\" in terminal;\n"
                                                   "2) Then take the process_ID of the \"simulate\" process to be killed;\n3) execute \"kill process_ID\" on terminal.\n\n"
-                                                  "If you click on \"yes\", all \"simulate\" process will be killed" , QMessageBox::Yes | QMessageBox::No))
+                                                  "If you click on \"yes\", all \"simulate\" processes will be killed" , QMessageBox::Yes | QMessageBox::No))
     {
         QProcess p;
         p.start("pkill simulate");
@@ -3716,7 +3716,7 @@ void MainWindow::on_actionHow_To_Use_triggered()
 void MainWindow::on_actionUpdate_triggered()
 {
 
-    if(QMessageBox::Yes == QMessageBox::question(this, tr("Update"), "Automatic download and installation of the latest version of DoseCalcs on the terminal. Modify the download and installation commands if necessary and click Save/Close button. Restart DoseCalcs-Gui after finishing")){
+    if(QMessageBox::Yes == QMessageBox::question(this, tr("Update"), "Automatic download and installation of the latest version of DoseCalcs on the terminal. Modify the download and installation commands if necessary and click Save/Close button. Restart DoseCalcs-Gui after finishing.")){
 
         BashCommandsForExecuting = "cd "+QDir::currentPath()+"/..\n"+
                 "rm -r main.tar.gz \n"+
@@ -5035,7 +5035,7 @@ bool MainWindow::ShowImportantSimulationData(){
     ImportantSimulationInputs +=
             "*** Physics : " + ui->SourceComboBoxPhysUsed->currentText() + "\n"+
             "*** Cuts In Range: " + ui->SourceLineEditDistanceCut->text()+ "\n"+
-            "*** Energy Range: " + ui->SourceLineEditDistanceCut->text()+ "\n\n";
+            "*** Energy Range: " + ui->SourceLineEditEnergyCut->text()+ "\n\n";
     ImportantSimulationInputs +=
             "*** Initial Particles : "+ui->SourcelineEditParName->text() + "\n"+
             "*** Initial Position : "+ui->comboBoxTypeOfSources->currentText() +" : " + ui->lineEditChosenSourceTypeData->text() +"\n" +
@@ -6414,7 +6414,7 @@ void MainWindow::on_AnalysisbtnGenerate_clicked()
         }
 
     }else{
-        QMessageBox::information(this, tr("Performing root analysis tasks"), "Cannot find analysis executable. Reinstall DoseCalcs-Core with  -DWITH_ANALYSIS_USE=OFF option in cmake command. Also if you will generate graphs, set ROOT analysis system bin path in the DoseCalcs-Core installation cmake command -DROOT_DIR=/home/../root_install/bin" );
+        QMessageBox::information(this, tr("Performing root analysis tasks"), "Cannot find analysis executable. Reinstall DoseCalcs-Core with  -DWITH_ANALYSIS_USE=ON option in cmake command. Also if you will generate graphs, set ROOT analysis system bin path in the DoseCalcs-Core installation cmake command -DROOT_DIR=/home/../root_install/bin" );
     }
 }
 void MainWindow::on_RootAnalysispushButtonOpenROOTGUI_clicked()

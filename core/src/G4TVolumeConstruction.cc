@@ -97,6 +97,8 @@ G4TVolumeConstruction::G4TVolumeConstruction()
     //G4cout<< " @@@@@@@@@@@@@@@@@@@@@@@@@@  G4TVolumeConstruction  @@@@@@@@@@@@@@@@@@@@@@@@@@@"<< G4endl;
 #endif
 
+    //CreateICRPSAFsReferenceDataFile();
+
     DicomCTName = "CTDATA.txt";
     DicomPETName = "PETDATA.txt";
 
@@ -3461,14 +3463,16 @@ void G4TVolumeConstruction::CreateICRPSAFsReferenceDataFile(){
     std::vector<G4double> EneVal;
     std::map<G4String, std::map<G4String, std::map<G4double, G4double>>> RefData;
 
-    std::cout << "\n ----------------------- Read Reference data file ----------------------- \n" <<  std::endl;
-    //G4String FileName = "Scripts/rcp-af_photon_2016-08-12.SAF", Outfn = "FemaleICRPRefData.txt";
-    G4String FileName = "Scripts/rcp-am_photon_2016-08-12.SAF", Outfn = "MaleICRPRefData.txt";
+    std::cout << "\n ----------------------- Read ICRP Reference data file ----------------------- \n" <<  std::endl;
+    G4String FileName = "/home/tarik/Bureau/1BuildsAndInstallations/DoseCalcs_build/core_build/rcp-am_alpha_2016-08-12.SAF", Outfn = "MaleICRPRefData.txt";
     std::ifstream fileR(FileName.c_str());
     G4String line, word, Src, Trg; G4double val;
+    G4int numE = 24; // 24 for alpha;
+    G4String ParticleName = "alpha"; // 24 for alpha;
+    G4String GeomName = "ICRPAdultMale"; // 24 for alpha;
+
     if(fileR.is_open()){
 
-        //G4cout  << " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << G4endl;
         G4cout << "Reading "<< FileName << " ... " << G4endl ;
 
         G4int kk = 0;
@@ -3478,47 +3482,50 @@ void G4TVolumeConstruction::CreateICRPSAFsReferenceDataFile(){
 
             G4cout << "line : "<< LineString.str() << G4endl ;
 
-            if(LineString.str().empty() || kk == 0){
-                LineString >> word;
-                kk++;
+            if(LineString.str().empty()){
                 continue;
             }
+            if(kk == 0){
 
-            if(kk == 1){
-
-                for(int f = 0; f < 28 ;f++ ){
+                for(int f = 0; f < numE ;f++ ){
                     LineString >> val;
                     EneVal.push_back(val);
                 }
+                G4cout << "EneVal.size() : "<< EneVal.size() << G4endl ;
 
                 kk++;
                 continue;
             }
 
-            LineString >> Trg;
-            LineString >> Src;
 
-            for(int f = 0; f < 28 ;f++ ){
-                LineString >> val;
+            line.replace(10, 2, " ");
+            G4cout << "line without <- : "<< line << G4endl ;
+
+            std::istringstream LineString11(line);
+            LineString11 >> Trg >> Src;
+
+            for(int f = 0; f < numE ;f++ ){
+                LineString11 >> val;
                 RefData[Src][Trg][EneVal[f]] = val;
-                G4cout << " " << Src << " " << Trg << " " << EneVal[f] << " " << val << G4endl ;
+                //G4cout << " " << Src << " " << Trg << " " << EneVal[f] << " " << val << G4endl ;
             }
         }
 
         fileR.close();
     }
 
-    std::ofstream fileO(Outfn.c_str());
+    std::ofstream fileO("SAFReferences");
     G4cout << "Writing to FemaleICRPRefData.txt ..." << G4endl ;
     if(fileO.is_open()){
 
         for ( auto Abeg = RefData.begin(); Abeg != RefData.end(); ++Abeg  )
         {
             Src = Abeg->first;
-            fileO << std::setw(11) << std::left << "****** SAF " << std::setw(12) << std::left << Src << std::setw(8) << std::left << " gamma ";
+            fileO << "****** SAF kg-1 " << Src << " " << ParticleName << " " << GeomName << " MeV ";
 
-            for(int f = 0; f < 28 ;f++ ){
-                fileO << std::setw(11) << std::left << EneVal[f] << " ";
+            for(int f = 0; f < numE ;f++ ){
+                //fileO << std::setw(11) << std::left << EneVal[f] << " ";
+                fileO << EneVal[f] << " ";
             }
             fileO << "\n" ;
 
@@ -3529,13 +3536,12 @@ void G4TVolumeConstruction::CreateICRPSAFsReferenceDataFile(){
 
                 for ( auto Cbeg = Bbeg->second.begin(); Cbeg != Bbeg->second.end(); ++Cbeg )
                 {
-                    fileO << std::setw(11) << std::left << RefData[Src][Trg][Cbeg->first] << " " ;
+                    fileO << RefData[Src][Trg][Cbeg->first] << " " ;
                 }
                 fileO << "\n" ;
 
             }
-            fileO << "* -----------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<
-                     "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<< "\n" ;
+            fileO << "* ---------------------------------------------------------------------\n" ;
         }
         fileO.close();
     }
