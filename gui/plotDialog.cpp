@@ -5822,7 +5822,7 @@ void PlotDialog::on_pushButtonOpenInRoot_clicked()
     outfile << LatexText.str();
     outfile.close();
 
-    if(QFile::exists(FileName) || QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName) ){
+    if( QFile::exists(FileName) && QFile::exists(Root_Lib_dir_path) && QFile::exists(Root_Lib_dir_path+"/thisroot.sh") && QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName) ){
 
         QString BashCommandsForExecuting =
                 "#! /bin/bash \n . " +Root_Lib_dir_path +"/thisroot.sh \n"+

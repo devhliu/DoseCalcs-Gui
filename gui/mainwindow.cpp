@@ -6427,11 +6427,11 @@ void MainWindow::on_RootAnalysispushButtonOpenROOTGUI_clicked()
     //CoreProcess.execute("sh " + DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
     if(QFile::exists(Root_Lib_dir_path) && QFile::exists(Root_Lib_dir_path+"/thisroot.sh") ){
         BashCommandsForExecuting = "\ncd " +Root_Lib_dir_path +"\n" + ". ./thisroot.sh \n"
-                +"cd "+UserCurrentResultsDirPath+" \n"
+                +"cd "+UserCurrentResultsDirPath+"/"+GraphsOutDirName+" \n"
                 +"root --web=off -e \"TBrowser x\" "
                 ;
     }else{
-        BashCommandsForExecuting = "cd "+UserCurrentResultsDirPath+" \n root --web=off -e \"TBrowser x\" "
+        BashCommandsForExecuting = "cd "+UserCurrentResultsDirPath+"/"+GraphsOutDirName+" \n root --web=off -e \"TBrowser x\" "
                 ;
     }
 
@@ -6498,7 +6498,7 @@ void MainWindow::ReadLoadICRPSpectrumData(){
 
     if(!IsICRPFilesAreRead){
 
-        Read_ICRP110MasssSAFs107RadiationFiles(ICRPDATAPath);
+        Read_ICRP107SpectrumRadiationFiles(ICRPDATAPath);
         //ICRPRadioNuclideDataDiscSpec = fileManagerObject->getICRPRadioNuclideDataDiscSpec();
 
         if(ICRPRadioNuclideDataDiscSpec.size() != 0){
@@ -6519,7 +6519,6 @@ void MainWindow::ReadLoadICRPSpectrumData(){
         radlist.push_back(RadioTracer_NAME);
 
     }
-
 
     QComboBox * RadioList = new QComboBox(); RadioList->addItems(radlist);
     RadioList->setToolTip("Choose a radionuclide");
@@ -6580,7 +6579,7 @@ void MainWindow::OpenROOTCanvas()
         Root_Lib_dir_path = ShowMessageBoxAndGetPath("Directory containing thisroot.sh Not Found, Click OK to Choose the Directory");
     }
 
-    if(QFile::exists(Root_Lib_dir_path) && QFile::exists(Root_Lib_dir_path+"/thisroot.sh") ){
+    if( QFile::exists(Root_Lib_dir_path) && QFile::exists(Root_Lib_dir_path+"/thisroot.sh") && QFile::exists(DoseCalcsCore_build_dir_path+"/"+GraphExecutableName) ){
 
         BashCommandsForExecuting = "#! /bin/bash \ncd " +Root_Lib_dir_path +"\n" + ". ./thisroot.sh \n"
                 +"cd "+DoseCalcsCore_build_dir_path+" \n"
@@ -6596,7 +6595,7 @@ void MainWindow::OpenROOTCanvas()
             ShowTerminal(DoseCalcsCore_build_dir_path+"/"+DoseCalcsExecutingFileName);
         }
     }else{
-        QMessageBox::information(this, tr(""), "Install ROOT Analysis System before run the ROOT-View");
+        QMessageBox::information(this, tr(""), "Install ROOT Analysis System, and rebuild DoseCalcs-Core with analysis option before run the ROOT-View");
     }
 }
 void MainWindow::CreateROOTFile()
@@ -8040,31 +8039,8 @@ void MainWindow::ReadICRPilesAndGetData(){
 
         }
     }
-    for ( auto it = ICRPRadioNuclideDataDiscSpec.begin(); it != ICRPRadioNuclideDataDiscSpec.end(); ++it  ){
-
-        QString RadioTracer_NAME = it.key();
-        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
-
-        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
-            QString Particle_NAME = it2.key();
-            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
-
-            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
-                QString Source_NAME  = it3.key();
-                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
-
-                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
-                    double Energy  = DD.key();
-                    //                  QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
-
-                    double SAFValue  = DD.value();
-                    //QTextStream(stdout) << " RadioTracer_NAME " << RadioTracer_NAME << " Period(s) " << ICRPRadioNuclideHalfLives[RadioTracer_NAME] << " Particle_NAME " << Particle_NAME << " Energy " << Energy << " Value " << SAFValue <<"\n";
-                }
-            }
-        }
-    }
-
     */
+
     /*
     for ( auto it = ICRPRadioNuclideData.begin(); it != ICRPRadioNuclideData.end(); ++it  ){
 
@@ -9536,7 +9512,6 @@ double MainWindow::GenerateRadiotracerQuantitiesByInterpolationInDefaultUnitForB
 void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
 
     ICRPRadioNuclideData.clear();
-    ICRPRadioNuclideDataDiscSpec.clear();
     ICRPRadioNuclideHalfLives.clear();
     RadionuclidesParticles.clear();
     RadioTracerSourceOrganResidenceTime.clear();
@@ -9551,9 +9526,9 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
     ui->progressBarReadingCalcData->show();
     double percent = 0;
 
-    for (int zzz = 0 ; zzz < 17; zzz++) { // ICRP files  "< 14"
+    for (int zzz = 0 ; zzz < 13; zzz++) { // ICRP files  "< 14"
 
-        percent = ((zzz+1)/17.)*100;
+        percent = ((zzz+1)/13.)*100;
 
         ui->progressBarReadingCalcData->setValue(percent);
 
@@ -9618,27 +9593,17 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
             FilePathString = "ICRP-07.RAD";
         }
         else if(zzz==12){
-            FilePathString = "ICRP-07.BET";
-        }
-        else if(zzz==13){
-            FilePathString = "ICRP-07.ACK";
-        }
-        else if(zzz==14){
-            FilePathString = "ICRP-07.NSF";
-        }
-        else if(zzz==15){
             FilePathString = "RadioPharmaceuticalsICRP.dat";
         }
-        else if(zzz==16){
-            FilePathString = "ICRP-07.NDX";
-        }
+        //else if(zzz==13){
+          //  FilePathString = "ICRP-07.NDX";
+        //}
 
         QString fm = DataDirName+"/"+FilePathString;
         QFile file(fm);
 
         if(!file.open(QIODevice::ReadOnly)) {
             //QMessageBox::information(0, "error", file.errorString());
-
         }else{
 
             //QTextStream(stdout) <<zzz << " -Reading file: " << fm << "....\n";
@@ -9863,17 +9828,118 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             }
 */
 
-                            /*
-                            if(ParticleName != "e-" && ParticleName != "e+"){
-                                ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[2].toDouble()] = fields[1].toDouble();
-                            }
-                            */
                             //if(ParticleName=="e+"){ParticleName = "e-";};
                             ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[2].toDouble()] = fields[1].toDouble();
 
                         }
                     }
-                    /*else if(zzz==12){ // for beta and electron Radiation files
+                    else if(zzz==12){ // for Radiotracer data
+
+                        std::string c1; std::string c2; std::string c3; double val;
+                        std::string line1 = line.toStdString();
+                        std::istringstream LineString(line1);
+
+                        if(LineString.str().empty()){
+                            continue;
+                        }
+
+                        LineString  >> c1 ;
+                        LineString  >> c2 ;
+
+                        RadiotracerradionucleidMap[c1.c_str()] = c2.c_str();
+
+                        while(LineString >> c3 ){
+                           LineString >> val;
+                           RadioTracerSourceOrganResidenceTime[c1.c_str()][c2.c_str()][c3.c_str()] = val;
+                        }
+                    }
+                }
+                lineInc++;
+            }
+            file.close();
+            //QTextStream(stdout) << "Closing file " << file.fileName() << "\n";
+        }
+    }
+
+    ui->progressBarReadingCalcData->setValue(100);
+
+    if(ICRPSAFs.size() == 0){
+        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data");
+        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
+    }else{
+        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data *");
+        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
+    }
+}
+void MainWindow::Read_ICRP107SpectrumRadiationFiles(QString DataDirName ){
+
+    ICRPRadioNuclideDataDiscSpec.clear();
+
+    ui->progressBarReadingCalcData->setRange(0, 100);
+    ui->progressBarReadingCalcData->setValue(0);
+    ui->progressBarReadingCalcData->show();
+    double percent = 0;
+
+    for (int zzz = 0 ; zzz < 3; zzz++) { // ICRP files  "< 14"
+
+        percent = ((zzz+1)/3)*100;
+
+        ui->progressBarReadingCalcData->setValue(percent);
+
+        QVector< double > particleEnergies;
+
+        QString Geometry ,
+                Quantity = "SAF",
+                SrcRegionName ,
+                organTargetname,
+                ParticleName,
+                RadioNuclideName,
+                FilePathString,
+                word;
+
+        if(zzz==0){
+            FilePathString = "ICRP-07.BET";
+        }
+        else if(zzz==1){
+            FilePathString = "ICRP-07.ACK";
+        }
+        else if(zzz==2){
+            FilePathString = "ICRP-07.NSF";
+        }
+
+        QString fm = DataDirName+"/"+FilePathString;
+        QFile file(fm);
+
+        if(!file.open(QIODevice::ReadOnly)) {
+            //QMessageBox::information(0, "error", file.errorString());
+
+        }else{
+
+            //QTextStream(stdout) <<zzz << " -Reading file: " << fm << "....\n";
+
+            QTextStream in(&file);
+
+            int lineInc = 0;
+            int NumOfDataLines = 0;
+            int DataLineInc = 0;
+            int RadioNuclideDataInc = 0;
+            int NumberOfEneRows = 0;
+            double LastEnergy = 0;
+            double Prob = 0;
+            while(!in.atEnd()) {
+
+                QRegExp space("\\s++");
+                QString line = in.readLine().remove(space);
+
+                //if(lineInc == 10000){
+                //  break;
+                //}
+
+                if(!line.isEmpty()){
+
+                    //QTextStream(stdout) << "line: " << line << "\n";
+
+                    if(zzz==0){ // for beta and electron Radiation files
 
                         QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
 
@@ -9898,14 +9964,13 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                 }else{
 
                                     //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " ParticleName " << ParticleName << " RadioNuclideDataInc " << RadioNuclideDataInc << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
-                                    //ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[0].toDouble()] = fields[1].toDouble();
 
                                     //double Energy = LastEnergy + (fields[0].toDouble()-LastEnergy)*QRandomGenerator::global()->generateDouble();
                                     double Energy = fields[0].toDouble();
                                     Prob = fields[1].toDouble();
 
                                     //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " RadioNuclideDataInc " << RadioNuclideDataInc << " Random Energy " << Energy << " Prob " << Prob << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
-
+/*
                                     if(
                                     //positron emitters for PET
                                     RadioNuclideName != "F-18" &&
@@ -9933,7 +9998,7 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                             ){
                                         continue;
                                     }
-
+*/
                                     ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["e-"]["Spectrum"][Energy] = Prob;
                                     ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["e+"]["Spectrum"][Energy] = Prob;
                                     LastEnergy = fields[0].toDouble();
@@ -9942,7 +10007,7 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             RadioNuclideDataInc++;
                         }
                     }
-                    *//*else if(zzz==13){ // for Auger elect...
+                    else if(zzz==1){ // for Auger elect...
 
                         QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
 
@@ -9962,7 +10027,7 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             //QTextStream(stdout) << "RadioNuclideName " << RadioNuclideName << " NumberOfEneRows " << NumberOfEneRows  << " RadioNuclideDataInc " << RadioNuclideDataInc  << "\n";
 
                         }else{
-
+/*
                             if(
                                     //positron emitters for PET
                                     RadioNuclideName != "F-18" &&
@@ -9990,15 +10055,14 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                     ){
                                 continue;
                             }
-
+*/
                             //QTextStream(stdout) << RadioNuclideDataInc << " RadioNuclideName " << RadioNuclideName << " RadioNuclideDataInc " << RadioNuclideDataInc << " fields[0] " << fields[0].toDouble()  << " fields[1] " << fields[1].toDouble()  << "\n";
-                            //ICRPRadioNuclideData[RadioNuclideName][ParticleName][fields[0].toDouble()] = fields[1].toDouble();
-                            ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[0].toDouble()] = fields[1].toDouble();
+                            //ICRPRadioNuclideDataDiscSpec[RadioNuclideName][ParticleName]["Discrete"][fields[0].toDouble()] = fields[1].toDouble();
 
                             RadioNuclideDataInc ++;
                         }
                     }
-                    *//*else if(zzz==14){ // for Neutron spectrum fission file
+                    else if(zzz==2){ // for Neutron spectrum fission file
 
                         QStringList fields = line.split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts);
                             //QTextStream(stdout) << "size "<< fields.size() << " -line: " << line << "\n";
@@ -10019,7 +10083,7 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                             if(NumOfDataLines-1 == DataLineInc){ // radionu data
                                 //QTextStream(stdout) << fields[1].toDouble() << " 0 ";
                             }
-
+/*
                             if(
                                     //positron emitters for PET
                                     RadioNuclideName != "F-18" &&
@@ -10047,7 +10111,7 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                     ){
                                 continue;
                             }
-
+*/
                             //ICRPRadioNuclideFSNData[RadioNuclideName][fields[0].toDouble()][fields[1].toDouble()] = fields[2].toDouble();
                             //ICRPRadioNuclideData[RadioNuclideName]["neutron"][fields[0].toDouble()] = fields[2].toDouble();
                             ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["neutron"]["Spectrum"][fields[0].toDouble()] = fields[2].toDouble();
@@ -10058,27 +10122,6 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
                                 ICRPRadioNuclideDataDiscSpec[RadioNuclideName]["neutron"]["Spectrum"][fields[1].toDouble()] = 0;
                             }
                         }
-                    }*/
-                    else if(zzz==15){ // for Radiotracer data
-
-                        std::string c1; std::string c2; std::string c3; double val;
-                        std::string line1 = line.toStdString();
-                        std::istringstream LineString(line1);
-
-                        if(LineString.str().empty()){
-                            continue;
-                        }
-
-                        LineString  >> c1 ;
-                        LineString  >> c2 ;
-
-                        RadiotracerradionucleidMap[c1.c_str()] = c2.c_str();
-
-                        while(LineString >> c3 ){
-                           LineString >> val;
-                           RadioTracerSourceOrganResidenceTime[c1.c_str()][c2.c_str()][c3.c_str()] = val;
-                        }
-
                     }
                 }
                 lineInc++;
@@ -10090,13 +10133,32 @@ void MainWindow::Read_ICRP110MasssSAFs107RadiationFiles(QString DataDirName ){
 
     ui->progressBarReadingCalcData->setValue(100);
 
-    if(ICRPSAFs.size() == 0){
-        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data");
-        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
-    }else{
-        ui->pushButtonReadICRPData->setText("Read ICRP Radionuclides and SAFs Data *");
-        ui->pushButtonReadUSERData->setText("Read User SAFs Data");
+    /*
+
+    for ( auto it = ICRPRadioNuclideDataDiscSpec.begin(); it != ICRPRadioNuclideDataDiscSpec.end(); ++it  ){
+
+        QString RadioTracer_NAME = it.key();
+        //        QTextStream(stdout) << "--Geometry_NAME " << Geometry_NAME <<"\n";
+
+        for ( auto it2 = it.value().begin(); it2 != it.value().end(); ++it2  ){
+            QString Particle_NAME = it2.key();
+            //            QTextStream(stdout) << "---Particle_NAME " << Particle_NAME <<"\n";
+
+            for ( auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3  ){
+                QString Source_NAME  = it3.key();
+                //                QTextStream(stdout) << "----Energy_Val " << Energy_Val <<"\n";
+
+                for ( auto DD = it3.value().begin(); DD != it3.value().end(); ++DD  ){
+                    double Energy  = DD.key();
+                    //                  QTextStream(stdout) << "-----Source_NAME " << Source_NAME <<"\n";
+
+                    double SAFValue  = DD.value();
+                    //QTextStream(stdout) << " RadioTracer_NAME " << RadioTracer_NAME << " Period(s) " << ICRPRadioNuclideHalfLives[RadioTracer_NAME] << " Particle_NAME " << Particle_NAME << " Energy " << Energy << " Value " << SAFValue <<"\n";
+                }
+            }
+        }
     }
+    */
 }
 void MainWindow::Read_final_result_file(QString FilePath){
 

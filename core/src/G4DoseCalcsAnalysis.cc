@@ -1376,6 +1376,7 @@ void G4DoseCalcsAnalysis::CreateMultiGraphParametersAndCanvas(std::string mgt, s
 
 }
 
+
 // Tables for self and cross and regions data
 void G4DoseCalcsAnalysis::createLatexTables(){
 
@@ -1507,7 +1508,12 @@ void G4DoseCalcsAnalysis::GenerateLatexTableResultReference(){
     std::cout << "\n\n                                                          ========= "<< __FUNCTION__ << " ========= "<< "\n" << std::endl;
     
     ReadResultFile();
-    for (int SelfOfCross = 1 ; SelfOfCross < 6 ; SelfOfCross++) { // 1: one table just for Self, 2: a table for each source just for cross, 3: one table for self-cross data for all sources and targets 4: one table for self-cross data with ratio included with ref name for all sources and targets with rsd, 5: is like 4 without rsd
+    for (int SelfOfCross = 1 ; SelfOfCross < 6 ; SelfOfCross++) { // 1: one table just for Self results, 2: a table for each source just for cross results, 3: one table for self-cross data for all sources and targets  results. 4: one table for self-cross data with ratio included with ref name for all sources and targets with rsd, 5: is like 4 without rsd
+
+        if(RefFilePaths.size() == 0 || CompareReferenceNames.size() == 0 && ReferenceTable.size() == 0 && (SelfOfCross == 4 || SelfOfCross == 5)){
+            //continue;
+        }
+
         for (int gg = 0 ; gg < QuantityNamesToScore.size() ; gg++) {
             for (int vvv = 0 ; vvv < GeometryList.size() ; vvv++) {
                 for (int jjj = 0 ; jjj < ParticleList.size() ; jjj++) {
@@ -1533,7 +1539,8 @@ void G4DoseCalcsAnalysis::GenerateLatexTableResultReference(){
                     //std::string ValNm = QuantitiesToScore;
                     std::string ValNm = "DoseCalcs";
                     
-                    if(GraphsData == "Reference_Result"){
+
+                    if(GraphsData == "Reference_Result" && RefFilePaths.size() != 0 && CompareReferenceNames.size() != 0 && ReferenceTable.size() != 0 ){
                         RowNum = 4;
                         if(RefFilePaths.size() > 1 && CompareReferenceNames.size() > 1 && CompareReferenceNames.size() == RefFilePaths.size()){
                             //RowNum = RefFilePaths.size();
@@ -3948,7 +3955,7 @@ void G4DoseCalcsAnalysis::GenerateSelfCrossGraphs(){
         GenerateResultInOneGraph();
         GenerateSourceEnegyGraph();
 
-        if(GenerateRelativeErrGraph == "yes" && CompareReferenceNames.size() != 0 && RefFilePaths.size() != 0){
+        if(GenerateRelativeErrGraph == "yes" && CompareReferenceNames.size() != 0 && RefFilePaths.size() != 0 && ReferenceQuantityGeometryRadioTracerSourceTargetValues.size() != 0){
             GenerateRadioTracerResultsInOneGraphWithComparisonForAllComAndSrcReg();
             GenerateRadioTracerComparisonFactorGraphsForAllComAndSrcReg();
         }else{
@@ -3958,17 +3965,16 @@ void G4DoseCalcsAnalysis::GenerateSelfCrossGraphs(){
         if(GenerateResultsForRadioTracer == true){
             GenerateRadioTracerResultsInOneGraphSourceTargets();
             GenerateRadioTracerResultsInOneGraphForAllComAndSrcReg();
-            if(GenerateRelativeErrGraph == "yes" && CompareReferenceNames.size() != 0 && RefFilePaths.size() != 0){
+            if(GenerateRelativeErrGraph == "yes" && CompareReferenceNames.size() != 0 && RefFilePaths.size() != 0 && ResRefErrCompTables.size() != 0){
                 GenerateComparisonFactorGraphs();
                 GenerateResultReferenceInOneGraph();
             }else{
                 std::cout << "Check the name and data file path of reference, or set /AnalysisData/generateRelativeErrGraph ... command" << std::endl;
             }
         }
-
     }
 # endif
-    
+
 }
 void G4DoseCalcsAnalysis::GenerateVoxel2DGraphs(){
     

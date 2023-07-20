@@ -415,6 +415,7 @@ private:
     void ReadUserilesAndGetData();
     void ReadLoadICRPSpectrumData();
     void Read_ICRP110MasssSAFs107RadiationFiles(QString);
+    void Read_ICRP107SpectrumRadiationFiles(QString);
     void Read_final_result_file(QString);
 
     double  GenerateTissueFactor(QString);

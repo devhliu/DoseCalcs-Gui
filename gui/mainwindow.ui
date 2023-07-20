@@ -71,7 +71,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <property name="usesScrollButtons">
              <bool>true</bool>
@@ -961,7 +961,7 @@
                     <item>
                      <widget class="QPushButton" name="pushButton_2LoadICRPSpectrum">
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose Spectrum data from ICRP Publication 107 based files. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose Spectrum data of radionuclide emitted particle from ICRP Publication 107 based files. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>Load ICRP Spectrum</string>
@@ -1390,7 +1390,7 @@
                  <property name="geometry">
                   <rect>
                    <x>0</x>
-                   <y>-257</y>
+                   <y>0</y>
                    <width>1003</width>
                    <height>567</height>
                   </rect>
