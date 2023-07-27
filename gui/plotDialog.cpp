@@ -4612,7 +4612,6 @@ void PlotDialog::on_pushButtonFillTable_clicked()
 
         ui->tableWidgetForOneGraph->resizeColumnsToContents();
     }
-
 }
 
 /*
@@ -5662,7 +5661,6 @@ void PlotDialog::on_checkBoxDiffForRadiotracerOr_stateChanged(int arg1)
     else{
         ui->checkBoxDiffForRadiotracerOr->setToolTip("Click on the \"Relative Diff Graph\" to calculate and plot the ratio, relative difference or logarithmic relative difference between the particle DoseCalcs results and the given reference");
     }
-
 }
 
 void PlotDialog::on_plotcomboBoxScoredVariable_activated(const QString &arg1)
@@ -5786,11 +5784,9 @@ void PlotDialog::on_pushButtonOpenInRoot_clicked()
     std::ostringstream LatexText;
 
 
-
     QString titletext = title->text(); titletext.replace(" ","_");
     QString xlbl = ui->customPlot->xAxis->label(); xlbl.replace(" ","_");
     QString ylbl = ui->customPlot->yAxis->label(); ylbl.replace(" ","_");
-
 
     LatexText  << graphtype << " " << titletext.toStdString() << " " << xlbl.toStdString() << " " << ylbl.toStdString() << " yes " << " yes " << " yes " << " RightTop " << " no \n";
 

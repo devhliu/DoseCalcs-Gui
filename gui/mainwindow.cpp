@@ -2171,6 +2171,8 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_checkBoxRocks_clicked(bool checked)
 {
     if (ui->checkBoxRocks->isChecked()){
+        ui->checkBoxnohup->setEnabled(false);
+        ui->checkBoxnohup->setChecked(false);
         ui->comboBoxNohupFiles->setVisible(true);
         ui->pushButtonShowOutputs->setVisible(true);
         QDir dir(DoseCalcsCore_build_dir_path);
@@ -2190,8 +2192,6 @@ void MainWindow::on_checkBoxRocks_clicked(bool checked)
 
 
     if(ui->checkBoxRocks->isChecked()){
-        ui->checkBoxnohup->setEnabled(false);
-        ui->checkBoxnohup->setChecked(false);
         ui->pushButtonLoadExe->setEnabled(true);
         ui->MPIOrMTOnRockscomboBox->setEnabled(true);
         ui->pushButtonGenerateExe->setEnabled(true);
@@ -4247,6 +4247,8 @@ int MainWindow::FillComponentsFromInputsFile(QString FilePathString){
         if(InputsVals.size() > 0){
             ui->UseDataFilesFor->setCurrentText(InputsVals[0]);
         }
+    }else{
+        AddNewMaterialOrRegionToListOfSourceRegionNames();
     }
     if(ui->checkBoxFixScoreCommands->isChecked()){
 
